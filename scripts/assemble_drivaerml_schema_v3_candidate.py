@@ -459,8 +459,8 @@ def _normalize_case_metrics(
         extra = sorted(set(metric_values or {}) - set(required_metric_ids))
         raise PackageAssemblyError(
             "metrics/cases.json must contain every specification metric; "
-            f"missing={missing}, extra={extra}. The current candidate reducer does "
-            "not yet emit the composite/group/R2 set required for a package."
+            f"missing={missing}, extra={extra}. Use the current split reducer with "
+            "native dev profile evidence; do not fill scores by hand."
         )
     for metric_id, metric_value in metric_values.items():
         if not isinstance(metric_value, (int, float)) or isinstance(metric_value, bool) or not math.isfinite(metric_value):
@@ -574,13 +574,26 @@ def _copy_profiles(
         if relative_profile:
             _require_schema(
                 chunk,
-                "v1/drivaerml-relative-profile-chunk.schema.json",
+                (
+                    "v1/drivaerml-surface-profile-chunk.schema.json"
+                    if required_series
+                    and not any(s[0] == "velocity_profiles" for s in required_series)
+                    else "v1/drivaerml-relative-profile-chunk.schema.json"
+                ),
                 expected_name,
             )
             try:
                 chunk = validate_schema_v3_relative_profile_chunk_candidate(
                     chunk,
                     expected_contract_sha256=relative_contract_sha256,
+                    prediction_scope=(
+                        "surface_only"
+                        if required_series
+                        and not any(
+                            s[0] == "velocity_profiles" for s in required_series
+                        )
+                        else "surface_and_volume"
+                    ),
                 )
             except DrivAerDatasetScorerError as error:
                 raise PackageAssemblyError(
@@ -709,6 +722,7 @@ def assemble_package(
     discretization_cases_path: Path,
     output_path: Path,
     regional_diagnostics_path: Path | None = None,
+    checkpoint_paths: dict[str, Path] | None = None,
 ) -> dict[str, Any]:
     config = load_json(config_path)
     if config.get("schema") != CONFIG_SCHEMA:
@@ -807,6 +821,14 @@ def assemble_package(
     submission_id = participant.get("submission_id")
     if not isinstance(submission_id, str):
         raise PackageAssemblyError("participant.submission_id must be a string")
+    dev_package = candidate["release_id"] == "drivaerml-native-dev-v1-candidate"
+    if dev_package:
+        from scripts.assemble_windsorml_schema_v3_candidate import _verify_checkpoints
+
+        try:
+            _verify_checkpoints(participant.get("methodology"), checkpoint_paths or {})
+        except ValueError as error:
+            raise PackageAssemblyError(str(error)) from error
     participant_submission = copy.deepcopy(participant)
     participant_submission["dataset_id"] = "drivaerml"
     participant_submission["prediction_scope"] = prediction_scope
@@ -831,6 +853,10 @@ def assemble_package(
         if prediction_scope == "surface_only"
         else []
     )
+    if prediction_scope == "surface_only":
+        from reference.drivaerml.dev_workflow import unavailable_metrics
+
+        unavailable_metric_ids = unavailable_metrics(specification)
     required_metric_ids = [
         metric["id"]
         for metric in specification.get("metrics", [])
@@ -948,6 +974,10 @@ def assemble_package(
             "discretization_sha256": discretization_sha256,
             "case_metrics_sha256": case_metrics_sha256,
         }
+        if dev_package:
+            from reference.drivaerml.pre_release import GENUINE_INFERENCE_ATTESTATION
+
+            evidence["notes"] = GENUINE_INFERENCE_ATTESTATION
         if regional_sha256 is not None:
             evidence["regional_diagnostics_sha256"] = regional_sha256
         reproducibility = participant.get("reproducibility")
@@ -1046,6 +1076,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Split-level zero-weight regional-diagnostics.json from the evaluator.",
     )
     parser.add_argument("--discretization-cases", type=Path)
+    parser.add_argument("--checkpoint", action="append", default=[], metavar="ID=PATH")
     parser.add_argument("--output", type=Path)
     parser.add_argument(
         "--list-unresolved",
@@ -1085,6 +1116,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             raise PackageAssemblyError(
                 "assembly requires arguments: " + ", ".join(f"--{name.replace('_', '-')}" for name in missing)
             )
+        from scripts.assemble_windsorml_schema_v3_candidate import _checkpoint_arguments
+
         result = assemble_package(
             config_path=args.config,
             specification_path=args.submission_specification,
@@ -1093,6 +1126,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             discretization_cases_path=args.discretization_cases,
             output_path=args.output,
             regional_diagnostics_path=args.regional_diagnostics,
+            checkpoint_paths=_checkpoint_arguments(args.checkpoint),
         )
     except PackageAssemblyError as error:
         print(json.dumps({"status": "blocked", "error": str(error)}, sort_keys=True), file=__import__("sys").stderr)

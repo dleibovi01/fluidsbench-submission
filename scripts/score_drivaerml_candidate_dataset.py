@@ -44,7 +44,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--split-id", required=True)
     parser.add_argument("--core-evidence-dir", required=True, type=Path)
     parser.add_argument("--diagnostic-evidence-dir", required=True, type=Path)
-    parser.add_argument("--force-truth", required=True, type=Path)
+    parser.add_argument(
+        "--force-truth",
+        type=Path,
+        default=ROOT
+        / "benchmark-specs/drivaerml/reference-data/force_mom_constref_all.csv",
+    )
     parser.add_argument(
         "--submission-specification", type=Path, default=DEFAULT_SPECIFICATION
     )
@@ -73,8 +78,7 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help=(
             "Optional candidate-only FluidsBench profile directory. Generation "
-            "fails unless every case has all 16 velocity lines and all four "
-            "continuous Cp cuts."
+            "requires complete fixed/relative profiles for the selected scope."
         ),
     )
     parser.add_argument(
@@ -97,6 +101,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise DrivAerDatasetScorerError(
             "candidate support identity arguments require "
             "--schema-v3-case-metrics-output"
+        )
+    if args.schema_v3_case_metrics_output is not None:
+        support = json.loads(args.submission_specification.read_text())[
+            "scoring_support"
+        ].get("candidate_manifest", {})
+        args.candidate_support_release_id = (
+            args.candidate_support_release_id or support.get("release_id")
+        )
+        args.candidate_support_manifest_sha256 = (
+            args.candidate_support_manifest_sha256 or support.get("manifest_sha256")
+        )
+        support_arguments = (
+            args.candidate_support_release_id,
+            args.candidate_support_manifest_sha256,
         )
     if args.schema_v3_case_metrics_output is not None and (
         args.submission_id is None
@@ -154,11 +172,26 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         )
     if args.schema_v3_profile_output_dir is not None:
-        package = schema_v3_profile_chunks_candidate_adapter(
-            evaluation,
-            submission_id=args.submission_id,
-            cases_per_chunk=args.profile_cases_per_chunk,
-        )
+        if evaluation.to_json().get("dev_workflow_version") == 1:
+            from reference.drivaerml.dataset_scorer import (
+                schema_v3_relative_profile_chunks_candidate_adapter,
+            )
+
+            package = schema_v3_relative_profile_chunks_candidate_adapter(
+                evaluation,
+                submission_id=args.submission_id,
+                namespaced_series_by_case={
+                    c["case_id"]: c["profile_series"]
+                    for c in evaluation.to_json()["cases"]
+                },
+                cases_per_chunk=args.profile_cases_per_chunk,
+            )
+        else:
+            package = schema_v3_profile_chunks_candidate_adapter(
+                evaluation,
+                submission_id=args.submission_id,
+                cases_per_chunk=args.profile_cases_per_chunk,
+            )
         result["schema_v3_profiles_candidate"] = (
             write_schema_v3_profile_chunks_candidate(
                 package, args.schema_v3_profile_output_dir

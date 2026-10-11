@@ -267,6 +267,8 @@ def expected_metric_reduction(
         "benchmark_scalar_rrmse_across_cases",
     }:
         return "dataset_reference"
+    if metric_id.endswith("_max_abs"):
+        return "maximum"
     if metric_id.endswith("_rel_l1"):
         return "relative_l1_percent"
     if metric_id.endswith("_rel_l2"):

@@ -359,6 +359,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--surface-prediction-manifest", type=Path, required=True)
     parser.add_argument("--volume-prediction-manifest", type=Path)
+    parser.add_argument(
+        "--profile-output",
+        type=Path,
+        help="Write complete fixed/relative dev profile evidence from the same prediction manifests",
+    )
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument(
         "--evaluator-git-revision",
@@ -389,6 +394,16 @@ def parse_args() -> argparse.Namespace:
 
 
 def run(args: argparse.Namespace) -> dict[str, object]:
+    profile_output = getattr(args, "profile_output", None)
+    if profile_output is not None:
+        if profile_output.resolve() == args.output.resolve():
+            raise CandidateImplementationBindingError(
+                "profile output must differ from core evidence output"
+            )
+        if profile_output.exists() or profile_output.is_symlink():
+            raise CandidateImplementationBindingError(
+                f"refusing to overwrite profile output: {profile_output}"
+            )
     requested_revision = getattr(args, "evaluator_git_revision", None)
     receipt_path = getattr(args, "implementation_receipt", None)
     if (requested_revision is None) != (receipt_path is None):
@@ -482,7 +497,21 @@ def run(args: argparse.Namespace) -> dict[str, object]:
                 validation_block_rows=args.maximum_prediction_chunk_rows,
                 encoded_chunk_bytes=args.io_chunk_bytes,
             )
+    profiles = None
+    if profile_output is not None:
+        from reference.drivaerml.dev_profiles import evaluate_profiles
+
+        profiles = evaluate_profiles(
+            args.case_id,
+            args.prediction_scope,
+            args.surface_prediction_manifest,
+            args.volume_prediction_manifest,
+        )
     identity = write_candidate_case_evidence(evaluation, args.output)
+    if profiles is not None:
+        from reference.drivaerml.dev_profiles import write_profile_evidence
+
+        write_profile_evidence(profile_output, profiles)
     if implementation_binding is None:
         return identity
 
