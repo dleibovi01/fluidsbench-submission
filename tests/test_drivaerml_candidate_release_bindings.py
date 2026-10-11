@@ -154,7 +154,7 @@ class DrivAerMLCandidateReleaseBindingTests(unittest.TestCase):
     def make_unresolved_v10_fixture(self, root: Path) -> tuple[dict, Path, Path]:
         benchmark = root / "benchmark-specs" / "drivaerml"
         benchmark.mkdir(parents=True)
-        bindings = load_json(BINDINGS_PATH)
+        bindings = load_json(ROOT / "tests/fixtures/drivaerml-unresolved-release-bindings.json")
         profile_path = benchmark / bindings["profile_definition_v10"]["file"]
         shutil.copy2(
             ROOT / "benchmark-specs" / "drivaerml" / profile_path.name,
@@ -408,15 +408,15 @@ class DrivAerMLCandidateReleaseBindingTests(unittest.TestCase):
         }
         return bindings, benchmark, global_manifest_path, generated
 
-    def test_checked_in_unresolved_hand_off_never_leaks_into_active_spec(self) -> None:
+    def test_checked_in_dev_hand_off_is_complete_but_official_intake_closed(self) -> None:
         bindings = promoter.load_candidate_release_bindings(BINDINGS_PATH)
-        self.assertEqual(bindings["status"], "unresolved")
+        self.assertEqual(bindings["status"], "ready")
         tokens = [
             item
             for item in promoter.unresolved_release_tokens(bindings)
             if item[0] != ("unresolved_token_prefix",)
         ]
-        self.assertEqual(len(tokens), 7)
+        self.assertEqual(tokens, [])
         self.assertFalse(
             any(path[:1] == ("relative_support",) for path, _token in tokens)
         )
@@ -431,8 +431,9 @@ class DrivAerMLCandidateReleaseBindingTests(unittest.TestCase):
         )
         active = load_json(ROOT / "benchmark-specs" / "drivaerml" / "submission-spec.json")
         self.assertEqual(promoter.unresolved_release_tokens(active), [])
-        self.assertNotIn("candidate_manifest", active["scoring_support"])
-        self.assertEqual(active["profile_definition"]["id"], "drivaerml-diagnostics-v9-candidate")
+        self.assertEqual(active["scoring_support"]["candidate_manifest"], bindings["candidate_manifest"])
+        self.assertFalse(active["scoring_support"]["submissions_open"])
+        self.assertEqual(active["profile_definition"]["id"], "drivaerml-diagnostics-v10-candidate")
         profile_path = BINDINGS_PATH.parent / bindings["profile_definition_v10"]["file"]
         self.assertEqual(
             bindings["profile_definition_v10"]["sha256"],
@@ -481,7 +482,7 @@ class DrivAerMLCandidateReleaseBindingTests(unittest.TestCase):
             )
 
     def test_unresolved_generator_preserves_later_candidate_and_v10_bindings(self) -> None:
-        bindings = promoter.load_candidate_release_bindings(BINDINGS_PATH)
+        bindings = load_json(ROOT / "tests/fixtures/drivaerml-unresolved-release-bindings.json")
         with tempfile.TemporaryDirectory() as temporary:
             ready, benchmark, global_manifest_path, generated = self.make_ready_fixture(
                 Path(temporary)
@@ -829,7 +830,7 @@ class DrivAerMLCandidateReleaseBindingTests(unittest.TestCase):
                 promoter.select_generation_profile(bindings, None)
 
     def test_unresolved_selection_does_not_regress_an_existing_v10_file(self) -> None:
-        bindings = promoter.load_candidate_release_bindings(BINDINGS_PATH)
+        bindings = load_json(ROOT / "tests/fixtures/drivaerml-unresolved-release-bindings.json")
         with tempfile.TemporaryDirectory() as temporary:
             ready, benchmark, global_manifest_path, generated = self.make_ready_fixture(
                 Path(temporary)
@@ -852,7 +853,7 @@ class DrivAerMLCandidateReleaseBindingTests(unittest.TestCase):
             )
 
     def test_unresolved_rerun_rejects_partial_or_stale_preserved_state(self) -> None:
-        unresolved = promoter.load_candidate_release_bindings(BINDINGS_PATH)
+        unresolved = load_json(ROOT / "tests/fixtures/drivaerml-unresolved-release-bindings.json")
         with tempfile.TemporaryDirectory() as temporary:
             ready, benchmark, global_manifest_path, generated = self.make_ready_fixture(
                 Path(temporary)
@@ -903,7 +904,7 @@ class DrivAerMLCandidateReleaseBindingTests(unittest.TestCase):
                         )
 
     def test_unresolved_rerun_validates_old_manifest_against_new_contract(self) -> None:
-        unresolved = promoter.load_candidate_release_bindings(BINDINGS_PATH)
+        unresolved = load_json(ROOT / "tests/fixtures/drivaerml-unresolved-release-bindings.json")
         with tempfile.TemporaryDirectory() as temporary:
             ready, benchmark, global_manifest_path, generated = self.make_ready_fixture(
                 Path(temporary)

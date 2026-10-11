@@ -27,7 +27,7 @@
         "maximum_overall_score": 60.0
       }
     },
-    "closed_reason": "The participant contract, all-case native evidence and profile truth, scientific review, and bounded scoring equation are complete, but ranking remains closed until the production evaluator/scoring-support/truth release identities are frozen, the three-model sensitivity gate passes, and an independent full schema-v3 submission dry run is approved.",
+    "closed_reason": "Development candidate packaging, intake and registration are available on dev. Official ranking remains closed pending the production release, genuine-model sensitivity evidence and independent full-split trial.",
     "scientific_approval": {
       "status": "approved",
       "approved_by": "neilashton",
@@ -49,10 +49,10 @@
     "candidate_evidence_index_file": "evidence/README.md",
     "candidate_evidence_manifest_file": "evidence/manifest.json",
     "dataset_evaluator_binding": {
-      "status": "pending_frozen_release",
+      "status": "frozen",
       "repository_url": "https://github.com/neilashton/fluidsbench-submission",
       "evaluator_reference_version": "drivaerml-evaluator-v3-candidate",
-      "evaluator_code_revision": null,
+      "evaluator_code_revision": "942221db699f7785054c07c718e8d510126357c3",
       "activation_rule": "set status=frozen and publish the exact immutable evaluator Git revision only after the production evaluator is scientifically approved; participant evaluation evidence must match the frozen reference version, and optional maintainer recomputation receipts must match both values exactly"
     },
     "source_release": {
@@ -311,9 +311,9 @@
       }
     },
     "profile_definition": {
-      "file": "drivaerml-diagnostics-v9.json",
-      "sha256": "df22bc807b62f925c32659d681ac44064e6acf46449038b8431b1e9139aba1e8",
-      "status": "candidate_velocity_and_continuous_cp_cut_support_pending_all_case_validation",
+      "file": "drivaerml-diagnostics-v10.json",
+      "sha256": "9136feac7ac276d91f7cbcfb6c558beffc97cfaf0f0174626fee67a1f2a52bd0",
+      "status": "frozen_development_candidate",
       "velocity_validity_policy": {
         "id": "drivaerml-autocfd5-velocity-validity-v1",
         "status": "candidate_policy_defined_owner_mask_pending",
@@ -384,6 +384,10 @@
         "cut_count": 4,
         "metric_id": "cp_cut_r2",
         "discrete_cp_probe_support_accepted": false
+      },
+      "profile_ground_truth": {
+        "release_id": "prototype-profile-ground-truth-2026-09-04",
+        "manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
       }
     },
     "participant_process": [
@@ -414,7 +418,14 @@
       "provide_at_least_three_genuine_trained_model_checkpoint_predictions_for_sensitivity_and_method_ordering",
       "review_fixed_field_error_caps_and_bounded_R2_sensitivity_with_genuine_model_predictions_and_publish_bootstrap_indexes",
       "approve_immutable_evaluator_and_scoring_support_release_before_opening_submissions"
-    ]
+    ],
+    "candidate_manifest": {
+      "status": "candidate",
+      "release_id": "drivaerml-native-dev-v1-candidate",
+      "manifest_file": "scoring-support/drivaerml-native-dev-v1-candidate/manifest.json",
+      "manifest_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/942221db699f7785054c07c718e8d510126357c3/benchmark-specs/drivaerml/scoring-support/drivaerml-native-dev-v1-candidate/manifest.json",
+      "manifest_sha256": "810311448f74037070940278b403545a1b9b59e7a87ce7c2d31da0ae9383df01"
+    }
   },
   "relative_diagnostics": {
     "status": "support_verified_activation_pending",
@@ -894,10 +905,10 @@
     }
   ],
   "profile_definition": {
-    "id": "drivaerml-diagnostics-v9-candidate",
-    "file": "drivaerml-diagnostics-v9.json",
-    "sha256": "df22bc807b62f925c32659d681ac44064e6acf46449038b8431b1e9139aba1e8",
-    "status": "candidate_velocity_and_continuous_cp_cut_support_pending_all_case_validation",
+    "id": "drivaerml-diagnostics-v10-candidate",
+    "file": "drivaerml-diagnostics-v10.json",
+    "sha256": "9136feac7ac276d91f7cbcfb6c558beffc97cfaf0f0174626fee67a1f2a52bd0",
+    "status": "frozen_development_candidate",
     "velocity_validity_policy_id": "drivaerml-autocfd5-velocity-validity-v1"
   },
   "profile_panels": [

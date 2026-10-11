@@ -489,7 +489,7 @@ class DrivAerMLCandidatePackageAssemblerTests(unittest.TestCase):
         config = load_json(DRIVAER_TEMPLATE)
         tokens = assembler.unresolved_tokens(config)
         self.assertGreater(len(tokens), 10)
-        self.assertTrue(
+        self.assertFalse(
             any(item["token"].startswith("__UNRESOLVED_DRIVAERML_") for item in tokens)
         )
         self.assertTrue(any(item["token"].startswith("__REPLACE_") for item in tokens))

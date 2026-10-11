@@ -1,17 +1,17 @@
 {
   "schema": "drivaerml-fluidsbench-candidate-release-bindings-v1",
-  "status": "unresolved",
+  "status": "ready",
   "unresolved_token_prefix": "__UNRESOLVED_DRIVAERML_",
   "candidate_manifest": {
     "status": "candidate",
-    "release_id": "__UNRESOLVED_DRIVAERML_CANDIDATE_SUPPORT_RELEASE_ID__",
-    "manifest_file": "__UNRESOLVED_DRIVAERML_CANDIDATE_SUPPORT_MANIFEST_FILE__",
-    "manifest_url": "__UNRESOLVED_DRIVAERML_CANDIDATE_SUPPORT_MANIFEST_URL__",
-    "manifest_sha256": "__UNRESOLVED_DRIVAERML_CANDIDATE_SUPPORT_MANIFEST_SHA256__"
+    "release_id": "drivaerml-native-dev-v1-candidate",
+    "manifest_file": "scoring-support/drivaerml-native-dev-v1-candidate/manifest.json",
+    "manifest_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/942221db699f7785054c07c718e8d510126357c3/benchmark-specs/drivaerml/scoring-support/drivaerml-native-dev-v1-candidate/manifest.json",
+    "manifest_sha256": "810311448f74037070940278b403545a1b9b59e7a87ce7c2d31da0ae9383df01"
   },
   "evaluator": {
     "reference_version": "drivaerml-evaluator-v3-candidate",
-    "code_revision": "__UNRESOLVED_DRIVAERML_CANDIDATE_EVALUATOR_CODE_REVISION__"
+    "code_revision": "942221db699f7785054c07c718e8d510126357c3"
   },
   "profile_definition_v10": {
     "file": "drivaerml-diagnostics-v10.json",
@@ -49,8 +49,8 @@
     }
   },
   "profile_ground_truth": {
-    "release_id": "__UNRESOLVED_DRIVAERML_PROFILE_GROUND_TRUTH_RELEASE_ID__",
-    "manifest_sha256": "__UNRESOLVED_DRIVAERML_PROFILE_GROUND_TRUTH_MANIFEST_SHA256__"
+    "release_id": "prototype-profile-ground-truth-2026-09-04",
+    "manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
   },
   "scientific_approval": {
     "status": "approved",
@@ -63,5 +63,5 @@
     },
     "release_activation_effect": "none_until_remaining_release_gates_complete"
   },
-  "notes": "This file is the release hand-off, not an active scoring-support declaration. The local constant-v10 and report-only relative-v3 contract and schema are hash-bound. Exact retained copies of the all-484 velocity-placement, velocity-mapping, and relative-Cp manifests are byte-hashed, schema-checked, and verified against the official 484-case registry, so the independent nested relative_support hand-off is ready. The dataset owner approved the cited scientific evidence and profile decisions on 2026-08-28. Top-level status governs the ranked constant candidate and remains unresolved only until its scoring-support, evaluator, and profile-ground-truth identities resolve; relative_support never blocks the constant candidate. Relative families retain weight 0 and their format remains closed pending genuine-model sensitivity and a final release-specific approval record that binds that evidence."
+  "notes": "Resolved development candidate bindings for complete native field, force and fixed-profile scoring plus zero-weight relative profile display. Dev registration is non-approving. Official submissions remain closed pending genuine-model sensitivity, an independent full-split trial and final release-specific owner approval."
 }

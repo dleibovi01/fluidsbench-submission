@@ -215,21 +215,21 @@
   "release_bindings": {
     "candidate_manifest": {
       "status": "candidate",
-      "release_id": "__UNRESOLVED_DRIVAERML_CANDIDATE_SUPPORT_RELEASE_ID__",
-      "manifest_url": "__UNRESOLVED_DRIVAERML_CANDIDATE_SUPPORT_MANIFEST_URL__",
-      "manifest_sha256": "__UNRESOLVED_DRIVAERML_CANDIDATE_SUPPORT_MANIFEST_SHA256__"
+      "release_id": "drivaerml-native-dev-v1-candidate",
+      "manifest_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/942221db699f7785054c07c718e8d510126357c3/benchmark-specs/drivaerml/scoring-support/drivaerml-native-dev-v1-candidate/manifest.json",
+      "manifest_sha256": "810311448f74037070940278b403545a1b9b59e7a87ce7c2d31da0ae9383df01"
     },
     "evaluator": {
       "reference_version": "drivaerml-evaluator-v3-candidate",
-      "code_revision": "__UNRESOLVED_DRIVAERML_CANDIDATE_EVALUATOR_CODE_REVISION__"
+      "code_revision": "942221db699f7785054c07c718e8d510126357c3"
     },
     "profile_definition_v10": {
-      "file": "__UNRESOLVED_DRIVAERML_PROFILE_DEFINITION_V10_FILE__",
-      "sha256": "__UNRESOLVED_DRIVAERML_PROFILE_DEFINITION_V10_SHA256__"
+      "file": "drivaerml-diagnostics-v10.json",
+      "sha256": "9136feac7ac276d91f7cbcfb6c558beffc97cfaf0f0174626fee67a1f2a52bd0"
     },
     "profile_ground_truth": {
-      "release_id": "__UNRESOLVED_DRIVAERML_PROFILE_GROUND_TRUTH_RELEASE_ID__",
-      "manifest_sha256": "__UNRESOLVED_DRIVAERML_PROFILE_GROUND_TRUTH_MANIFEST_SHA256__"
+      "release_id": "prototype-profile-ground-truth-2026-09-04",
+      "manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc"
     }
   }
 }

@@ -1604,6 +1604,10 @@ class ValidatorTests(unittest.TestCase):
             candidate_dataset_spec = load_json(
                 ROOT / "benchmark-specs" / "drivaerml" / "submission-spec.json"
             )
+            # Preserve the historical unfrozen-candidate audit scenario explicitly.
+            candidate_dataset_spec["scoring_support"]["dataset_evaluator_binding"].update(
+                status="pending_frozen_release", evaluator_code_revision=None
+            )
             self.assertEqual(
                 candidate_dataset_spec["scoring_support"][
                     "dataset_evaluator_binding"

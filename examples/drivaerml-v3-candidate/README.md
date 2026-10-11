@@ -1,22 +1,23 @@
 # DrivAerML FluidsBench schema-v3 candidate package
 
-This directory is a configuration template, not a submission and not scoring
-support. It deliberately contains `__REPLACE_...__` participant fields and
-`__UNRESOLVED_DRIVAERML_...__` owner-release fields. Those strings are
-machine-detectable blockers; they are not example hashes or release IDs.
-The benchmark's separate release hand-off may already hash-bind a local v10
-profile registry. That is not an instruction to replace this template's v10
-tokens: wait until the active specification and all owner-release bindings are
-published as one coherent release.
+The `dev` branch provides the complete native DrivAerML candidate workflow.
+Copy `package-config.template.json` and replace the participant `__REPLACE_...__`
+fields. Its benchmark-owned release bindings are already filled in and must
+match the checked-out dev specification.
+
+Start with the [participant guide](../../benchmark-specs/drivaerml/PARTICIPANT_GUIDE.md).
+It covers native prediction chunks, fixed and relative profile extraction,
+complete-split scoring, packaging, and the pull request to `dev`. Official
+submissions remain closed; registered dev results are non-rankable and non-citable.
 
 Use the shared [hardware and compute fields](../../METHODOLOGY.md#hardware-and-compute)
 for each training stage and inference campaign, including GPU model and allocation counts.
 
-## Inputs and blockers
+## Participant configuration
 
 Copy `package-config.template.json` outside the repository, fill the
-participant fields, and use the immutable release values published by the
-DrivAerML benchmark owner. Check what remains before attempting assembly:
+participant fields. Keep the supplied benchmark release values. Check what
+participant information remains before attempting assembly:
 
 ```bash
 python scripts/assemble_drivaerml_schema_v3_candidate.py \
@@ -25,9 +26,10 @@ python scripts/assemble_drivaerml_schema_v3_candidate.py \
 ```
 
 Include the common [methodology record](../../METHODOLOGY.md) and the selected scope's outputs.
-`surface_only` requires the two surface fields and four Cp cuts; omit volume predictions and velocity series, retain fixed
+`surface_only` requires the two surface fields and eight fixed/relative Cp series; omit volume predictions and velocity series, retain fixed
 zero contributions without renormalizing weights, and do not fill missing metrics with dummy values (maximum overall score 60).
-`surface_and_volume` requires all four fields, four Cp cuts, and 16 velocity profiles.
+`surface_and_volume` requires all four fields and 40 fixed/relative profile series.
+Relative diagnostics carry zero score weight. Shared Cp aliases are generated automatically.
 
 <details>
 <summary>Required method configuration, checkpoint identity, stages, and parameter counts</summary>
@@ -66,9 +68,9 @@ target-data `training_regime`.
 ## Commands: assemble
 
 The token report does not validate repository bindings or evaluator outputs;
-successful assembly is the authoritative readiness check. Once the
-owner-release fields are published and the frozen evaluator produces
-a complete `metrics/cases.json` and `profiles/` directory, assemble the
+successful assembly verifies the package bindings and schemas. After the
+case evaluator and split reducer produce `metrics/cases.json`,
+`regional-diagnostics.json`, and `profiles/`, assemble the
 participant-owned files with:
 
 ```bash
@@ -76,6 +78,8 @@ python scripts/assemble_drivaerml_schema_v3_candidate.py \
   --config /path/to/package-config.json \
   --case-metrics /path/to/metrics/cases.json \
   --profiles /path/to/profiles \
+  --regional-diagnostics /path/to/regional-diagnostics.json \
+  --checkpoint <checkpoint-id>=/path/to/checkpoint.pt \
   --discretization-cases /path/to/discretization/cases.jsonl \
   --output /path/to/drivaerml-my-model-v1
 ```
@@ -112,5 +116,26 @@ The output contains no `approval`, `maintainer-validation.json`, or
 Complete native prediction artifacts are optional and are intentionally not
 added by this initial assembler.
 
-Use the [participant guide](../../benchmark-specs/drivaerml/PARTICIPANT_GUIDE.md#6-assemble-and-validate-a-closed-candidate)
-for `--candidate-dry-run` after assembly. A pass is non-approving and never resolves missing release tokens or grants a rank.
+Repeat `--checkpoint ID=PATH` for every checkpoint declared in the method
+record. The assembler checks the actual local file bytes against each SHA-256.
+Keep checkpoint files outside the submission package.
+
+Validate the new directory inside the repository:
+
+```bash
+python scripts/validate_submission.py --dev-intake --contributor-stage \
+  submissions/drivaerml/<submission-id>
+```
+
+Open a PR targeting `dev` with only that new submission directory. After review,
+a maintainer runs:
+
+```bash
+python scripts/register_drivaerml_pre_release.py \
+  submissions/drivaerml/<submission-id>/submission.json --register
+python scripts/manage_leaderboard.py build --dev-intake
+python scripts/manage_leaderboard.py check --dev-intake
+```
+
+Registration binds the exact package tree and permits dev display. It does not
+create official approval. Changed package bytes invalidate the registration.
