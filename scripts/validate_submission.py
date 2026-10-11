@@ -79,6 +79,12 @@ from reference.windsorml.pre_release import (
     REGISTRY_STATUS as WINDSORML_PRE_RELEASE_REGISTRY_STATUS,
     build_registry_entry as build_windsorml_pre_release_registry_entry,
 )
+from reference.drivaerml.pre_release import (
+    DrivAerMLPreReleaseError,
+    REGISTRY_SCHEMA as DRIVAERML_PRE_RELEASE_REGISTRY_SCHEMA,
+    REGISTRY_STATUS as DRIVAERML_PRE_RELEASE_REGISTRY_STATUS,
+    build_registry_entry as build_drivaerml_pre_release_registry_entry,
+)
 from reference.airfrans.pre_release import (
     registered_airfrans_pre_release_reference,
     candidate_validation_view as airfrans_candidate_validation_view,
@@ -566,6 +572,9 @@ WINDSORML_PRE_RELEASE_REGISTRY_PATH = (
     Path("benchmark-specs")
     / "windsorml"
     / "pre-release-reference-registry.json"
+)
+DRIVAERML_PRE_RELEASE_REGISTRY_PATH = (
+    Path("benchmark-specs") / "drivaerml" / "pre-release-reference-registry.json"
 )
 LEGACY_V1_SUBMISSION_ID = re.compile(r"^(?P<series>[a-z0-9][a-z0-9-]{2,69})-v1$")
 
@@ -1401,6 +1410,120 @@ def registered_windsorml_pre_release_reference(
         )
     except (
         WindsorMLPreReleaseError,
+        OSError,
+        json.JSONDecodeError,
+        ValueError,
+    ):
+        return None
+    if retained_submission != submission or observed != expected:
+        return None
+    return deepcopy(expected)
+
+
+def _drivaerml_pre_release_registry(
+    *, root: Path | None = None
+) -> dict[str, Any] | None:
+    """Load the closed dev-only DrivAerML registry, failing closed."""
+
+    effective_root = (root or ROOT).resolve()
+    try:
+        registry = load_submission_json(
+            effective_root / DRIVAERML_PRE_RELEASE_REGISTRY_PATH
+        )
+    except (OSError, UnicodeError, ValueError):
+        return None
+    expected_activation = {
+        "owner_approval_complete": False,
+        "published": False,
+        "submissions_opened": False,
+        "registration_changes_activation": False,
+    }
+    entries = registry.get("entries") if isinstance(registry, dict) else None
+    if (
+        not isinstance(registry, dict)
+        or registry.get("schema") != DRIVAERML_PRE_RELEASE_REGISTRY_SCHEMA
+        or registry.get("status") != DRIVAERML_PRE_RELEASE_REGISTRY_STATUS
+        or registry.get("dataset_id") != "drivaerml"
+        or registry.get("activation") != expected_activation
+        or not isinstance(entries, list)
+        or not all(isinstance(entry, dict) for entry in entries)
+    ):
+        return None
+    paths = [entry.get("submission_path") for entry in entries]
+    identifiers = [entry.get("submission_id") for entry in entries]
+    if (
+        any(not isinstance(value, str) or not value for value in paths + identifiers)
+        or len(paths) != len(set(paths))
+        or len(identifiers) != len(set(identifiers))
+    ):
+        return None
+    return registry
+
+
+def _registered_drivaerml_pre_release_entry(
+    path: Path,
+    *,
+    root: Path | None = None,
+) -> dict[str, Any] | None:
+    effective_root = (root or ROOT).resolve()
+    try:
+        relative_path = path.resolve().relative_to(effective_root).as_posix()
+    except (OSError, ValueError):
+        return None
+    registry = _drivaerml_pre_release_registry(root=effective_root)
+    if registry is None:
+        return None
+    return next(
+        (
+            entry
+            for entry in registry["entries"]
+            if entry.get("submission_path") == relative_path
+        ),
+        None,
+    )
+
+
+def is_registered_drivaerml_pre_release_path(
+    path: Path,
+    *,
+    root: Path | None = None,
+) -> bool:
+    """Return whether the maintainer registry names this exact dev path."""
+
+    return _registered_drivaerml_pre_release_entry(path, root=root) is not None
+
+
+def registered_drivaerml_pre_release_reference(
+    path: Path,
+    submission: dict[str, Any],
+    manifest: dict[str, Any],
+    *,
+    root: Path | None = None,
+) -> dict[str, Any] | None:
+    """Recognize one hash-bound genuine-inference DrivAerML dev reference.
+
+    The registry is deliberately outside the participant package.  An entry is
+    effective only in the prototype feed and only while every package byte,
+    artifact hash, checkpoint declaration, scope value, and inference
+    attestation recomputes to the exact reviewed entry.
+    """
+
+    effective_root = (root or ROOT).resolve()
+    expected = _registered_drivaerml_pre_release_entry(path, root=effective_root)
+    if (
+        expected is None
+        or manifest.get("data_release", {}).get("status") != "prototype_dummy_data"
+        or manifest.get("data_release", {}).get("source_ref") != "dev"
+    ):
+        return None
+    try:
+        retained_submission = load_submission_json(path)
+        observed = build_drivaerml_pre_release_registry_entry(
+            path,
+            repository_root=effective_root,
+        )
+    except (
+        DrivAerMLPreReleaseError,
         OSError,
         json.JSONDecodeError,
         ValueError,
@@ -3718,14 +3841,23 @@ def validate_metrics(add: Any, submission: dict[str, Any], dataset: dict[str, An
         else:
             fixed_zero_components = set(unavailable)
     actual_ids = set(values)
-    missing = sorted((expected_ids - fixed_zero_components) - actual_ids)
+    unavailable_ids = (
+        {
+            m
+            for m in expected_ids
+            if m.startswith(("volume_", "drivaerml_volume_", "velocity_profile_"))
+        }
+        if surface_only
+        else set()
+    )
+    missing = sorted((expected_ids - unavailable_ids) - actual_ids)
     unknown = sorted(actual_ids - expected_ids)
     if missing:
         add(f"metric_values is missing: {', '.join(missing)}")
     if unknown:
         add(f"metric_values contains unknown metrics: {', '.join(unknown)}")
     if surface_only:
-        fabricated = sorted(actual_ids & fixed_zero_components)
+        fabricated = sorted(actual_ids & unavailable_ids)
         if fabricated:
             add(
                 "surface_only metric_values must omit unavailable raw metrics: "
@@ -4111,6 +4243,8 @@ def validate_v3_scoring_support(
             "benchmark_scalar_rrmse_across_cases",
         }:
             return "dataset_reference"
+        if metric_id.endswith("_max_abs"):
+            return "maximum"
         if metric_id.endswith("_rel_l1"):
             return "relative_l1_percent"
         if metric_id.endswith("_rel_l2"):
@@ -4691,6 +4825,12 @@ def validate_v3_case_metrics(
                         bound_metrics[metric_id] = support_id
                         bound_metric_bindings[metric_id] = binding
 
+    if surface_only:
+        unavailable_metric_ids |= {
+            m
+            for m in bound_metrics
+            if m.startswith(("volume_", "drivaerml_volume_", "velocity_profile_"))
+        }
     bound_metrics_by_support: dict[str, set[str]] = {}
     for metric_id, support_id in bound_metrics.items():
         if bound_metric_bindings.get(metric_id, {}).get("case_evidence") == "metric_value":
@@ -4910,6 +5050,9 @@ def validate_v3_case_metrics(
         elif aggregation == "all_test_cases" and reduction == "mae":
             expected_value = math.fsum(values) / len(values)
             reduction_label = "equal-case MAE reduction"
+        elif aggregation == "all_test_cases" and reduction == "maximum":
+            expected_value = max(values)
+            reduction_label = "maximum absolute residual"
         elif aggregation == "all_test_cases" and reduction == "rmse":
             expected_value = math.sqrt(
                 math.fsum(value * value for value in values) / len(values)
@@ -6948,11 +7091,17 @@ def validate_profiles(
             add(f"cannot read {filename}: {error}")
             continue
         chunk_schema = (
-            "drivaerml-relative-profile-chunk.schema.json"
+            (
+                "drivaerml-surface-profile-chunk.schema.json"
+                if submission.get("prediction_scope") == "surface_only"
+                else "drivaerml-relative-profile-chunk.schema.json"
+            )
             if relative_profile
-            else "hiliftaeroml-compact-profile-chunk.schema.json"
-            if hilift_profile
-            else "profile-chunk.schema.json"
+            else (
+                "hiliftaeroml-compact-profile-chunk.schema.json"
+                if hilift_profile
+                else "profile-chunk.schema.json"
+            )
         )
         for error in schema_errors(chunk, chunk_schema):
             add(f"profiles/{filename} {error}")
@@ -6963,6 +7112,9 @@ def validate_profiles(
                     validate_schema_v3_relative_profile_chunk_candidate(
                         chunk,
                         expected_contract_sha256=relative_contract_sha256,
+                        prediction_scope=submission.get(
+                            "prediction_scope", "surface_and_volume"
+                        ),
                     )
                 )
             except DrivAerDatasetScorerError as error:
@@ -7323,6 +7475,27 @@ def validate_submission_file(
             return errors, stats
         candidate_dry_run = True
 
+    if dev_intake and (
+        submission.get("dataset_id") == "drivaerml"
+        and submission.get("scoring_support", {}).get("status") == "candidate"
+        and not is_registered_drivaerml_pre_release_path(path)
+    ):
+        release = manifest.get("data_release", {})
+        if (
+            release.get("status") != "prototype_dummy_data"
+            or release.get("source_ref") != "dev"
+        ):
+            add("DrivAerML development intake requires the prototype dev release")
+            return errors, stats
+        try:
+            # Reuse the exact package/inference checks without registering or
+            # publishing a row. The ordinary candidate validator runs below.
+            build_drivaerml_pre_release_registry_entry(path, repository_root=ROOT)
+        except (DrivAerMLPreReleaseError, OSError, ValueError) as error:
+            add(f"invalid DrivAerML development submission: {error}")
+            return errors, stats
+        candidate_dry_run = True
+
     if candidate_dry_run:
         if "approval" in submission:
             add("candidate dry-run packages must not contain approval metadata")
@@ -7407,6 +7580,34 @@ def validate_submission_file(
         and not contributor_stage
         and not candidate_dry_run
     )
+    configured_drivaerml_pre_release_path = is_registered_drivaerml_pre_release_path(
+        path
+    )
+    drivaerml_pre_release_binding = registered_drivaerml_pre_release_reference(
+        path,
+        submission,
+        manifest,
+    )
+    if (
+        configured_drivaerml_pre_release_path
+        and drivaerml_pre_release_binding is None
+        and not candidate_dry_run
+    ):
+        add(
+            "registered DrivAerML pre-release reference does not match its "
+            "maintainer lifecycle, package tree, artifacts, checkpoint "
+            "declarations, or inference attestation"
+        )
+    if contributor_stage and drivaerml_pre_release_binding is not None:
+        add(
+            "the maintainer-registered DrivAerML pre-release reference is "
+            "unavailable in contributor-stage validation"
+        )
+    registered_drivaerml_pre_release = (
+        drivaerml_pre_release_binding is not None
+        and not contributor_stage
+        and not candidate_dry_run
+    )
     development_fixture_binding = registered_ahmedml_development_fixture(
         path,
         submission,
@@ -7429,9 +7630,15 @@ def validate_submission_file(
         or registered_preview
         or registered_ahmedml_pre_release
         or registered_windsorml_pre_release
+        or registered_drivaerml_pre_release
         or registered_development_fixture
     )
-    if registered_preview or registered_ahmedml_pre_release or registered_windsorml_pre_release:
+    if (
+        registered_preview
+        or registered_ahmedml_pre_release
+        or registered_windsorml_pre_release
+        or registered_drivaerml_pre_release
+    ):
         if "approval" in submission:
             add("registered pre-release references must not contain approval metadata")
         for filename in (
@@ -7616,6 +7823,18 @@ def validate_submission_file(
         opened_profile_support_release=opened_profile_support_release,
         case_metrics=case_metrics,
     )
+    if (
+        submission.get("dataset_id") == "drivaerml"
+        and submission.get("scoring_support", {}).get("release_id")
+        == "drivaerml-native-dev-v1-candidate"
+    ):
+        try:
+            from reference.drivaerml.dev_workflow import validate_package_metrics
+
+            validate_package_metrics(path.parent, submission, dataset_spec)
+        except (ValueError, OSError, KeyError, TypeError) as error:
+            add(f"DrivAerML native dev metric binding failed: {error}")
+
     if preview_binding is not None and not contributor_stage:
         validate_registered_hiliftaeroml_preview_archive(
             add,

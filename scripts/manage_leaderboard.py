@@ -24,6 +24,7 @@ if __package__:
         registered_ahmedml_development_fixture,
         registered_ahmedml_pre_release_reference,
         registered_windsorml_pre_release_reference,
+        registered_drivaerml_pre_release_reference,
         registered_airfrans_pre_release_reference,
         registered_hiliftaeroml_preview,
         schema_errors,
@@ -40,6 +41,7 @@ else:
         registered_ahmedml_development_fixture,
         registered_ahmedml_pre_release_reference,
         registered_windsorml_pre_release_reference,
+        registered_drivaerml_pre_release_reference,
         registered_airfrans_pre_release_reference,
         registered_hiliftaeroml_preview,
         schema_errors,
@@ -317,6 +319,9 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
             root=ROOT,
         )
         windsorml_pre_release = registered_windsorml_pre_release_reference(path, submission, manifest, root=ROOT)
+        drivaerml_pre_release = registered_drivaerml_pre_release_reference(
+            path, submission, manifest, root=ROOT
+        )
         airfrans_pre_release = registered_airfrans_pre_release_reference(
             path, submission, manifest, root=ROOT
         )
@@ -330,10 +335,10 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
             registered_preview is None
             and ahmedml_pre_release is None
             and windsorml_pre_release is None
+            and drivaerml_pre_release is None
             and airfrans_pre_release is None
             and development_fixture is None
-            and submission.get("approval", {}).get("status")
-            != allowed_approval_status
+            and submission.get("approval", {}).get("status") != allowed_approval_status
         ):
             continue
         row = deepcopy(submission)
@@ -344,6 +349,8 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
             row["record_type"] = ahmedml_pre_release["record_type"]
         elif windsorml_pre_release is not None:
             row["record_type"] = windsorml_pre_release["record_type"]
+        elif drivaerml_pre_release is not None:
+            row["record_type"] = drivaerml_pre_release["record_type"]
         elif airfrans_pre_release is not None:
             row["record_type"] = airfrans_pre_release["record_type"]
         elif development_fixture is not None:
@@ -1472,8 +1479,9 @@ def main() -> int:
     check_parser = subparsers.add_parser("check", help="validate submissions and verify generated feeds")
     for intake_parser in (validate_parser, build_parser, check_parser):
         intake_parser.add_argument(
-            "--dev-intake", action="store_true",
-            help="validate unapproved AhmedML and WindsorML development candidates without publishing them",
+            "--dev-intake",
+            action="store_true",
+            help="validate unapproved AhmedML, WindsorML and DrivAerML development candidates without publishing them",
         )
     approve_parser = subparsers.add_parser(
         "approve",

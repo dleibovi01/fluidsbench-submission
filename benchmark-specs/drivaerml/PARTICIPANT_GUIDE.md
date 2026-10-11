@@ -7,7 +7,9 @@ the 16 velocity diagnostics used by FluidsBench. The contract is still a
 closed candidate:
 `submissions_open` is `false`. The bounded composite equation is active and can
 produce implementation-feedback scores, but no package made with these
-instructions is an official leaderboard submission yet.
+instructions is an official leaderboard submission yet. The complete workflow
+is available on `dev`, including contributor PR validation, maintainer
+registration, and the dev leaderboard. Start from a current `dev` checkout.
 
 Use this sequence: [check the runtime](#before-you-start), [choose a split and scope](#1-choose-one-official-split),
 [predict native fields](#2-predict-on-the-actual-native-supports), [run the evaluator](#5-install-and-run-the-candidate-tools),
@@ -272,15 +274,13 @@ truth while retaining the per-case files for convenient local processing.
 <details>
 <summary>Required profile support, global R2 reductions, score caps, and velocity validity rules</summary>
 
-The current closed package still names
-[`drivaerml-diagnostics-v9.json`](drivaerml-diagnostics-v9.json); the
-owner-approved successor awaiting immutable release binding is
-[`drivaerml-diagnostics-v10.json`](drivaerml-diagnostics-v10.json). It contains
-16 velocity lines and four continuous Cp cuts: upper-body centreline (`y=0`),
-underbody centreline (`y=0`), sidewall (`z=0.15 m`), and front-left wheelhouse
-(`y=-0.6 m`). All-case native velocity and continuous-Cp support and truth are
-published and scientifically approved. Contributors must use the frozen
-release when it is issued and must not invent replacement support.
+The dev package binds [`drivaerml-diagnostics-v10.json`](drivaerml-diagnostics-v10.json)
+and the immutable native-v3 profile truth/support release. It contains
+16 fixed velocity lines and four fixed continuous Cp cuts: upper-body centreline
+(`y=0`), underbody centreline (`y=0`), sidewall (`z=0.15 m`), and front-left
+wheelhouse (`y=-0.6 m`). The evaluator also produces the corresponding zero-weight
+relative diagnostics. Extraction uses retained native raw-cell IDs, supported
+segments and exact coordinates; participants do not regenerate supports.
 
 The four continuous Cp cuts remain a ranked component with composite weight
 0.10; the velocity profiles retain weight 0.15. The evaluator derives every cut
@@ -385,7 +385,8 @@ accumulated with one equal weight per raw native cell:
   --surface-area-npy /path/to/run_1/boundary_cell_area_1.npy \
   --surface-prediction-manifest /path/to/surface/manifest.json \
   --volume-prediction-manifest /path/to/volume/manifest.json \
-  --output /tmp/run_1-candidate-evidence.json
+  --output /path/to/work/core/run_1.json \
+  --profile-output /path/to/work/profiles/run_1.json
 ```
 
 Use `--multipart` instead of `--monolithic-vtu` when the pinned part files are
@@ -405,60 +406,47 @@ three-part streams respectively, calls the same core and diagnostic evaluator
 entry points, and writes candidate evidence only. It never downloads data,
 generates scientific support, or creates a submission.
 
-For a complete selected split, first run the reducer for candidate scientific
-evidence. Keep this output outside the eventual schema-v3 package because it is
-not the schema-v3 `evaluation-evidence.json` record:
+Run the case command for **every** test case in the selected split, with core
+and profile evidence named `run_N.json` in their respective directories. The
+profile stage reads the same complete prediction manifests, verifies chunk
+hashes and native coverage, and extracts both fixed and relative profiles.
+It downloads SHA-256-verified immutable native-v3 truth/support chunks into
+`~/.cache/fluidsbench/drivaerml/`; for offline use set
+`FLUIDSBENCH_DRIVAERML_TRUTH_ROOT` to the retained native-v3 directory containing
+`index.json` and `chunks/`. The package contains predictions, not copied truth.
+
+Then reduce the complete split in one command:
 
 ```bash
 .venv-drivaerml/bin/python scripts/score_drivaerml_candidate_dataset.py \
-  --split-id <official-split-id> \
-  --core-evidence-dir /path/to/core-case-evidence \
-  --diagnostic-evidence-dir /path/to/diagnostic-case-evidence \
-  --force-truth /path/to/force_mom_constref_all.csv \
-  --output /path/to/work/candidate-dataset-evidence.json
-```
-
-After the owner publishes all immutable candidate release bindings, rerun the
-same reducer with the schema-v3 adapters:
-
-```bash
-.venv-drivaerml/bin/python scripts/score_drivaerml_candidate_dataset.py \
-  --split-id <official-split-id> \
-  --core-evidence-dir /path/to/core-case-evidence \
-  --diagnostic-evidence-dir /path/to/diagnostic-case-evidence \
-  --force-truth /path/to/force_mom_constref_all.csv \
+  --split-id full \
+  --core-evidence-dir /path/to/work/core \
+  --diagnostic-evidence-dir /path/to/work/profiles \
   --output /path/to/work/candidate-dataset-evidence.json \
-  --schema-v3-case-metrics-output /path/to/package/metrics/cases.json \
-  --schema-v3-profile-output-dir /path/to/package/profiles \
-  --submission-id <submission-id> \
-  --candidate-support-release-id <published-candidate-release-id> \
-  --candidate-support-manifest-sha256 <64-character-sha256>
+  --regional-diagnostics-output /path/to/work/regional-diagnostics.json \
+  --schema-v3-case-metrics-output /path/to/work/metrics/cases.json \
+  --schema-v3-profile-output-dir /path/to/work/package-profiles \
+  --submission-id <submission-id>
 ```
 
-Profile packaging requires all four Cp-cut series for every test case. In
-`surface_and_volume`, those are followed by all 16 velocity-profile series;
-`surface_only` contains no velocity-profile series. While the Cp-cut extraction
-support remains unpublished, this command may produce candidate dataset and
-case-metric evidence but must refuse the complete profile output; it never
-fills missing curves with placeholders.
+Use your selected split ID consistently. `full` has 50 test cases; the OOD
+split has 97. The reducer reads the retained canonical force CSV and published
+candidate bindings automatically. It computes force and profile global R²,
+all field/diagnostic metrics, component scores, and the bounded overall score.
+It refuses missing, extra, duplicated, or reordered evidence where the contract
+requires order. Do not calculate or insert missing scores by hand.
 
-The current candidate reducer also does not yet emit the complete
-composite/group/global-R2 metric set required in a submission. The package
-assembler checks the specification's exact metric set and therefore refuses
-that incomplete adapter output. Do not calculate or insert those missing
-values by hand; the frozen reducer must produce them.
+Full-field packages contain 40 fixed/relative series per case. Surface-only
+packages contain eight Cp series and no velocity series. Two relative Cp cuts
+are explicit shared-support aliases. Relative families remain report-only at
+zero weight; only fixed families contribute to the composite.
 
 ## 6. Assemble and validate a closed candidate
 
 Start from
 [`examples/drivaerml-v3-candidate/`](../../examples/drivaerml-v3-candidate/).
-Its explicit `__REPLACE_...__` and `__UNRESOLVED_DRIVAERML_...__` strings are
-real machine-detectable blockers, not illustrative release IDs or hashes.
-The repository release hand-off can resolve and verify the local v10 profile
-file/SHA-256 pair before the other owner-release fields exist. That does not
-resolve the participant template: do not copy the v10 pair into a package
-until the active specification and the owner-published release bindings match
-it and every other release token has been replaced.
+Replace the participant `__REPLACE_...__` values and retain the already-published
+benchmark bindings. Supply the actual checkpoint bytes used for inference.
 List them at any time:
 
 ```bash
@@ -474,10 +462,12 @@ participant-owned files:
 ```bash
 python scripts/assemble_drivaerml_schema_v3_candidate.py \
   --config /path/to/package-config.json \
-  --case-metrics /path/to/package/metrics/cases.json \
-  --profiles /path/to/package/profiles \
+  --case-metrics /path/to/work/metrics/cases.json \
+  --profiles /path/to/work/package-profiles \
+  --regional-diagnostics /path/to/work/regional-diagnostics.json \
+  --checkpoint <checkpoint-id>=/path/to/checkpoint.pt \
   --discretization-cases /path/to/discretization/cases.jsonl \
-  --output /path/to/submissions/drivaerml/<submission-id>
+  --output submissions/drivaerml/<submission-id>
 ```
 
 The assembler obtains dataset, split, evaluator, and release identities from
@@ -487,38 +477,39 @@ write `approval`, `maintainer-validation.json`, or
 `prediction-artifact-checks.json`. Candidate validity can then be checked with:
 
 ```bash
-python scripts/validate_submission.py --candidate-dry-run \
-  /path/to/submissions/drivaerml/<submission-id>
+python scripts/validate_submission.py --dev-intake --contributor-stage \
+  submissions/drivaerml/<submission-id>
 ```
 
-This mode is non-approving. It works only after the repository contains an
-exact `scoring_support.candidate_manifest`; it does not fall back to the
-candidate evidence manifest or accept unresolved release tokens. A passing
-candidate dry run means that the package implements the closed contract. It
-does not mean that the result is accepted, rankable, citable, independently
-validated, or scientifically approved.
+Repeat `--checkpoint ID=PATH` for all declared checkpoints. Assembly verifies
+file hashes and records the participant's genuine-inference attestation. The
+validator independently recomputes force/profile scores against pinned truth,
+checks complete native support and split coverage, and validates the package
+hash chain. A dev pass does not grant official approval or a ranking claim.
 
-## 7. Pull-request boundary and later official submission
+## 7. Pull request and dev publication
 
-While `submissions_open` is `false`, use a candidate package for local or
-owner-coordinated dry-run review only. Do not merge it as a public leaderboard
-result. Contract, evaluator, support, Cp/velocity, or instruction changes
-belong in a separate trusted-maintenance pull request; never combine them with
-a participant result.
+Open a PR targeting **`dev`**, containing exactly one new
+`submissions/drivaerml/<submission-id>/` directory. Keep contract, evaluator,
+support, schema, workflow, generated-feed, and maintainer metadata changes out
+of a participant PR. Follow the immutable result-series/version rules in the
+[result reference](../../docs/RESULT_FORMAT.md#result-versions).
 
-After FluidsBench explicitly opens DrivAerML, rebuild the package against the
-official frozen release, change its scoring-support status through the
-owner-published instructions, and run `--contributor-stage`. The participant
-pull request then contains exactly one entirely new
-`submissions/drivaerml/<submission-id>/` directory and no edits to schemas,
-specifications, scripts, workflows, generated feeds, maintainer-owned files,
-or existing submissions. Follow the immutable result-series/version rules in
-the [result reference](../../docs/RESULT_FORMAT.md#result-versions).
+After review and merge, a maintainer registers the exact package and rebuilds
+the dev feeds:
 
-The profile JSON must cover every required case and contain all four continuous
-Cp-cut series, plus all 16 velocity series only for `surface_and_volume`.
-`surface_only` must omit velocity-profile values and volume predictions. The official evaluator and
-support release IDs and hashes must match exactly.
+```bash
+python scripts/register_drivaerml_pre_release.py \
+  submissions/drivaerml/<submission-id>/submission.json --register
+python scripts/manage_leaderboard.py build --dev-intake
+python scripts/manage_leaderboard.py check --dev-intake
+```
+
+Commit the registry and generated feeds on `dev`. The dev leaderboard reads
+the submission repository's `dev` feed and displays registered packages as
+pre-release references. Their scores and profiles can be inspected, but they
+are not official, citable, or promotable results. The registry binds every file;
+changing a registered package invalidates its registration. Main remains closed.
 
 Sharing complete native prediction fields is optional under the repository's
 normal reproducibility policy. If a contributor shares them, the declaration
@@ -533,34 +524,21 @@ the frozen evaluator remains the required result payload.
 Until then, use this workflow for implementation feedback and reproducibility
 review only.
 
-## Inactive diagnostic extension
+## Relative diagnostics in dev
 
 <details>
-<summary>Geometry-relative diagnostics: retained candidate only, rejected by the current participant format</summary>
+<summary>Report-only fixed/relative profile comparison and remaining official gates</summary>
 
-### Geometry-relative diagnostics candidate (not active)
+The dev evaluator derives relative velocity profiles from native `UMeanTrim`
+and relative Cp cuts from native `pMeanTrim`. Participants do not upload new
+landmarks, mappings, or another predicted Cp field. The exact all-484 support
+and truth release supplies those identities. Both relative families carry
+weight zero and can be inspected beside the fixed profiles in the dev viewer.
 
-A hash-bound evaluator-side candidate is being validated in which velocity
-profiles and Cp cuts follow case-specific vehicle landmarks while the fixed
-definitions above remain available as the `constant` view. This does not
-change the participant submission format: the evaluator derives the candidate
-relative velocity profiles from the same native volume `UMeanTrim` prediction
-and the relative Cp cuts from the same native surface `pMeanTrim` prediction.
-Participants do not predict or upload moved coordinates, landmarks, mappings,
-or another Cp field.
-
-Both relative diagnostic families have composite weight `0.0` and are
-report-only. They do not affect submission eligibility or ranking, and the
-current `constant` definitions remain the submission-facing view with their
-candidate weights unchanged. Exact all-case velocity-placement,
-velocity-mapping, and relative-Cp manifests are now retained and verified, and
-the nested `relative_support` hand-off is ready. A separate pending release
-record binds those bytes, their per-case relative-series identities, and an
-exact evaluator Git revision. Relative diagnostics remain unavailable in
-participant packages because genuine-model sensitivity and the final
-release-specific approval record are still pending. The underlying support is
-included in the 2026-08-28 scientific approval, but artifact publication or
-scientific approval alone does not activate this report-only format.
+Official activation remains separate: genuine three-model sensitivity and an
+independent full-split submission trial still need to be completed before the
+final release-specific approval. Dev registration does not satisfy these gates
+or open official submissions.
 
 The retained candidate is
 [`drivaerml-relative-diagnostics-v3.json`](drivaerml-relative-diagnostics-v3.json).

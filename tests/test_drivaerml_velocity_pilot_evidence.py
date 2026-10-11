@@ -988,15 +988,15 @@ class DrivAerMLVelocityPilotEvidenceTests(unittest.TestCase):
         ):
             self.assertFalse(scope[key])
 
-    def test_submission_remains_closed_and_evaluator_unfrozen(self) -> None:
+    def test_official_submission_remains_closed_with_frozen_dev_evaluator(self) -> None:
         specification = _load(SPEC_PATH)
         self.assertEqual(specification["status"], "candidate_scoring_contract")
         support = specification["scoring_support"]
         self.assertEqual(support["status"], "owner_review_required")
         self.assertFalse(support["submissions_open"])
         binding = support["dataset_evaluator_binding"]
-        self.assertEqual(binding["status"], "pending_frozen_release")
-        self.assertIsNone(binding["evaluator_code_revision"])
+        self.assertEqual(binding["status"], "frozen")
+        self.assertRegex(binding["evaluator_code_revision"], r"^[0-9a-f]{40}$")
         self.assertEqual(
             support["activation_gates"]["velocity_profiles"],
             "all_484_fixed_and_relative_native_truth_and_support_published_owner_scientifically_approved_release_binding_pending",

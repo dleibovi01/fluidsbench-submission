@@ -329,11 +329,11 @@ class DrivAerMLContractTests(unittest.TestCase):
             )
         )
 
-    def test_v9_diagnostic_profile_contract_is_fully_pinned(self) -> None:
+    def test_v10_diagnostic_profile_contract_is_fully_pinned(self) -> None:
         binding = self.specification["profile_definition"]
         profile_path = DATASET_ROOT / binding["file"]
         self.assertEqual(binding["sha256"], sha256_file(profile_path))
-        self.assertEqual(self.profile["id"], "drivaerml-diagnostics-v9-candidate")
+        self.assertEqual(self.profile["id"], "drivaerml-diagnostics-v10-candidate")
         self.assertNotIn("pressure_profiles", self.profile)
         pressure = self.profile["pressure_cuts"]
         self.assertEqual(pressure["definition_authority"], "FluidsBench")

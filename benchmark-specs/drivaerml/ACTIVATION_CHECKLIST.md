@@ -71,20 +71,29 @@ sensitivity evidence, or independent full-submission dry run.
   checks, fail-closed browser matching, and the bounded nine-component score
   are implemented and tested.
 
+## Dev workflow available
+
+The `dev` branch now binds the native candidate scoring-support release,
+complete evaluator, v10 fixed profiles, and immutable fixed/relative native-v3
+truth. The participant template has resolved benchmark bindings. The case
+command extracts profiles from the same native prediction streams; the split
+reducer computes the full score set. Packaging verifies checkpoint bytes and
+both surface-only and full-field scope. Dev PR validation and exact maintainer
+registration permit non-citable pre-release display without opening official
+submissions. See the [participant guide](PARTICIPANT_GUIDE.md).
+
 ## Still required before submissions open
 
-1. **Freeze the production release.** Choose and publish the final evaluator
-   Git revision, scoring-support release ID/manifest/URL/SHA-256, and
-   profile-ground-truth release ID/SHA-256. Resolve the remaining placeholders
-   in [`candidate-release-bindings.json`](candidate-release-bindings.json),
-   promote v10 into the participant-facing specification, and bind every
-   participant-produced metric/profile identity to those immutable releases.
+1. **Review the production release identities.** The dev candidate has resolved
+   immutable support/evaluator/truth bindings and v10 is active for dev packages.
+   Review and publish the final production release after the remaining gates;
+   dev bindings alone do not authorize official ranking.
 2. **Complete the current scoring-sensitivity gate.** Run at least three
    genuine trained DrivAerML checkpoints on a common official cohort and the
    prescribed paired 10,000-replicate bootstrap. This validates ranking
    stability; it is separate from the now-complete scientific review of native
    support and profile definitions. Relative profile families stay report-only
-   and their submission format stays disabled until this gate and their final
+   and their official submission format stays disabled until this gate and their final
    release-specific approval record are complete.
 3. **Run one independent full schema-v3 submission dry run.** It must exercise
    a complete official split and the frozen evaluator/release identities. The

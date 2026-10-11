@@ -333,6 +333,7 @@ class CandidateProfileChunks:
 
     index: Mapping[str, object]
     chunks: tuple[tuple[str, Mapping[str, object]], ...]
+    prediction_scope: str = "surface_and_volume"
 
     def index_json(self) -> dict[str, object]:
         result = dict(self.index)
@@ -800,7 +801,10 @@ def _load_contract(
         )
     if profile_sha != declared_profile_sha:
         raise DrivAerDatasetScorerError("diagnostic profile definition SHA-256 mismatch")
-    if profile.get("id") != "drivaerml-diagnostics-v9-candidate":
+    if profile.get("id") not in {
+        "drivaerml-diagnostics-v9-candidate",
+        "drivaerml-diagnostics-v10-candidate",
+    }:
         raise DrivAerDatasetScorerError("diagnostic profile identity mismatch")
     if "pressure_profiles" in profile:
         raise DrivAerDatasetScorerError(
@@ -819,12 +823,14 @@ def _load_contract(
         or pressure_profile.get("definition_authority") != "FluidsBench"
         or pressure_profile.get("association") != "native_surface_VTP_CellData"
         or pressure_profile.get("extraction_status")
-        != "pending_immutable_owner_cut_support"
+        not in {
+            "pending_immutable_owner_cut_support",
+            "pending_immutable_all_case_support",
+        }
         or pressure_profile.get("reduction")
         != "equal_case_equal_cut_global_R2_with_normalized_native_intersection_segment_length_support_per_cut"
         or velocity_profile.get("ranked_metric_id") != "velocity_profile_r2"
-        or velocity_profile.get("report_only_metric_id")
-        != "velocity_profile_uinf_rmse"
+        or velocity_profile.get("report_only_metric_id") != "velocity_profile_uinf_rmse"
         or velocity_profile.get("ranked_reduction")
         != "equal_case_equal_line_global_R2_with_normalized_trapezoidal_arc_length_support_per_line"
         or velocity_profile.get("definition_authority") != "AutoCFD5"
@@ -3114,6 +3120,17 @@ def evaluate_candidate_dataset(
 ) -> CandidateDatasetEvaluation:
     """Validate and reduce exactly one official DrivAerML test split."""
 
+    if immutable_pins is OFFICIAL_IMMUTABLE_PINS:
+        declared = json.loads(Path(submission_specification).read_text())[
+            "profile_definition"
+        ]
+        if declared["file"] == "drivaerml-diagnostics-v10.json":
+            from dataclasses import replace
+
+            immutable_pins = replace(
+                immutable_pins,
+                diagnostic_profile_sha256="9136feac7ac276d91f7cbcfb6c558beffc97cfaf0f0174626fee67a1f2a52bd0",
+            )
     contract, truth = _load_contract(
         submission_specification=submission_specification,
         split_id=split_id,
@@ -3137,7 +3154,14 @@ def evaluate_candidate_dataset(
             core_document, core_path, core_sha, contract=contract, pinned=pinned
         )
         diagnostic_document, diagnostic_path, diagnostic_sha = diagnostic_documents[case_id]
-        diagnostic = _validate_diagnostic_case(
+        from .dev_workflow import validate_diagnostic_case, PROFILE_EVIDENCE_SCHEMA
+
+        diagnostic_validator = (
+            validate_diagnostic_case
+            if diagnostic_document.get("schema") == PROFILE_EVIDENCE_SCHEMA
+            else _validate_diagnostic_case
+        )
+        diagnostic = diagnostic_validator(
             diagnostic_document,
             diagnostic_path,
             diagnostic_sha,
@@ -3484,6 +3508,15 @@ def evaluate_candidate_dataset(
             raise DrivAerDatasetScorerError(
                 f"cannot aggregate zero-weight regional diagnostics: {error}"
             ) from error
+    if all(
+        diagnostic_documents[c][0].get("schema") == PROFILE_EVIDENCE_SCHEMA
+        for c in contract.case_ids
+    ):
+        from .dev_workflow import complete_metric_values
+
+        complete_metric_values(
+            evidence, json.loads(Path(submission_specification).read_text())
+        )
     _assert_no_absolute_paths(evidence)
     if regional_diagnostics is not None:
         _assert_no_absolute_paths(regional_diagnostics)
@@ -3593,6 +3626,24 @@ def schema_v3_case_metrics_candidate_adapter(
                     "extrapolated_count": 0,
                     "metric_values": {metric_id: float(fields[metric_id]) for metric_id in metric_ids},
                     "metric_sufficient_statistics": support_statistics,
+                }
+            )
+        if evidence.get("dev_workflow_version") == 1:
+            supports.append(
+                {
+                    "support_id": "drivaerml-force-coefficients-v1",
+                    "metric_sufficient_statistics": {},
+                    "support_count": 1,
+                    "scored_count": 1,
+                    "coverage_fraction": 1.0,
+                    "weight_coverage_fraction": 1.0,
+                    "unmapped_count": 0,
+                    "extrapolated_count": 0,
+                    "metric_values": {
+                        k: v
+                        for k, v in nonspatial.items()
+                        if k.startswith("field_integrated_")
+                    },
                 }
             )
         cases.append(
@@ -4602,6 +4653,7 @@ def validate_schema_v3_relative_profile_chunk_candidate(
     document: Mapping[str, object],
     *,
     expected_contract_sha256: str = RELATIVE_PROFILE_CONTRACT_SHA256,
+    prediction_scope: str = "surface_and_volume",
 ) -> dict[str, object]:
     """Validate one complete DrivAerML constant+relative candidate chunk."""
 
@@ -4626,6 +4678,10 @@ def validate_schema_v3_relative_profile_chunk_candidate(
     if not isinstance(raw_cases, list) or not raw_cases:
         raise DrivAerDatasetScorerError("relative profile chunk cases must be non-empty")
     expected_keys = set(_relative_profile_expected_keys())
+    if prediction_scope == "surface_only":
+        expected_keys = {k for k in expected_keys if k[0] == "pressure_profiles"}
+    elif prediction_scope != "surface_and_volume":
+        raise DrivAerDatasetScorerError("invalid prediction scope")
     retained_support = _relative_series_support_index()
     retained_constant_support = _constant_series_support_index()
     normalized_cases: list[dict[str, object]] = []
@@ -4643,9 +4699,9 @@ def validate_schema_v3_relative_profile_chunk_candidate(
             )
         seen_cases.add(case_id)
         raw_series = case["series"]
-        if not isinstance(raw_series, list) or len(raw_series) != RELATIVE_PROFILE_SERIES_PER_CASE:
+        if not isinstance(raw_series, list) or len(raw_series) != len(expected_keys):
             raise DrivAerDatasetScorerError(
-                f"{case_id} must provide exactly {RELATIVE_PROFILE_SERIES_PER_CASE} namespaced series"
+                f"{case_id} must provide exactly {len(expected_keys)} namespaced series"
             )
         normalized_series: list[dict[str, object]] = []
         observed_keys: list[tuple[str, str, str, str, str]] = []
@@ -4831,17 +4887,13 @@ def schema_v3_relative_profile_chunks_candidate_adapter(
     """Package evaluator-derived constant and report-only relative diagnostics.
 
     Geometry placement and field sampling remain evaluator responsibilities.
-    This boundary accepts only the complete, namespaced 40-series result for
-    every selected case and therefore cannot fabricate or subset-reduce a
+    This boundary accepts only the complete, namespaced result (40 series for
+    full fields or eight Cp series for surface-only) for every selected case and therefore cannot fabricate or subset-reduce a
     missing relative family.
     """
 
     if not isinstance(evaluation, CandidateDatasetEvaluation):
         raise DrivAerDatasetScorerError("evaluation must be CandidateDatasetEvaluation")
-    if evaluation.to_json().get("prediction_scope") == PREDICTION_SCOPE_SURFACE_ONLY:
-        raise DrivAerDatasetScorerError(
-            "surface-only submissions have no velocity profiles to package"
-        )
     if not isinstance(submission_id, str) or _SUBMISSION_ID_RE.fullmatch(submission_id) is None:
         raise DrivAerDatasetScorerError("submission_id is not schema-v3 compatible")
     if not isinstance(namespaced_series_by_case, Mapping):
@@ -4892,6 +4944,7 @@ def schema_v3_relative_profile_chunks_candidate_adapter(
                 "cases": packaged_cases[start : start + chunk_size],
             },
             expected_contract_sha256=contract_sha256,
+            prediction_scope=evidence.get("prediction_scope", "surface_and_volume"),
         )
         digest = hashlib.sha256(_canonical_json_payload(document)).hexdigest()
         chunks.append((filename, document))
@@ -4916,7 +4969,11 @@ def schema_v3_relative_profile_chunks_candidate_adapter(
         "chunks": chunk_index,
     }
     _assert_no_absolute_paths(index)
-    return CandidateProfileChunks(index=index, chunks=tuple(chunks))
+    return CandidateProfileChunks(
+        index=index,
+        chunks=tuple(chunks),
+        prediction_scope=evidence.get("prediction_scope", "surface_and_volume"),
+    )
 
 
 def schema_v3_profile_chunks_candidate_adapter(
@@ -5559,7 +5616,9 @@ def write_schema_v3_profile_chunks_candidate(
             f"candidate profile index chunk {position}",
         )
         if relative_format:
-            chunk = validate_schema_v3_relative_profile_chunk_candidate(document)
+            chunk = validate_schema_v3_relative_profile_chunk_candidate(
+                document, prediction_scope=package.prediction_scope
+            )
         else:
             chunk = _exact_keys(
                 document,
