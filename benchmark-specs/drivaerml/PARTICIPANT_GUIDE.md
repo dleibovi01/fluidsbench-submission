@@ -1,20 +1,16 @@
 # DrivAerML candidate participant guide
 
 This guide describes the native-mesh workflow for a DrivAerML result submitted
-to `fluidsbench-submission`. It is not an AutoCFD submission guide. AutoCFD5 is
-named below only because its published line definitions are the provenance for
-the 16 velocity diagnostics used by FluidsBench. The contract is still a
-closed candidate:
-`submissions_open` is `false`. The bounded composite equation is active and can
-produce implementation-feedback scores, but no package made with these
-instructions is an official leaderboard submission yet. The complete workflow
-is available on `dev`, including contributor PR validation, maintainer
-registration, and the dev leaderboard. Start from a current `dev` checkout.
+to `fluidsbench-submission`. The complete candidate workflow is available on
+`dev`, including contributor PR validation, maintainer registration and the dev
+leaderboard. Official submissions remain closed (`submissions_open=false`).
 
-Use this sequence: [check the runtime](#before-you-start), [choose a split and scope](#1-choose-one-official-split),
-[predict native fields](#2-predict-on-the-actual-native-supports), [run the evaluator](#5-install-and-run-the-candidate-tools),
-then [assemble and validate](#6-assemble-and-validate-a-closed-candidate).
-The shared [submission workflow](../../SUBMITTING.md) covers package versions, optional artifacts, and later PR review.
+Start with the [resumable participant quickstart](QUICKSTART.md): prepare data
+and support, validate your entry, evaluate the complete split, then package and
+verify the result. It uses the same native field/force evaluator and dev intake
+checks documented below. Dev v2 profile integration matches AutoCFD5 v1.1.7.
+The shared [submission workflow](../../SUBMITTING.md) covers package versions,
+optional artifacts and later PR review.
 
 Use the shared [hardware and compute fields](../../METHODOLOGY.md#hardware-and-compute)
 for each training stage and inference campaign, including GPU model and allocation counts.
@@ -30,7 +26,7 @@ on Linux until cross-platform support is implemented and tested.
 
 The generic repository checks use `requirements.txt`. The exact recommended
 stack for the complete VTK-based DrivAerML evidence workflow is defined in
-[`requirements-drivaerml-evaluator.txt`](../../requirements-drivaerml-evaluator.txt):
+[`requirements-drivaerml-participant.txt`](../../requirements-drivaerml-participant.txt):
 Python 3.12.13, NumPy 2.2.6, and VTK 9.5.2. Runtime enforcement differs by
 workflow. Velocity-assignment generation rejects a Python, NumPy, or VTK
 version mismatch. The native-surface reader rejects a VTK version other than
@@ -45,7 +41,7 @@ reproducing the complete candidate evidence workflow.
 ```bash
 python3.12 --version  # must print: Python 3.12.13
 python3.12 -m venv .venv-drivaerml
-.venv-drivaerml/bin/pip install -r requirements-drivaerml-evaluator.txt
+.venv-drivaerml/bin/pip install -r requirements-drivaerml-participant.txt
 .venv-drivaerml/bin/python -c \
   'import platform,numpy,vtk; print(platform.python_version(), numpy.__version__, vtk.vtkVersion.GetVTKVersion())'
 # must print: 3.12.13 2.2.6 9.5.2
@@ -292,7 +288,9 @@ FluidsBench profile JSON.
 The ranked profile metrics are global R2 values, not macro-averaged RMSE. Each
 case and each required line or cut receives equal total weight. Within a
 velocity line, samples use normalized trapezoidal arc-length support; within a
-Cp cut, samples use normalized native intersection-segment-length support. A
+Cp cut, dev v2 samples also use normalized trapezoidal arc-length support.
+The [dev v2 contract](dev-profile-scoring-v2.json) overrides the historical v10
+Cp reduction without changing its geometry or truth. A
 single global weighted truth mean is then used for each profile family. This
 prevents the 651-sample L1 velocity line from outweighing a 31-sample R line.
 The corresponding equal-case/equal-line and equal-case/equal-cut RMSE values
@@ -551,7 +549,9 @@ Each complete case has 40 namespaced logical series: 20 unchanged constant
 series, 16 materialized relative-velocity series, two moved relative Cp cuts,
 and two relative Cp aliases that reference the materialized constant
 centrelines without copying their arrays. The submission specification keeps
-`profile_format_enabled=false`; the validator therefore rejects this format.
+`profile_format_enabled=false` for official activation. Dev intake explicitly
+accepts this format under the published candidate release; ordinary official
+validation continues to reject it.
 The velocity-placement, velocity-mapping, and Cp manifest bytes and SHA-256
 identities are retained under [`support/relative-v3/`](support/relative-v3/),
 but their verified publication does not activate the format. The legacy

@@ -7826,7 +7826,7 @@ def validate_submission_file(
     if (
         submission.get("dataset_id") == "drivaerml"
         and submission.get("scoring_support", {}).get("release_id")
-        == "drivaerml-native-dev-v1-candidate"
+        == "drivaerml-native-dev-v2-candidate"
     ):
         try:
             from reference.drivaerml.dev_workflow import validate_package_metrics

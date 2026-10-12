@@ -12,6 +12,8 @@ from reference.drivaerml.dev_profiles import (
     INDEX_SHA256,
     compare_profiles,
     truth_case,
+    WORKFLOW_VERSION,
+    validate_scoring_contract,
 )
 from reference.scores import composite_overall_score, composite_component_group_scores
 
@@ -142,6 +144,7 @@ def r2(truth, prediction):
 
 
 def complete_metric_values(evidence, specification):
+    validate_scoring_contract(specification)
     cases = evidence["cases"]
     values = evidence["metric_values"]
     scope = evidence["prediction_scope"]
@@ -204,7 +207,11 @@ def complete_metric_values(evidence, specification):
             f"incomplete dev metrics: missing={sorted(required-set(values))}, unexpected={sorted(set(values)-required)}"
         )
     evidence["metric_values"] = values
-    evidence["dev_workflow_version"] = 1
+    evidence["dev_workflow_version"] = WORKFLOW_VERSION
+    cp_reduction = evidence.get("metric_reductions", {}).get("cp_cut_rmse")
+    if cp_reduction is not None:
+        cp_reduction["support_scope"]["within_cut_weighting"] = "trapezoidal_arc_length"
+        cp_reduction["support_scope"]["support_status"] = "published_immutable_native_v3"
     evidence["native_profile_truth_index_sha256"] = INDEX_SHA256
     evidence["eligibility"][
         "reason"
@@ -220,6 +227,7 @@ def complete_metric_values(evidence, specification):
 
 def validate_package_metrics(directory, submission, specification):
     """Recompute the package's force/profile values from immutable truth."""
+    validate_scoring_contract(specification)
     from reference.drivaerml.dev_profiles import sha256
     from reference.drivaerml.dataset_scorer import OFFICIAL_FORCE_TRUTH_SHA256
 

@@ -24,7 +24,12 @@ from reference.drivaerml.diagnostic_evaluator import gather_mapped_prediction_fi
 TRUTH_COMMIT = "4ae72e5145ee2cfc58432a86e1496337f2cc615f"
 TRUTH_BASE = f"https://raw.githubusercontent.com/neilashton/fluidsbench/{TRUTH_COMMIT}/assets/data/profile-ground-truth/datasets/drivaerml/native-v3/"
 INDEX_SHA256 = "e7cf14f161fc7dbf22794e6f66db4e157329be960d2a4368140e08cf0608a5ae"
-SCHEMA = "drivaerml-native-dev-profile-evidence-v1"
+SCHEMA = "drivaerml-native-dev-profile-evidence-v2"
+WORKFLOW_VERSION = 2
+RELEASE_ID = "drivaerml-native-dev-v2-candidate"
+SCORING_CONTRACT_SHA256 = (
+    "0ef98cb4871e6e03c3b76ab558a3074efc1bff6ce1da9b18aee6aa2d3a5db889"
+)
 UINF = 38.889
 COMMON = (
     "panel_id",
@@ -46,14 +51,34 @@ def sha256(path):
     return digest.hexdigest()
 
 
-def retained_json(relative, digest):
+def validate_scoring_contract(specification):
+    contract = specification.get("dev_profile_scoring", {})
+    path = (
+        Path(__file__).resolve().parents[2]
+        / "benchmark-specs/drivaerml/dev-profile-scoring-v2.json"
+    )
+    if (
+        contract.get("sha256") != SCORING_CONTRACT_SHA256
+        or contract.get("release_id") != RELEASE_ID
+        or sha256(path) != SCORING_CONTRACT_SHA256
+    ):
+        raise ValueError("DrivAerML dev profile scoring contract differs")
+
+
+def retained_json(relative, digest, *, root=None, offline=None):
     if Path(relative).is_absolute() or ".." in Path(relative).parts:
         raise ValueError("profile truth path must stay within the pinned release")
-    offline = os.environ.get("FLUIDSBENCH_DRIVAERML_TRUTH_ROOT")
+    environment_root = os.environ.get("FLUIDSBENCH_DRIVAERML_TRUTH_ROOT")
+    if offline is None:
+        offline = bool(environment_root)
     root = (
-        Path(offline)
-        if offline
-        else Path.home() / ".cache/fluidsbench/drivaerml" / INDEX_SHA256
+        Path(root)
+        if root is not None
+        else (
+            Path(environment_root)
+            if environment_root
+            else Path.home() / ".cache/fluidsbench/drivaerml" / INDEX_SHA256
+        )
     )
     path = root / relative
     if not path.is_file():
@@ -131,18 +156,16 @@ def prediction_series(truth, values=None):
 def weights(series):
     coordinate = np.asarray(series["coordinate"], dtype=float)
     result = np.zeros(len(coordinate), dtype=float)
-    if series["panel_id"] == "pressure_profiles":
-        # Arc coordinates are cumulative segment lengths. Relative intervals
-        # may restart at each segment; never join across those boundaries.
-        for segment in series["segments"]:
-            start, stop = segment["emitted_index_start"], segment["emitted_index_stop"]
-            result[start:stop] = np.diff(np.r_[0.0, coordinate[start:stop]])
-    else:
-        for segment in series["segments"]:
-            start, stop = segment["emitted_index_start"], segment["emitted_index_stop"]
-            edges = np.diff(coordinate[start:stop]) / 2
-            result[start : stop - 1] += edges
-            result[start + 1 : stop] += edges
+    # Dev v2 uses the AutoCFD5 trapezoidal convention for both families.
+    # A segment's first coordinate need not be zero. Never invent an edge
+    # from zero to that first point, or bridge unsupported gaps.
+    for segment in series["segments"]:
+        start, stop = segment["emitted_index_start"], segment["emitted_index_stop"]
+        edges = np.diff(coordinate[start:stop]) / 2
+        if not np.isfinite(edges).all() or (edges <= 0).any():
+            raise ValueError("native profile segment coordinates must increase")
+        result[start : stop - 1] += edges
+        result[start + 1 : stop] += edges
     if not np.isfinite(result).all() or (result < 0).any() or result.sum() <= 0:
         raise ValueError("native profile has invalid scoring weights")
     return result / result.sum()
