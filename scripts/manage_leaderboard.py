@@ -303,7 +303,12 @@ def json_bytes(value: Any) -> bytes:
 def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
     rows = {dataset["name"]: [] for dataset in manifest["datasets"]}
     release_status = manifest.get("data_release", {}).get("status")
-    allowed_approval_status = "prototype" if release_status == "prototype_dummy_data" else "approved"
+    allowed_approval_statuses = {"prototype"} if release_status == "prototype_dummy_data" else {"approved"}
+    # Dev previews contain retained fixtures and newly reviewed results. Normal
+    # source validation still enforces official/open contracts for approvals;
+    # candidate packages need the exact registrations below.
+    if release_status == "prototype_dummy_data" and manifest.get("data_release", {}).get("source_ref") == "dev":
+        allowed_approval_statuses.add("approved")
     for path in submission_files():
         submission = load_json(path)
         registered_preview = registered_hiliftaeroml_preview(
@@ -338,7 +343,7 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
             and drivaerml_pre_release is None
             and airfrans_pre_release is None
             and development_fixture is None
-            and submission.get("approval", {}).get("status") != allowed_approval_status
+            and submission.get("approval", {}).get("status") not in allowed_approval_statuses
         ):
             continue
         row = deepcopy(submission)
@@ -414,7 +419,7 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
                     }
                 )
             row["prediction_artifact_status"] = prediction_status
-        if allowed_approval_status == "approved":
+        if submission.get("approval", {}).get("status") == "approved":
             validation_metadata = submission["approval"]["validation"]
             validation_path = path.parent / validation_metadata["evidence_file"]
             validation = load_json(validation_path)
@@ -543,6 +548,13 @@ def published_metric_value(value: int | float, decimal_places: int) -> tuple[Dec
 
 def claim_eligibility(release_status: str, row: dict[str, Any]) -> dict[str, Any]:
     if release_status == "prototype_dummy_data":
+        if row.get("approval", {}).get("status") == "approved":
+            return {
+                "academic_citation": False,
+                "promotion": False,
+                "reason_code": "pre_release_reference",
+                "reason": "Maintainer-approved submitted result displayed in the dev preview; it is not part of an official leaderboard release.",
+            }
         if row.get("record_type") == "development_fixture":
             return {
                 "academic_citation": False,
@@ -737,16 +749,17 @@ def scoring_support_file_binding(row: dict[str, Any]) -> dict[str, str] | None:
     # historical scoring-support/ layout. Follow the benchmark-owned binding
     # and still require the exact row digest before exposing a claim artifact.
     spec_path = directory.parent / "submission-spec.json"
-    if declaration.get("status") == "candidate" and spec_path.is_file():
-        candidate = load_json(spec_path).get("scoring_support", {}).get("candidate_manifest", {})
+    if declaration.get("status") in {"candidate", "official"} and spec_path.is_file():
+        support = load_json(spec_path).get("scoring_support", {})
+        candidate = support.get("candidate_manifest", {}) if declaration["status"] == "candidate" else support
         relative = candidate.get("manifest_file")
         if (
             isinstance(relative, str)
             and candidate.get("manifest_sha256") == expected_sha256
             and candidate.get("release_id") == declaration.get("release_id")
         ):
-            bound_path = (directory.parent / relative).resolve()
-            if bound_path.is_relative_to(directory.parent.resolve()) and bound_path.is_file():
+            bound_path = directory.parent / relative
+            if bound_path.resolve().is_relative_to(directory.parent.resolve()) and bound_path.is_file():
                 candidates.append(bound_path)
     if row.get("dataset_id") == "airfrans" and row.get("record_type") == "pre_release_reference":
         candidates.extend((directory.parent / "pre-release").glob("*/scoring-support/manifest.json"))
