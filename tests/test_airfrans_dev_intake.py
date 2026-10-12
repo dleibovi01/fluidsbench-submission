@@ -1,4 +1,4 @@
-"""Exercise real contributor and maintainer gates without adding a result to feeds."""
+"""Exercise contributor, approval and feed publication in a disposable repository."""
 import copy
 import json
 import shutil
@@ -8,6 +8,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts import validate_submission as validator
+from scripts import manage_leaderboard as manager
 from scripts.manage_leaderboard import approval_documents, json_bytes
 from reference.scoring_support import sha256_file
 
@@ -19,7 +20,7 @@ class AirfransDevIntakeTests(unittest.TestCase):
         spec = json.loads((ROOT / 'benchmark-specs/airfrans/submission-spec.json').read_text())
         manifest = validator.manifest_with_benchmark_contract(validator.load_json(validator.MANIFEST_PATH))
         with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
+            root = Path(temporary).resolve()
             (root / 'benchmark-specs').symlink_to(ROOT / 'benchmark-specs', target_is_directory=True)
             folder = root / 'submissions/airfrans/dev-intake-trial'
             shutil.copytree(ROOT / 'submissions/airfrans/transolverpp-full-v1', folder)
@@ -71,11 +72,16 @@ class AirfransDevIntakeTests(unittest.TestCase):
             evidence_path.write_bytes(json_bytes(evidence))
             submission['evaluation']['evidence_sha256'] = sha256_file(evidence_path)
             path.write_bytes(json_bytes(submission))
-            with patch.object(validator, 'ROOT', root):
+            with patch.object(validator, 'ROOT', root), patch.object(manager, 'ROOT', root), \
+                 patch.object(manager, 'MANIFEST_PATH', root / 'leaderboard/manifest.json'), \
+                 patch.object(manager, 'REVISION_HISTORY_PATH', root / 'leaderboard/revisions.json'), \
+                 patch.object(manager, 'CLAIMS_ROOT', root / 'leaderboard/claims'), \
+                 patch.object(manager, 'CLAIMS_INDEX_PATH', root / 'leaderboard/claims/index.json'):
                 errors, stats = validator.validate_submission_file(path, manifest, contributor_stage=True)
                 self.assertEqual(errors, [])
                 self.assertEqual(stats, {'cases': 200, 'series': 1600})
                 self.assertNotIn('approval', json.loads(path.read_text()))
+                self.assertEqual(manager.source_rows_by_dataset(manifest)['AirfRANS'], [])
                 receipt, approved = approval_documents(submission, folder,
                     validated_by='Local intake test', validated_at='2026-10-07T20:00:00Z',
                     approved_by='Local intake test', approved_at='2026-10-07',
@@ -84,6 +90,18 @@ class AirfransDevIntakeTests(unittest.TestCase):
                 path.write_bytes(json_bytes(approved))
                 self.assertEqual(validator.validate_submission_file(path, manifest)[0], [])
                 self.assertTrue(validator.validate_submission_file(path, manifest, contributor_stage=True)[0])
+                self.assertEqual(manager.build(manifest), [])
+                published = json.loads((root / 'leaderboard/all.json').read_text())
+                self.assertEqual([r['submission_id'] for r in published], ['dev-intake-trial'])
+                self.assertEqual(published[0]['metric_values'], submission['metric_values'])
+                self.assertEqual(published[0]['maintainer_validation']['status'], 'validated')
+                self.assertFalse(published[0]['claim_eligibility']['academic_citation'])
+                self.assertFalse(published[0]['claim_eligibility']['promotion'])
+                generated = json.loads(manager.MANIFEST_PATH.read_text())
+                self.assertEqual(manager.check_generated_feeds(generated), [])
+                non_dev = copy.deepcopy(manifest)
+                non_dev['data_release']['source_ref'] = 'main'
+                self.assertEqual(manager.source_rows_by_dataset(non_dev)['AirfRANS'], [])
                 closed = copy.deepcopy(submission)
                 closed['split_id'] = 'reynolds_extrapolation'
                 closed['split'] = 'Reynolds extrapolation'

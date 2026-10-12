@@ -40,6 +40,10 @@ citation eligibility, or promotion eligibility.
 5. A maintainer can run the **Maintainer approve and regenerate** workflow with the exact submission path, validator/approver
    identities, validation timestamp, and approval date. Select `dev` for dev intake: the approval PR targets the dispatched branch. It creates the validation record, binds the resulting draft PR URL,
    rebuilds and verifies the compact feeds, and opens the protected-branch PR. The final merge remains manual.
+   Approved AirfRANS packages are included in the dev preview alongside retained reference rows. After merging the approval
+   PR, check the new submission ID, scores and full-split profiles on the
+   [dev leaderboard](https://fluidsbench.org/review-x4n7q9m2vk6p/committee-leaderboard/).
+   Dev display does not grant official-release citation or promotion eligibility.
 6. Optional prediction checks are descriptive and never change approval or claim eligibility. The separate **Check optional
    prediction artifact metadata** workflow checks declarations only; it cannot award the blue badge. Follow the
    [full-split metric-verification procedure](OPTIONAL_VERIFICATION.md#maintainer-procedure) for an actual recomputation.
