@@ -14,7 +14,9 @@ import numpy as np
 try:
     import vtk  # noqa: F401
 except ImportError:
-    raise unittest.SkipTest("requires optional VTK for DrivAerML evaluator tests") from None
+    raise unittest.SkipTest(
+        "requires optional VTK for DrivAerML evaluator tests"
+    ) from None
 
 from reference.drivaerml.evaluator import (
     CANDIDATE_EVIDENCE_SCHEMA,
@@ -62,20 +64,40 @@ def _volume_document(
     pressure: np.ndarray,
     velocity: np.ndarray,
 ) -> bytes:
+    # Real tetrahedra covering all four required diagnostic regions. The old
+    # field-only XML fixture predated mandatory regional geometry validation.
+    centres = np.asarray([[0, 0, 0.3], [0, 0, 1.2], [4.5, 0, 1], [-2, 0, 0], [7, 0, 0]])
+    local = np.asarray(
+        [
+            [-0.02, -0.02, -0.02],
+            [0.06, -0.02, -0.02],
+            [-0.02, 0.06, -0.02],
+            [-0.02, -0.02, 0.06],
+        ]
+    )
+    points = (centres[:, None, :] + local).reshape(-1, 3).astype("<f8")
     return b"".join(
         [
             b'<VTKFile type="UnstructuredGrid" version="0.1" ',
             b'byte_order="LittleEndian" header_type="UInt64">',
-            b'<UnstructuredGrid><Piece NumberOfPoints="1" NumberOfCells="',
+            b'<UnstructuredGrid><Piece NumberOfPoints="20" NumberOfCells="',
             str(len(pressure)).encode("ascii"),
             b'"><CellData>',
             b'<DataArray type="Float32" Name="pMeanTrim" format="binary">',
             _encoded(np.asarray(pressure, dtype="<f4").tobytes()),
-            b'</DataArray>',
+            b"</DataArray>",
             b'<DataArray type="Float32" Name="UMeanTrim" ',
             b'NumberOfComponents="3" format="binary">',
             _encoded(np.asarray(velocity, dtype="<f4").tobytes()),
-            b'</DataArray></CellData></Piece></UnstructuredGrid></VTKFile>',
+            b'</DataArray></CellData><Points><DataArray type="Float64" NumberOfComponents="3" format="binary">',
+            _encoded(points.tobytes()),
+            b'</DataArray></Points><Cells><DataArray type="Int64" Name="connectivity" format="binary">',
+            _encoded(np.arange(20, dtype="<i8").tobytes()),
+            b'</DataArray><DataArray type="Int64" Name="offsets" format="binary">',
+            _encoded(np.arange(4, 21, 4, dtype="<i8").tobytes()),
+            b'</DataArray><DataArray type="UInt8" Name="types" format="binary">',
+            _encoded(np.full(5, 10, dtype="u1").tobytes()),
+            b"</DataArray></Cells></Piece></UnstructuredGrid></VTKFile>",
         ]
     )
 
@@ -151,11 +173,16 @@ class SyntheticCase:
         for raw_id in range(self.entity_count):
             base = 1.0 + 0.2 * raw_id
             first = len(points)
+            z = 1.0 if raw_id in (2, 3) else 0.0
             points.extend(
                 [
-                    [3.0 * raw_id, 0.0, 0.0],
-                    [3.0 * raw_id + base, 0.0, 0.0],
-                    [3.0 * raw_id, 1.0, 0.0],
+                    [3.0 * raw_id, 0.0, z],
+                    [3.0 * raw_id + base, 0.0, z],
+                    (
+                        [3.0 * raw_id, 0.0, z + 1.0]
+                        if raw_id in (1, 3)
+                        else [3.0 * raw_id, 1.0, z]
+                    ),
                 ]
             )
             connectivity.extend([first, first + 1, first + 2])
@@ -340,9 +367,7 @@ class DrivAerMLCandidateEvaluatorTests(unittest.TestCase):
         *,
         maximum_rows: int = 10,
     ):
-        stream = open_verified_multipart(
-            fixture.resolved, verification_chunk_size=13
-        )
+        stream = open_verified_multipart(fixture.resolved, verification_chunk_size=13)
         self.addCleanup(stream.close)
         index = index_inline_binary_vtk_xml(stream, scan_chunk_size=11)
         return evaluate_candidate_case(
@@ -452,9 +477,7 @@ class DrivAerMLCandidateEvaluatorTests(unittest.TestCase):
             area_audit = full.surface_area_audit["native_geometry_order_audit"]
             self.assertTrue(area_audit["raw_order_correspondence_verified"])
             self.assertEqual(area_audit["entity_count"], 5)
-            self.assertLessEqual(
-                area_audit["maximum_relative_difference"], 6.0e-8
-            )
+            self.assertLessEqual(area_audit["maximum_relative_difference"], 6.0e-8)
 
     def test_permuted_fixed_surface_areas_fail_geometry_order_audit(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -486,7 +509,9 @@ class DrivAerMLCandidateEvaluatorTests(unittest.TestCase):
                 )
             bad_areas.close()
 
-    def test_compact_evidence_is_deterministic_and_truthfully_candidate_only(self) -> None:
+    def test_compact_evidence_is_deterministic_and_truthfully_candidate_only(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             fixture = SyntheticCase(root)
@@ -508,9 +533,7 @@ class DrivAerMLCandidateEvaluatorTests(unittest.TestCase):
             self.assertEqual(payload["status"], CANDIDATE_STATUS)
             self.assertFalse(payload["official_submission"])
             self.assertTrue(
-                payload["coverage"]["surface"][
-                    "complete_gap_free_duplicate_free"
-                ]
+                payload["coverage"]["surface"]["complete_gap_free_duplicate_free"]
             )
             self.assertEqual(
                 payload["source"]["volume_weighting"],
@@ -571,7 +594,10 @@ class DrivAerMLCandidateEvaluatorTests(unittest.TestCase):
             )
             self.assertNotIn("volume_native_cells", payload["prediction_inputs"])
             self.assertFalse(
-                any(metric_id.startswith("volume_") for metric_id in payload["metric_values"])
+                any(
+                    metric_id.startswith("volume_")
+                    for metric_id in payload["metric_values"]
+                )
             )
 
     def test_case_support_count_and_chunk_limit_reject(self) -> None:
@@ -597,7 +623,10 @@ class DrivAerMLCandidateEvaluatorTests(unittest.TestCase):
                 case_id="run_1",
                 support_id="surface_native_cells",
                 raw_partitions=(2, 2),
-                fields={name: value[:4] for name, value in fixture.surface_predictions.items()},
+                fields={
+                    name: value[:4]
+                    for name, value in fixture.surface_predictions.items()
+                },
             )
             with self.assertRaisesRegex(
                 DrivAerCandidateEvaluatorError, "differs from native count"
@@ -653,9 +682,7 @@ class DrivAerMLCandidateEvaluatorTests(unittest.TestCase):
                 allow_pickle=False,
             )
             os.replace(replacement, area_path)
-            with self.assertRaisesRegex(
-                ValueError, "changed after surface-area audit"
-            ):
+            with self.assertRaisesRegex(ValueError, "changed after surface-area audit"):
                 fixture.surface_areas.assert_source_unchanged(
                     context="after surface-area audit"
                 )
