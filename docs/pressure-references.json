@@ -160,7 +160,7 @@
       "code_evidence": [
         {
           "path": "benchmark-specs/drivaerml/submission-spec.json",
-          "sha256": "43e196ad567c206d5cd87034f3df154c68eafca6d49687a852375886fe976517",
+          "sha256": "64cb4c355429f667b6e496d713a77731e08bc3539ebc8ec83d0fc981a3caeb23",
           "finding": "Re-audited 2026-10-12: dev v2 aligns Cp profile integration with AutoCFD5 trapezoidal weights and versions the support release. Native pMeanTrim units, outlet reference, Cp conversion and field/force reductions are unchanged."
         },
         {

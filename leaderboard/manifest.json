@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-10-12T06:05:43Z",
+  "generated_at": "2026-10-12T06:07:43Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -21,7 +21,7 @@
   "data_release": {
     "id": "prototype-dev-2026-09-29-b7435a38c0c1",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-10-12T06:05:43Z",
+    "generated_at": "2026-10-12T06:07:43Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
@@ -51,14 +51,14 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "5f434735f14ec3fd032beb73f6eaaf1476d2afeaa15130f5d2c023a8de232bce",
+      "index_sha256": "daa6f72565218d0ff9594f4b653df6018b69449936ec3dcb76156076db6aa69d",
       "record_count": 60,
       "eligible_record_count": 0
     },
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "67c474833ea02f1a01fdb8ae16a81bddae3ac137cdcda44bbc32984d72e829db",
+      "sha256": "f1a18410265f36f654b675a1e5abe4a3161c86af29a5abf5ccba3c6fa71eb23f",
       "record_count": 61,
       "series_count": 61
     }
@@ -1458,7 +1458,7 @@
           "status": "frozen",
           "repository_url": "https://github.com/neilashton/fluidsbench-submission",
           "evaluator_reference_version": "drivaerml-evaluator-v3-candidate",
-          "evaluator_code_revision": "942221db699f7785054c07c718e8d510126357c3",
+          "evaluator_code_revision": "fa321e6fe6ce05a7bae41bd3961108d11ef467a6",
           "activation_rule": "set status=frozen and publish the exact immutable evaluator Git revision only after the production evaluator is scientifically approved; participant evaluation evidence must match the frozen reference version, and optional maintainer recomputation receipts must match both values exactly"
         },
         "source_release": {
@@ -1829,7 +1829,7 @@
           "status": "candidate",
           "release_id": "drivaerml-native-dev-v2-candidate",
           "manifest_file": "scoring-support/drivaerml-native-dev-v2-candidate/manifest.json",
-          "manifest_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/942221db699f7785054c07c718e8d510126357c3/benchmark-specs/drivaerml/scoring-support/drivaerml-native-dev-v2-candidate/manifest.json",
+          "manifest_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/fa321e6fe6ce05a7bae41bd3961108d11ef467a6/benchmark-specs/drivaerml/scoring-support/drivaerml-native-dev-v2-candidate/manifest.json",
           "manifest_sha256": "7c6648f333e508eff77b14a475106a26671eb99a0d25bf8c6e48e13fe9a527dc"
         }
       },
