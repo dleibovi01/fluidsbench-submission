@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-10-11T14:32:09Z",
+  "generated_at": "2026-10-12T06:05:43Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -21,7 +21,7 @@
   "data_release": {
     "id": "prototype-dev-2026-09-29-b7435a38c0c1",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-10-11T14:32:09Z",
+    "generated_at": "2026-10-12T06:05:43Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
@@ -51,14 +51,14 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "07b0c251a2528fa226ddc72d9a295b27c905783bfb1e3e61271f7ae44281be49",
+      "index_sha256": "5f434735f14ec3fd032beb73f6eaaf1476d2afeaa15130f5d2c023a8de232bce",
       "record_count": 60,
       "eligible_record_count": 0
     },
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "36e2cbc2b5f145f55a1992428cdee523ce71750ee71970f74f45e51d9c27e654",
+      "sha256": "67c474833ea02f1a01fdb8ae16a81bddae3ac137cdcda44bbc32984d72e829db",
       "record_count": 61,
       "series_count": 61
     }
@@ -1827,10 +1827,10 @@
         ],
         "candidate_manifest": {
           "status": "candidate",
-          "release_id": "drivaerml-native-dev-v1-candidate",
-          "manifest_file": "scoring-support/drivaerml-native-dev-v1-candidate/manifest.json",
-          "manifest_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/942221db699f7785054c07c718e8d510126357c3/benchmark-specs/drivaerml/scoring-support/drivaerml-native-dev-v1-candidate/manifest.json",
-          "manifest_sha256": "810311448f74037070940278b403545a1b9b59e7a87ce7c2d31da0ae9383df01"
+          "release_id": "drivaerml-native-dev-v2-candidate",
+          "manifest_file": "scoring-support/drivaerml-native-dev-v2-candidate/manifest.json",
+          "manifest_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/942221db699f7785054c07c718e8d510126357c3/benchmark-specs/drivaerml/scoring-support/drivaerml-native-dev-v2-candidate/manifest.json",
+          "manifest_sha256": "7c6648f333e508eff77b14a475106a26671eb99a0d25bf8c6e48e13fe9a527dc"
         }
       },
       "overall_score_composite": {

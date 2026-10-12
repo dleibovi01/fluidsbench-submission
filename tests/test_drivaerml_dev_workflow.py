@@ -580,3 +580,51 @@ def test_checkpoint_bytes_must_match_before_assembly(completed, tmp_path):
             checkpoint_paths={"coordinate-network-checkpoint": wrong},
         )
     assert not (tmp_path / "bad-package").exists()
+
+
+def test_participant_command_packages_and_verifies_both_scopes(completed, tmp_path):
+    from reference.drivaerml import participant_workflow as workflow
+
+    root, _, scope = completed
+    config = load(root / "config.json")
+    evaluation = tmp_path / "evaluation"
+    evaluation.mkdir()
+    (evaluation / "metrics").mkdir()
+    shutil.copyfile(root / "metrics.json", evaluation / "metrics/cases.json")
+    shutil.copyfile(root / "regional.json", evaluation / "regional-diagnostics.json")
+    shutil.copytree(root / "profiles", evaluation / "package-profiles")
+    workflow.write_json(
+        evaluation / "workflow.json",
+        {
+            "entry": {
+                "schema": workflow.ENTRY_SCHEMA,
+                "split_id": "full",
+                "prediction_scope": scope,
+                "submission_id": config["participant"]["submission_id"],
+            },
+            "implementation": workflow.implementation_identity(),
+            "outputs": {
+                p.relative_to(evaluation).as_posix(): profiles.sha256(p)
+                for p in evaluation.rglob("*")
+                if p.is_file()
+            },
+        },
+    )
+    output = tmp_path / "ready-for-pr"
+    result = workflow.package(
+        evaluation,
+        root / "config.json",
+        root / "cases.jsonl",
+        output,
+        {"coordinate-network-checkpoint": root / "test-checkpoint.bin"},
+    )
+    assert result["status"] == "validated_dev_package"
+    assert load(output / "submission.json")["prediction_scope"] == scope
+    assert workflow.verify_package(output)["status"] == "valid_dev_package"
+    document = load(output / "submission.json")
+    document["metric_values"]["cp_cut_r2"] -= 0.01
+    write(output / "submission.json", document)
+    import subprocess
+
+    with pytest.raises((ValueError, subprocess.CalledProcessError)):
+        workflow.verify_package(output)

@@ -5,7 +5,8 @@ Copy `package-config.template.json` and replace the participant `__REPLACE_...__
 fields. Its benchmark-owned release bindings are already filled in and must
 match the checked-out dev specification.
 
-Start with the [participant guide](../../benchmark-specs/drivaerml/PARTICIPANT_GUIDE.md).
+Start with the [resumable quickstart](../../benchmark-specs/drivaerml/QUICKSTART.md)
+and the [participant guide](../../benchmark-specs/drivaerml/PARTICIPANT_GUIDE.md).
 It covers native prediction chunks, fixed and relative profile extraction,
 complete-split scoring, packaging, and the pull request to `dev`. Official
 submissions remain closed; registered dev results are non-rankable and non-citable.

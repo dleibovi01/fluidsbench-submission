@@ -14,7 +14,7 @@ from reference.weightings import evaluator_weighting
 from scripts.validate_scoring_supports import expected_metric_reduction
 
 SPEC_ROOT = ROOT / "benchmark-specs/drivaerml"
-RELEASE = "drivaerml-native-dev-v1-candidate"
+RELEASE = "drivaerml-native-dev-v2-candidate"
 SOURCE_COMMIT = "781637418bd9bde43b6c9a7aeb2e3c2563404e79"
 BASE = f"https://raw.githubusercontent.com/neilashton/fluidsbench-submission/{SOURCE_COMMIT}/benchmark-specs/drivaerml/"
 FORCE = "drivaerml-force-coefficients-v1"
@@ -291,7 +291,7 @@ def publish(output):
             "schema_version": "1.0",
             "release_id": RELEASE,
             "status": "candidate",
-            "published_at": "2026-10-11T00:00:00Z",
+            "published_at": "2026-10-12T00:00:00Z",
             "dataset_id": "drivaerml",
             "dataset_version": spec["dataset_version"],
             "evaluation_reference_version": spec["evaluation_reference_version"],

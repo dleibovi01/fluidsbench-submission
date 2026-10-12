@@ -521,7 +521,15 @@ class _ChunkSums:
 
 
 def _bins(codes: np.ndarray, weights: np.ndarray | None = None) -> np.ndarray:
-    return np.bincount(codes, weights=weights, minlength=4)
+    if weights is None:
+        return np.bincount(codes, minlength=4)
+    # Match AutoCFD5 v1.1.7: weighted bincount sums sequentially and can
+    # exceed the reconstruction tolerance for valid million-row chunks.
+    # Pairwise float64 sums retain the tolerance and all scoring definitions.
+    return np.asarray(
+        [np.sum(weights[codes == code], dtype=np.float64) for code in range(4)],
+        dtype=np.float64,
+    )
 
 
 def _finite_nonnegative(value: float, label: str) -> float:

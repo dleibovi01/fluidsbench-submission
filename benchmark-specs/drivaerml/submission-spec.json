@@ -421,10 +421,10 @@
     ],
     "candidate_manifest": {
       "status": "candidate",
-      "release_id": "drivaerml-native-dev-v1-candidate",
-      "manifest_file": "scoring-support/drivaerml-native-dev-v1-candidate/manifest.json",
-      "manifest_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/942221db699f7785054c07c718e8d510126357c3/benchmark-specs/drivaerml/scoring-support/drivaerml-native-dev-v1-candidate/manifest.json",
-      "manifest_sha256": "810311448f74037070940278b403545a1b9b59e7a87ce7c2d31da0ae9383df01"
+      "release_id": "drivaerml-native-dev-v2-candidate",
+      "manifest_file": "scoring-support/drivaerml-native-dev-v2-candidate/manifest.json",
+      "manifest_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/942221db699f7785054c07c718e8d510126357c3/benchmark-specs/drivaerml/scoring-support/drivaerml-native-dev-v2-candidate/manifest.json",
+      "manifest_sha256": "7c6648f333e508eff77b14a475106a26671eb99a0d25bf8c6e48e13fe9a527dc"
     }
   },
   "relative_diagnostics": {
@@ -654,7 +654,7 @@
       "kind": "r2",
       "equation": "1-\\frac{\\sum_{c,q}\\sum_{s\\in\\Gamma_{cq}}\\tilde{w}_{cqs}(\\hat{C}_{p,s}-C_{p,s})^2}{\\sum_{c,q}\\sum_{s\\in\\Gamma_{cq}}\\tilde{w}_{cqs}(C_{p,s}-\\bar{C}_{p,w})^2}",
       "aggregation": "equal_case_equal_cut_global_weighted_r2",
-      "weighting": "equal_cases_equal_cuts_normalized_native_cut_intersection_segment_length",
+      "weighting": "equal_cases_equal_cuts_normalized_trapezoidal_arc_length",
       "availability": "all_four_continuous_native_surface_cuts_available_for_every_case_after_immutable_owner_extraction_support_is_published"
     },
     {
@@ -900,7 +900,7 @@
       "kind": "error",
       "equation": "\\frac{1}{N}\\sum_c\\frac{1}{4}\\sum_q\\sqrt{\\frac{\\sum_{s\\in\\Gamma_{cq}}\\Delta s_s(\\hat{C}_{p,s}-C_{p,s})^2}{\\sum_{s\\in\\Gamma_{cq}}\\Delta s_s}}",
       "aggregation": "equal_case_equal_cut_macro_average",
-      "weighting": "native_cut_intersection_segment_length",
+      "weighting": "trapezoidal_arc_length_within_cut",
       "availability": "all_four_continuous_native_surface_cuts_available_for_every_case_after_immutable_owner_extraction_support_is_published"
     }
   ],
@@ -1154,5 +1154,12 @@
       "case_id_status": "official",
       "sha256": "107865198cb0a9414335cfe0b363bccc38c419e5482a9e7ef5aa675efd391f67"
     }
-  ]
+  ],
+  "dev_profile_scoring": {
+    "file": "dev-profile-scoring-v2.json",
+    "sha256": "0ef98cb4871e6e03c3b76ab558a3074efc1bff6ce1da9b18aee6aa2d3a5db889",
+    "status": "dev_only",
+    "release_id": "drivaerml-native-dev-v2-candidate",
+    "precedence": "For native dev v2 packages, this contract replaces the v10 native intersection-segment-length Cp reduction. The immutable v10/relative-v3 geometry, station identities and native-v3 truth remain unchanged. Historical v1 packages must be reevaluated before dev v2 intake."
+  }
 }

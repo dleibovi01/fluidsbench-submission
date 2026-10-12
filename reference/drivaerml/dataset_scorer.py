@@ -3628,7 +3628,7 @@ def schema_v3_case_metrics_candidate_adapter(
                     "metric_sufficient_statistics": support_statistics,
                 }
             )
-        if evidence.get("dev_workflow_version") == 1:
+        if evidence.get("dev_workflow_version") == 2:
             supports.append(
                 {
                     "support_id": "drivaerml-force-coefficients-v1",

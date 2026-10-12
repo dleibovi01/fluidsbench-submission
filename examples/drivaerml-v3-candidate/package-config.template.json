@@ -215,9 +215,9 @@
   "release_bindings": {
     "candidate_manifest": {
       "status": "candidate",
-      "release_id": "drivaerml-native-dev-v1-candidate",
-      "manifest_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/942221db699f7785054c07c718e8d510126357c3/benchmark-specs/drivaerml/scoring-support/drivaerml-native-dev-v1-candidate/manifest.json",
-      "manifest_sha256": "810311448f74037070940278b403545a1b9b59e7a87ce7c2d31da0ae9383df01"
+      "release_id": "drivaerml-native-dev-v2-candidate",
+      "manifest_url": "https://raw.githubusercontent.com/neilashton/fluidsbench-submission/942221db699f7785054c07c718e8d510126357c3/benchmark-specs/drivaerml/scoring-support/drivaerml-native-dev-v2-candidate/manifest.json",
+      "manifest_sha256": "7c6648f333e508eff77b14a475106a26671eb99a0d25bf8c6e48e13fe9a527dc"
     },
     "evaluator": {
       "reference_version": "drivaerml-evaluator-v3-candidate",

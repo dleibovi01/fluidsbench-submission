@@ -172,7 +172,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
         )
     if args.schema_v3_profile_output_dir is not None:
-        if evaluation.to_json().get("dev_workflow_version") == 1:
+        if evaluation.to_json().get("dev_workflow_version") == 2:
             from reference.drivaerml.dataset_scorer import (
                 schema_v3_relative_profile_chunks_candidate_adapter,
             )

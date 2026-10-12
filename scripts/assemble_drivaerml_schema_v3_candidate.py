@@ -725,6 +725,10 @@ def assemble_package(
     checkpoint_paths: dict[str, Path] | None = None,
 ) -> dict[str, Any]:
     config = load_json(config_path)
+    if {"direct_force_coefficients", "test_case_ids", "train_case_ids", "validation_case_ids"} & set(config):
+        raise PackageAssemblyError("direct force coefficients and custom case lists are forbidden")
+    if config.get("force_prediction_source", "field_integrated") != "field_integrated":
+        raise PackageAssemblyError("only field_integrated forces are accepted; direct coefficients are forbidden")
     if config.get("schema") != CONFIG_SCHEMA:
         raise PackageAssemblyError(f"config.schema must equal {CONFIG_SCHEMA!r}")
     blockers = unresolved_tokens(config)
@@ -814,6 +818,7 @@ def assemble_package(
         "spatial_discretization", "case_metrics", "metric_values", "profile_data",
         "regional_diagnostics",
         "approval", "prediction_artifacts", "parameter_count_millions",
+        "force_prediction_source", "direct_force_coefficients",
     }
     overlap = sorted(forbidden.intersection(participant))
     if overlap:
@@ -821,7 +826,7 @@ def assemble_package(
     submission_id = participant.get("submission_id")
     if not isinstance(submission_id, str):
         raise PackageAssemblyError("participant.submission_id must be a string")
-    dev_package = candidate["release_id"] == "drivaerml-native-dev-v1-candidate"
+    dev_package = candidate["release_id"] == "drivaerml-native-dev-v2-candidate"
     if dev_package:
         from scripts.assemble_windsorml_schema_v3_candidate import _verify_checkpoints
 
