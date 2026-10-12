@@ -543,6 +543,8 @@ def assemble_package(
     dataset_evidence_path: Path | None = None,
 ) -> dict[str, Any]:
     config = load_json(config_path, label="package config")
+    from reference.native_participant import validate_package_policy
+    validate_package_policy(config)
     if config.get("schema") != CONFIG_SCHEMA:
         raise PackageAssemblyError(f"config.schema must equal {CONFIG_SCHEMA!r}")
     blockers = unresolved_tokens(config)

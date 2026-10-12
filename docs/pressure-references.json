@@ -57,8 +57,8 @@
         },
         {
           "path": "reference/ahmedml/evaluator.py",
-          "sha256": "29667f5a5234f9a50b71cb19cc6e41ce6ec56e8baf9817422e0688f73e7fcfc9",
-          "finding": "Native pMean enters field accumulators directly; no fitted pressure offset."
+          "sha256": "d2ca7a36d9e47af3333714ae12066ef347d4087282bd2ea6cf773a221662366c",
+          "finding": "Native pMean enters field accumulators directly; no fitted pressure offset. Re-audited 2026-10-12: only regional weighted summation changed to pairwise float64 sums; pressure units, reference, conversions and whole-field scoring are unchanged."
         },
         {
           "path": "reference/ahmedml/contract.py",

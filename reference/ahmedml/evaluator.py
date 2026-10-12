@@ -280,10 +280,17 @@ class _RegionalSums:
     def _bins(
         self, codes: np.ndarray, values: np.ndarray | None = None
     ) -> np.ndarray:
-        return np.bincount(
-            codes, weights=values, minlength=len(self.region_ids)
-        ).astype(
-            np.float64, copy=False
+        if values is None:
+            return np.bincount(codes, minlength=len(self.region_ids)).astype(
+                np.float64, copy=False
+            )
+        # Weighted bincount accumulates sequentially. At supported million-row
+        # chunk sizes its rounding drift can fail the unchanged reconstruction
+        # tolerance against the whole-field pairwise sums.
+        return np.asarray(
+            [np.sum(values[codes == code], dtype=np.float64)
+             for code in range(len(self.region_ids))],
+            dtype=np.float64,
         )
 
     def add(
