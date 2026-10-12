@@ -1,5 +1,11 @@
 # AirfRANS FluidsBench schema-v3 candidate package
 
+**Historical candidate workflow.** New submissions use the
+[AirfRANS dev quickstart](../../benchmark-specs/airfrans/QUICKSTART.md) and
+`scripts/airfrans.py package`. Full, Scarce and AoA intake is now open on `dev`.
+The closed-intake descriptions below record the context of these earlier
+candidate packages and do not describe current intake.
+
 This directory holds the config template for assembling an AirfRANS
 schema-v3 candidate submission, plus one concrete example
 (`transolverpp-full-v1-candidate-config.json`) used to build the

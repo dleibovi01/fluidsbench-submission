@@ -380,6 +380,8 @@ def assemble(
     profile_score_path: Path,
     output_dir: Path,
     spec_path: Path,
+    intake: bool = False,
+    discretization_documents: tuple[dict, list[dict]] | None = None,
 ) -> None:
     if output_dir.exists():
         raise AssembleError(f"output directory already exists, refusing to overwrite: {output_dir}")
@@ -389,6 +391,17 @@ def assemble(
     support_manifest = load_json(scoring_support_manifest_path)
     support_manifest_sha256 = sha256_file(scoring_support_manifest_path)
     metrics_cases = load_json(metrics_cases_path)
+    if intake:
+        binding = spec["scoring_support"]
+        if (spec.get("intake_branch") != "dev" or not binding.get("submissions_open")
+                or binding.get("status") != "official"
+                or support_manifest.get("release_id") != binding["release_id"]
+                or support_manifest_sha256 != binding["manifest_sha256"]
+                or profile_truth != {key: spec["profile_definition"]["profile_ground_truth"][key]
+                                    for key in ("release_id", "manifest_sha256")}):
+            raise AssembleError("intake requires the current approved dev support and truth bindings")
+        if discretization_documents is None:
+            raise AssembleError("intake requires actual participant discretization records")
 
     submission_id = config["submission_id"]
     split_id = config["split_id"]
@@ -412,7 +425,7 @@ def assemble(
     metrics_sha256 = write_json(output_dir / "metrics" / "cases.json", metrics_cases)
 
     # discretization.json + discretization/cases.jsonl
-    discretization, case_rows = build_discretization(
+    discretization, case_rows = discretization_documents or build_discretization(
         config, submission_id, split_id, support_manifest["release_id"], support_manifest_sha256, case_records
     )
     case_manifest_sha256 = write_jsonl(output_dir / "discretization" / "cases.jsonl", case_rows)
@@ -442,6 +455,12 @@ def assemble(
         "case_set_id": case_set_id,
         "reference_version": spec["evaluation_reference_version"],
         "command": (
+            "python scripts/airfrans.py evaluate-entry <entry> --dataset-root <Dataset> "
+            "--support-root <support> --output <work/result> --resume; "
+            "python scripts/airfrans.py package --evaluation-root <work/result>/evaluation "
+            f"--config <entry>/package-config.json --discretization-cases <entry>/discretization-cases.jsonl "
+            f"--output submissions/airfrans/{submission_id}"
+            if intake else
             "python3 -m reference.evaluate_predictions "
             f"--support-manifest {scoring_support_manifest_path} --case-set {case_set_id} "
             f"--prediction-manifest <layer2-output>/manifest.json --submission-id {submission_id} "
@@ -459,6 +478,8 @@ def assemble(
         "discretization_sha256": discretization_sha256,
         "case_metrics_sha256": metrics_sha256,
         "notes": (
+            "Participant evaluation using the approved AirfRANS dev contract; maintainer review remains required."
+            if intake else
             "AirfRANS remains closed (submission-spec.json scoring_support.status="
             "owner_review_required, submissions_open=false); this is a candidate "
             "package, not an accepted result."
@@ -512,7 +533,7 @@ def assemble(
         },
         "reproducibility": reproducibility_config,
         "scoring_support": {
-            "status": "candidate",
+            "status": "official" if intake else "candidate",
             "release_id": support_manifest["release_id"],
             "manifest_url": config["release_bindings"]["scoring_support"]["manifest_url"],
             "manifest_sha256": support_manifest_sha256,
@@ -538,6 +559,8 @@ def assemble(
             "profile_ground_truth_manifest_sha256": profile_truth["manifest_sha256"],
         },
         "note": (
+            "AirfRANS dev submission; forces and profiles are derived from the predicted native fields."
+            if intake else
             "Candidate AirfRANS schema-v3 package. AirfRANS submissions remain "
             "closed (owner_review_required) pending the owner_decisions_required "
             "checklist in benchmark-specs/airfrans/submission-spec.json. "
@@ -549,7 +572,7 @@ def assemble(
     validate_against_schema("v3/submission.schema.json", submission, "submission.json")
     write_json(output_dir / "submission.json", submission)
 
-    print(f"Assembled candidate package at {output_dir}")
+    print(f"Assembled {'dev submission' if intake else 'candidate'} package at {output_dir}")
     print(f"  submission_id       = {submission_id}")
     print(f"  case_count          = {metrics_cases['case_count']}")
     print(f"  overall_score       = {metrics_cases['metric_values'].get('overall_score')}")

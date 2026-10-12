@@ -7382,9 +7382,12 @@ def validate_submission_file(
     contributor_stage: bool = False,
     candidate_dry_run: bool = False,
     dev_intake: bool = False,
+    require_registered_path: bool = True,
     profile_support_release: Path | None = None,
     opened_profile_support_release: HiLiftCompactSupportRelease | None = None,
 ) -> tuple[list[str], dict[str, int]]:
+    # Atomic packagers may validate an unpublished staging directory. Ordinary
+    # repository/CLI validation always retains the registered-path requirement.
     errors: list[str] = []
     stats = {"cases": 0, "series": 0}
     prefix = str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path)
@@ -7713,7 +7716,7 @@ def validate_submission_file(
         submission,
         dataset,
         split,
-        require_registered_path=not candidate_dry_run,
+        require_registered_path=require_registered_path and not candidate_dry_run,
     )
     if submission.get("dataset_version") != dataset_spec.get("dataset_version"):
         add(f"dataset_version must equal {dataset_spec.get('dataset_version')!r} from the benchmark specification")
