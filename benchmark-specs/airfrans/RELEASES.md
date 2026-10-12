@@ -1,5 +1,10 @@
 # AirfRANS development intake
 
+For new submissions, follow the [participant quickstart](QUICKSTART.md). It
+automates the downloads, checks, extraction, evaluation and packaging described
+below, with recovery after interrupted evaluation. The manual release details
+here remain useful for inspecting or independently installing the artifacts.
+
 **Intake is open on `dev` for Full, Scarce and AoA extrapolation.** Submit a new
 schema-v3 result directory through a PR against **`dev`**. Reynolds extrapolation
 is closed: 318 of its 496 evaluation cases are not covered by these supports.

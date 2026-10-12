@@ -6,7 +6,7 @@ Evaluate a physics AI surrogate model and share its results on the [FluidsBench 
 This repository holds the dataset contracts, evaluators, result packages, and generated data feeds.
 
 **AirfRANS submissions are open on `dev` for Full, Scarce and AoA extrapolation.**
-Use the [dev intake and download guide](benchmark-specs/airfrans/RELEASES.md) and target your PR at `dev`.
+Use the [participant quickstart](benchmark-specs/airfrans/QUICKSTART.md) for verified support downloads, resumable evaluation and package generation, and target your PR at `dev`.
 Reynolds and official intake for the other datasets remain closed. Production is unchanged. Work on `dev` is pre-release: prototype rows are illustrative;
 registered HiLiftAeroML Transolver and GeoTransolver previews retain real inference and CFD comparison truth but remain
 unapproved and non-citable. A local candidate validation pass does not open submissions or create a leaderboard entry.
