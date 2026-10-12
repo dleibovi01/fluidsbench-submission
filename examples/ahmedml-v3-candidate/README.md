@@ -1,5 +1,9 @@
 # AhmedML schema-v3 genuine-inference candidate
 
+The [participant quickstart](../../benchmark-specs/ahmedml/QUICKSTART.md) provides
+the complete resumable command sequence and pinned Linux container. The
+per-case commands below remain available for existing pipelines.
+
 This directory is a reusable configuration template, not a submission. The
 AhmedML native evaluator remains a closed owner-review candidate and public
 submissions are not open. Development candidate PRs are accepted against `dev`.

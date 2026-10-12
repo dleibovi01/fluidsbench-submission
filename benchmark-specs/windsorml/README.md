@@ -1,5 +1,8 @@
 # WindsorML development submissions
 
+Start with the [resumable participant quickstart](QUICKSTART.md) for data/support
+preparation, whole-split evaluation, recovery and validated packaging.
+
 WindsorML accepts complete schema-v3 **development candidate PRs targeting `dev`**.
 Official submissions remain closed. Start with the
 [candidate packaging guide](../../examples/windsorml-v3-candidate/README.md).

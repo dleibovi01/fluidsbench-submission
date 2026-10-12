@@ -60,7 +60,7 @@ Use the static-pressure field. total(p)_coeffMean is a different quantity. Absol
 <summary>Evaluator and specification trace</summary>
 
 - [benchmark-specs/ahmedml/submission-spec.json](../benchmark-specs/ahmedml/submission-spec.json): The audited dev scoring specification; not modified by this documentation audit. Re-audited 2026-10-11: only the closed-reason text now documents AhmedML development intake; pressure fields, units and scoring definitions are unchanged.
-- [reference/ahmedml/evaluator.py](../reference/ahmedml/evaluator.py): Native pMean enters field accumulators directly; no fitted pressure offset.
+- [reference/ahmedml/evaluator.py](../reference/ahmedml/evaluator.py): Native pMean enters field accumulators directly; no fitted pressure offset. Re-audited 2026-10-12: only regional weighted summation changed to pairwise float64 sums; pressure units, reference, conversions and whole-field scoring are unchanged.
 - [reference/ahmedml/contract.py](../reference/ahmedml/contract.py): Surface and volume both require native CellData pMean.
 
 SHA-256 identities for these files and downloaded sources are recorded in the JSON inventory.

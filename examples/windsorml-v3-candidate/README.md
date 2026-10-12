@@ -1,5 +1,9 @@
 # WindsorML schema-v3 candidate workflow
 
+The [participant quickstart](../../benchmark-specs/windsorml/QUICKSTART.md) provides
+the complete resumable command sequence and pinned Linux container. The
+per-case commands below remain available for existing pipelines.
+
 Use the current upstream **`dev`** branch. This workflow packages genuine model
 inference for development review; official intake remains closed. Read the
 [data, split and physics contract](../../benchmark-specs/windsorml/README.md)

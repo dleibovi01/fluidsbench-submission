@@ -2,6 +2,9 @@
 
 # AhmedML: prepare a candidate result
 
+Start with the [resumable participant quickstart](QUICKSTART.md) for data/support
+preparation, whole-split evaluation, recovery and validated packaging.
+
 AhmedML remains a closed, owner-review candidate. Public submissions are not
 open. Genuine-inference development candidates can be submitted by PR to `dev`
 without maintainer registration. The benchmark definition is pinned to `neashton/ahmedml` revision
