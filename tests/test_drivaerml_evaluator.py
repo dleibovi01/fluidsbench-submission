@@ -75,7 +75,7 @@ def _volume_document(
             [-0.02, -0.02, 0.06],
         ]
     )
-    points = (centres[:, None, :] + local).reshape(-1, 3).astype("<f8")
+    points = (centres[:, None, :] + local).reshape(-1, 3).astype("<f4")
     return b"".join(
         [
             b'<VTKFile type="UnstructuredGrid" version="0.1" ',
@@ -89,7 +89,7 @@ def _volume_document(
             b'<DataArray type="Float32" Name="UMeanTrim" ',
             b'NumberOfComponents="3" format="binary">',
             _encoded(np.asarray(velocity, dtype="<f4").tobytes()),
-            b'</DataArray></CellData><Points><DataArray type="Float64" NumberOfComponents="3" format="binary">',
+            b'</DataArray></CellData><Points><DataArray type="Float32" NumberOfComponents="3" format="binary">',
             _encoded(points.tobytes()),
             b'</DataArray></Points><Cells><DataArray type="Int64" Name="connectivity" format="binary">',
             _encoded(np.arange(20, dtype="<i8").tobytes()),
