@@ -7,7 +7,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = Path(__file__).resolve().parent
+ROOT = SCRIPTS.parent
+# Running this file puts scripts/ first on sys.path, where this module would shadow
+# the installed AirfRANS library ("import airfrans"). Drop it before importing
+# anything; the per-case worker runs this same file, so it is covered too.
+sys.path[:] = [entry for entry in sys.path if Path(entry or ".").resolve() != SCRIPTS]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 

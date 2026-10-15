@@ -6,12 +6,12 @@ This is the one model-specific step before the AirfRANS pipeline
 adapt it to however your inference script stores its outputs. Everything
 else is generic.
 
-Each output ``<case_id>.npz`` holds ``velocity`` (N, 2), ``pressure`` (N,),
-``airfoil_pressure`` (M,), ``internal_points`` (N, 3) and ``airfoil_points``
-(M, 3), where N/M are the native ``_internal.vtu``/``_aerofoil.vtp`` point
-counts in native point order -- the same contract as the handover helper's
-``write_case``, and the input expected by
-``scripts/derive_airfrans_predicted_fields.py``.
+Each output ``<case_id>.npz`` holds exactly the four arrays that
+``scripts/airfrans.py validate-entry`` accepts: ``velocity`` (N, 2),
+``pressure`` (N,), ``internal_points`` (N, 3) and ``airfoil_points`` (M, 3),
+where N/M are the native ``_internal.vtu``/``_aerofoil.vtp`` point counts in
+native point order. Any other array is rejected; airfoil pressure, wall shear
+and forces are derived from these fields during evaluation.
 
 Predictions must already be denormalized and in native point order. This
 script checks that by comparing the model's coordinates to the native mesh
@@ -28,7 +28,6 @@ import json
 from pathlib import Path
 
 import numpy as np
-import pyvista as pv
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SPLIT_FILE = ROOT / "benchmark-specs" / "airfrans" / "splits" / "full.json"
@@ -46,16 +45,24 @@ def load_raw_prediction(raw_dir: Path, case_id: str) -> tuple[np.ndarray, np.nda
     return coords, fields[:, :2], fields[:, 2]
 
 
-def airfoil_indices(internal_points: np.ndarray, airfoil_points: np.ndarray) -> np.ndarray:
-    """Index of each native airfoil point within the native internal mesh (exact match)."""
-    lookup = {point.tobytes(): index for index, point in enumerate(internal_points)}
-    try:
-        return np.array([lookup[point.tobytes()] for point in airfoil_points], dtype=np.int64)
-    except KeyError as error:
-        raise ValueError("an airfoil point has no exactly matching internal-mesh point") from error
+def native_prediction_arrays(
+    velocity: np.ndarray,
+    pressure: np.ndarray,
+    internal_points: np.ndarray,
+    airfoil_points: np.ndarray,
+) -> dict[str, np.ndarray]:
+    """The exact array set ``validate-entry`` accepts; nothing else may be added."""
+    return {
+        "velocity": velocity,
+        "pressure": pressure,
+        "internal_points": internal_points,
+        "airfoil_points": airfoil_points,
+    }
 
 
 def pack_case(dataset_root: Path, raw_dir: Path, output_dir: Path, case_id: str, tolerance: float) -> None:
+    import pyvista as pv
+
     case_dir = dataset_root / case_id
     internal_points = np.asarray(pv.read(case_dir / f"{case_id}_internal.vtu").points, dtype=np.float64)
     airfoil_points = np.asarray(pv.read(case_dir / f"{case_id}_aerofoil.vtp").points, dtype=np.float64)
@@ -76,11 +83,7 @@ def pack_case(dataset_root: Path, raw_dir: Path, output_dir: Path, case_id: str,
 
     np.savez_compressed(
         output_dir / f"{case_id}.npz",
-        velocity=velocity,
-        pressure=pressure,
-        airfoil_pressure=pressure[airfoil_indices(internal_points, airfoil_points)],
-        internal_points=internal_points,
-        airfoil_points=airfoil_points,
+        **native_prediction_arrays(velocity, pressure, internal_points, airfoil_points),
     )
 
 
