@@ -20,13 +20,21 @@ For the commands below, either install `requirements-airfrans-participant.txt`
 into a Python 3.12 environment, or run them inside the container. For example:
 
 ```bash
-docker run --rm -v "$PWD:/work" -v /path/to/AirfRANS/Dataset:/data:ro \
+docker run --rm --user "$(id -u):$(id -g)" \
+  -v "$PWD:/work" -v /path/to/AirfRANS/Dataset:/data:ro \
   -w /work fluidsbench-airfrans scripts/airfrans.py --help
 ```
 
+`--user "$(id -u):$(id -g)"` runs the container as your own user. Without it
+the container runs as root, and on Linux every file it writes into your checkout
+(support, evaluation outputs, the final package) would belong to root and could
+only be changed or deleted with `sudo`.
+
 Inside the container use `/data` for `--dataset-root` and keep entries, support
-and outputs under `/work` so they persist. Public source/weight sharing is
-optional. Checkpoint hashes and truthful method/compute records are required.
+and outputs under `/work` so they persist. These working directories
+(`support/`, `work/`, `my-entry/`) are ignored by git; commit only the final
+`submissions/airfrans/<submission_id>/` directory. Public source/weight sharing
+is optional. Checkpoint hashes and truthful method/compute records are required.
 
 ## Prepare the reusable reference support
 
