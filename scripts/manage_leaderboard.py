@@ -25,6 +25,7 @@ if __package__:
         registered_ahmedml_pre_release_reference,
         registered_windsorml_pre_release_reference,
         registered_drivaerml_pre_release_reference,
+        registered_drivaernetplusplus_pre_release_reference,
         registered_airfrans_pre_release_reference,
         registered_hiliftaeroml_preview,
         schema_errors,
@@ -42,6 +43,7 @@ else:
         registered_ahmedml_pre_release_reference,
         registered_windsorml_pre_release_reference,
         registered_drivaerml_pre_release_reference,
+        registered_drivaernetplusplus_pre_release_reference,
         registered_airfrans_pre_release_reference,
         registered_hiliftaeroml_preview,
         schema_errors,
@@ -327,6 +329,9 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
         drivaerml_pre_release = registered_drivaerml_pre_release_reference(
             path, submission, manifest, root=ROOT
         )
+        drivaernetplusplus_pre_release = registered_drivaernetplusplus_pre_release_reference(
+            path, submission, manifest, root=ROOT
+        )
         airfrans_pre_release = registered_airfrans_pre_release_reference(
             path, submission, manifest, root=ROOT
         )
@@ -341,6 +346,7 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
             and ahmedml_pre_release is None
             and windsorml_pre_release is None
             and drivaerml_pre_release is None
+            and drivaernetplusplus_pre_release is None
             and airfrans_pre_release is None
             and development_fixture is None
             and submission.get("approval", {}).get("status") not in allowed_approval_statuses
@@ -356,6 +362,8 @@ def source_rows_by_dataset(manifest: dict[str, Any]) -> dict[str, list[dict[str,
             row["record_type"] = windsorml_pre_release["record_type"]
         elif drivaerml_pre_release is not None:
             row["record_type"] = drivaerml_pre_release["record_type"]
+        elif drivaernetplusplus_pre_release is not None:
+            row["record_type"] = drivaernetplusplus_pre_release["record_type"]
         elif airfrans_pre_release is not None:
             row["record_type"] = airfrans_pre_release["record_type"]
         elif development_fixture is not None:
@@ -582,6 +590,13 @@ def claim_eligibility(release_status: str, row: dict[str, Any]) -> dict[str, Any
             elif row.get("dataset_id") == "ahmedml":
                 reason = (
                     "Genuine AhmedML pre-release model-inference data retained "
+                    "to exercise the evaluator and dev leaderboard while "
+                    "submissions remain closed; it is not an official benchmark "
+                    "result or ranking claim."
+                )
+            elif row.get("dataset_id") == "drivaernetplusplus":
+                reason = (
+                    "Genuine DrivAerNet++ pre-release model-inference data retained "
                     "to exercise the evaluator and dev leaderboard while "
                     "submissions remain closed; it is not an official benchmark "
                     "result or ranking claim."
@@ -1494,7 +1509,7 @@ def main() -> int:
         intake_parser.add_argument(
             "--dev-intake",
             action="store_true",
-            help="validate unapproved AhmedML, WindsorML and DrivAerML development candidates without publishing them",
+            help="validate unapproved AhmedML, WindsorML, DrivAerML and DrivAerNet++ development candidates without publishing them",
         )
     approve_parser = subparsers.add_parser(
         "approve",

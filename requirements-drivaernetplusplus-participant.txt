@@ -1,0 +1,5 @@
+# Python 3.12.13. Evaluation and packaging need only jsonschema and numpy;
+# vtk is used by the maintainer support publisher, pinned in the same image.
+jsonschema==4.26.0
+numpy==2.2.6
+vtk==9.5.2

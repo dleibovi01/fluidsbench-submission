@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-10-12T06:07:43Z",
+  "generated_at": "2026-10-18T17:36:27Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -19,13 +19,13 @@
     "rounding": "decimal_half_up"
   },
   "data_release": {
-    "id": "prototype-dev-2026-09-29-b7435a38c0c1",
+    "id": "prototype-dev-2026-09-29-e0c9e7949e43",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-10-12T06:07:43Z",
+    "generated_at": "2026-10-18T17:36:27Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
-    "feed_sha256": "b7435a38c0c1451135a070b54f3d6118a43fc0a22a64ac91de92d99a41f2d1c9",
+    "feed_sha256": "e0c9e7949e43fd0bd1563c2efb0dcd53e584d2ea32102a072d64e00038aa091d",
     "canonical_url": "https://fluidsbench.org/",
     "archive_url": null,
     "release_view_url": null,
@@ -51,16 +51,16 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "daa6f72565218d0ff9594f4b653df6018b69449936ec3dcb76156076db6aa69d",
-      "record_count": 60,
+      "index_sha256": "ed0add0f5d0106ca189e9649ac4d1981c16eed5735f97c441458ad8719420dc1",
+      "record_count": 48,
       "eligible_record_count": 0
     },
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "f1a18410265f36f654b675a1e5abe4a3161c86af29a5abf5ccba3c6fa71eb23f",
-      "record_count": 61,
-      "series_count": 61
+      "sha256": "712069b9486ecd13f990e52daa7d30566db514f895083e9c3fa197b0b572b346",
+      "record_count": 49,
+      "series_count": 49
     }
   },
   "all_file": "leaderboard/all.json",
@@ -1947,25 +1947,21 @@
       "name": "DrivAerNet++",
       "slug": "drivaernetplusplus",
       "file": "leaderboard/datasets/drivaernetplusplus.json",
-      "submission_count": 12,
-      "updated_at": "2026-07-08",
+      "submission_count": 0,
+      "updated_at": null,
       "metrics": {
         "dimensional_fields": [
-          "surface_pressure",
-          "surface_wall_shear",
-          "volume_velocity",
-          "volume_pressure"
+          "surface_pressure"
         ],
-        "coefficient_errors": [
-          "c_drag",
-          "c_lift"
-        ]
+        "coefficient_errors": []
       },
       "splits": [
         {
-          "id": "default",
-          "name": "Default",
-          "description": "Default prototype benchmark split."
+          "id": "official_test",
+          "name": "Official test",
+          "case_set_id": "official_test",
+          "case_count": 1154,
+          "description": "Official DrivAerNet++ test split (1,154 designs, Mohamedelrefaie/DrivAerNet commit 8b8c053); every native surface point is scored."
         }
       ],
       "submission_format": "metric_values",
@@ -1996,7 +1992,7 @@
         {
           "id": "pressure_profiles",
           "title": "Pressure-coefficient profiles",
-          "description": "Reference and submitted pressure-coefficient traces at the selected station.",
+          "description": "Reference and predicted Cp = p/450 read by the evaluator at frozen native points; report-only.",
           "data_key": "cp_cuts",
           "x_keys": [
             "x",
@@ -2018,120 +2014,49 @@
             {
               "id": "upper_body_centerline",
               "label": "Upper-body centreline",
-              "x_label": "x/L along upper-body centreline",
-              "description": "FluidsBench trace through the annotated upper-body components.",
+              "x_label": "x/L along the upper-body centreline",
+              "description": "Evaluator-owned outer envelope of upward-facing centreline points (one native point per 0.005L bin).",
               "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://arxiv.org/abs/2406.09624"
+              "source_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/drivaernetplusplus/profiles/STATION_DEFINITIONS.md"
             },
             {
               "id": "underbody_centerline",
               "label": "Underbody centreline",
-              "x_label": "x/L along underbody centreline",
-              "description": "FluidsBench trace through the smooth or detailed underbody configuration.",
+              "x_label": "x/L along the underbody centreline",
+              "description": "Evaluator-owned outer envelope of downward-facing centreline points; on detailed-underbody designs it crosses open cavities by construction.",
               "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://arxiv.org/abs/2406.09624"
-            },
-            {
-              "id": "front_wheelhouse",
-              "label": "Front wheelhouse",
-              "x_label": "s/L along front-wheelhouse trace",
-              "description": "FluidsBench trace through the annotated front-wheel region.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://arxiv.org/abs/2406.09624"
+              "source_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/drivaernetplusplus/profiles/STATION_DEFINITIONS.md"
             },
             {
               "id": "rear_body_centerline",
               "label": "Rear-body centreline",
-              "x_label": "s/L along rear-body centreline",
-              "description": "FluidsBench trace through the fastback, notchback, or estateback rear surface.",
+              "x_label": "z/L up the rear base",
+              "description": "Evaluator-owned rearmost rear-facing centreline points in the rear 10% of the car (one native point per 0.005L bin).",
               "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://arxiv.org/abs/2406.09624"
+              "source_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/drivaernetplusplus/profiles/STATION_DEFINITIONS.md"
             }
           ],
-          "required": true,
+          "required": false,
           "required_series_fields": [
             "case_id",
             "station_id"
           ],
           "reverse_y": true
-        },
-        {
-          "id": "velocity_profiles",
-          "title": "Velocity profiles",
-          "description": "Reference and submitted normalized velocity traces at the selected station.",
-          "data_key": "velocity_profiles",
-          "x_keys": [
-            "x",
-            "offset",
-            "distance"
-          ],
-          "quantities": [
-            {
-              "id": "velocity_ratio",
-              "label": "Velocity",
-              "y_label": "Normalized velocity",
-              "y_keys": [
-                "u_over_u_inf",
-                "velocity_ratio"
-              ],
-              "unit": ""
-            }
-          ],
-          "stations": [
-            {
-              "id": "prototype_0_25l",
-              "label": "0.25L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 0.25 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
-            },
-            {
-              "id": "prototype_0_50l",
-              "label": "0.50L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 0.50 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
-            },
-            {
-              "id": "prototype_1_00l",
-              "label": "1.00L",
-              "x_label": "Profile coordinate",
-              "description": "Prototype velocity profile at 1.00 reference lengths.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.github.io/"
-            },
-            {
-              "id": "wake_x_0_75l",
-              "label": "Wake at 0.75L",
-              "x_label": "Profile coordinate",
-              "description": "Vehicle wake profile at x/L = 0.75.",
-              "basis": "fluidsbench_benchmark_trace",
-              "source_url": "https://fluidsbench.org/datasets/"
-            }
-          ],
-          "required": false,
-          "allow_unlisted_stations": true,
-          "required_series_fields": [
-            "case_id",
-            "station_id"
-          ]
         }
       ],
       "scoring_support": {
         "status": "owner_review_required",
         "submissions_open": false,
-        "closed_reason": "Submissions are currently closed.",
+        "closed_reason": "Official DrivAerNet++ submissions remain closed pending owner review of the candidate support. Genuine-inference candidates may be submitted to dev using --dev-intake.",
         "coverage_contract": {
-          "dimensionality": "3D surface pressure; other supports pending",
+          "dimensionality": "3D surface pressure (PointData p); other supports pending",
           "rule": "complete_original_public_release_entities",
           "inference_may_be_chunked": true,
           "chunk_metrics_must_use_additive_sufficient_statistics": true,
           "complete_case_and_entity_coverage_required": true,
           "full_prediction_artifact_required": false,
           "case_aggregation": "calculate_each_case_then_macro_average_cases_equally",
-          "public_ground_truth": "Ground-truth fields are in the public dataset release."
+          "public_ground_truth": "Ground-truth fields are in the public dataset release; the prepared reference pressure, dual-area weights and profile points are distributed through support-distribution-v1.json."
         },
         "public_supports": [
           {
@@ -2146,7 +2071,7 @@
             ],
             "units_note": "Owner statement (M. Elrefaie, 2026-08-18): PointData array p stores kinematic pressure in m^2/s^2 (static pressure divided by density) from incompressible OpenFOAM v11 simpleFoam with k-omega SST at U_inf = 30 m/s, rho = 1.184 kg/m^3, nu = 1.56e-5 m^2/s; the kinematic dynamic head 0.5*U_inf^2 is 450 m^2/s^2. Dimensional metrics may be enabled later under this convention.",
             "physical_weight": "mass_lumped_dual_surface_area",
-            "verification": "confirmed_by_official_loader",
+            "verification": "confirmed_on_all_official_test_files",
             "case_file_rule": "case ID <ID> maps to SurfacePressureVTK/DrivAer_<ID>.vtk (prepend DrivAer_, append .vtk)",
             "source_pins": {
               "dataverse_doi": "doi:10.7910/DVN/K7PWNJ",
@@ -2162,6 +2087,14 @@
               "splits_url": "https://github.com/Mohamedelrefaie/DrivAerNet/tree/main/train_val_test_splits",
               "benchmark_repository": "https://github.com/Mohamedelrefaie/CarBench",
               "benchmark_evaluation_status": "CarBench is the reference surface-pressure benchmark for this dataset. Its evaluation code and models are not yet public (the repository currently publishes the benchmark description only); the official split files will also be mirrored there after the CarBench release. CarBench reports equal-point (unweighted) relative L2 under three evaluation protocols, compared in Elrefaie et al. (journal revision) on a stratified 61-geometry subset of the held-out test split. 'Subsampled' scores a 10,000-point prediction on those same 10,000 points. 'Interpolated' upscales that 10,000-point prediction to every native node by radial-basis interpolation; in that study its degradation relative to subsampled is dominated by interpolation error rather than by resolution. 'Patchwise' predicts every native node directly (ceil(N/1e4) disjoint 10,000-point passes, or a single geometry encoding with chunked queries for models such as AB-UPT and TripNet that decode arbitrary query points); its relative L2 tracks the subsampled values closely and preserves the model ordering. These labels describe how CarBench produced its published numbers and do not by themselves decide eligibility here. Eligibility follows the repository submission rules: a submission must supply one prediction for every native point of all 1,154 official_test cases and report every prescribed metric, including the area-weighted primary and the equal-point diagnostic. Any interpolation, mapping or resampling used to reach those native points is permitted, must be declared in discretization.json, and carries its own error into the score. No published CarBench value is usable as an official row as it stands: the protocol comparison covers 61 geometries rather than the 1,154-case official_test split, and its values are equal-point only, so they correspond to this dataset's surface_pressure_equal_entity_rel_l2 diagnostic rather than to the area-weighted primary metric. AB-UPT is evaluated from an author-provided checkpoint rather than a CarBench-trained model."
+            },
+            "prepared_support": {
+              "status": "candidate",
+              "distribution_file": "support-distribution-v1.json",
+              "source_identity_file": "public-source-identity/drivaernetplusplus-public-source-identity-v1.json",
+              "case_count": 1154,
+              "rules_version": "drivaernetplusplus-native-support-rules-v1",
+              "note": "Every native PointData point of all 1,154 official_test files, reference pressure p exactly as stored (float32), and mass-lumped fan-triangulated dual-area weights (float64). Participants download this prepared support; they never regenerate it."
             }
           },
           {
@@ -2186,12 +2119,18 @@
           "chunk_rule": "sum_numerators_and_denominators_across_chunks_then_take_one_square_root"
         },
         "owner_decisions_required": [
-          "publish_immutable_scoring_support_release_with_manifest_hashes_and_dual_area_weights",
-          "run_publisher_on_official_dataverse_files_and_record_publication_validation",
-          "define_and_validate_profile_station_ground_truth_extraction",
+          "approve_candidate_support_release_and_publication_validation",
+          "confirm_profile_station_set_and_retirement_of_front_wheelhouse",
           "confirm_or_retire_pending_wall_shear_and_volume_supports",
           "record_final_owner_approval_with_pull_request"
-        ]
+        ],
+        "candidate_manifest": {
+          "status": "candidate",
+          "release_id": "drivaernetplusplus-native-pressure-support-v1-candidate",
+          "manifest_file": "scoring-support/drivaernetplusplus-native-pressure-support-v1-candidate/manifest.json",
+          "manifest_url": "https://github.com/neilashton/fluidsbench-submission/blob/dev/benchmark-specs/drivaernetplusplus/scoring-support/drivaernetplusplus-native-pressure-support-v1-candidate/manifest.json",
+          "manifest_sha256": "ea04603f238f9fffa65e1d00e69ec15ca19a5a03e1b8b869e756a511d39d280a"
+        }
       },
       "overall_score_composite": {
         "metric_id": "overall_score",
@@ -2206,7 +2145,7 @@
         ],
         "tolerance": 1e-06
       },
-      "revision_count": 12
+      "revision_count": 0
     },
     {
       "name": "HiLiftAeroML",
