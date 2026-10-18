@@ -663,7 +663,10 @@ def add_release_rankings(
         definition = definitions[metric_id]
         groups: dict[str, list[tuple[dict[str, Any], Decimal, float, str]]] = {}
         for row in rows_by_dataset.get(dataset["name"], []):
-            if row.get("record_type") == "development_fixture":
+            if row.get("record_type") == "development_fixture" or (
+                row.get("dataset_id") == "drivaernetplusplus"
+                and row.get("record_type") == "pre_release_reference"
+            ):
                 row.pop("ranking", None)
                 row["claim_eligibility"] = claim_eligibility(
                     release_status, row
