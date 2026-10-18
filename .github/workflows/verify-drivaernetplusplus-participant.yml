@@ -27,6 +27,19 @@ jobs:
       - run: docker run --rm fluidsbench-drivaernetplusplus --help
       - name: Plan the official support download without fetching it
         run: docker run --rm fluidsbench-drivaernetplusplus fetch-support --destination /support --dry-run
+      - name: Download one published archive into the persistent participant cache
+        run: |
+          mkdir -p support/drivaernetplusplus work
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$PWD:/work" -v "$PWD/support/drivaernetplusplus:/support" -w /work \
+            --entrypoint python fluidsbench-drivaernetplusplus \
+            scripts/check_drivaernetplusplus_container_cache.py fetch --support-root /support
+      - name: Score synthetic smoke predictions in a fresh container with the same cache
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$PWD:/work" -v "$PWD/support/drivaernetplusplus:/support" -w /work \
+            --entrypoint python fluidsbench-drivaernetplusplus \
+            scripts/check_drivaernetplusplus_container_cache.py check --support-root /support
       - name: Test pinned runtime, evaluator, recovery, packaging and dev intake
         run: >-
           docker run --rm -v "$PWD:/work" -w /work --entrypoint sh fluidsbench-drivaernetplusplus -c
