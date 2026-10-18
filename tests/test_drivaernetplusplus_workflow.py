@@ -219,7 +219,10 @@ class NativeRules(unittest.TestCase):
             points, offsets.astype(np.int64), np.concatenate(polygons).astype(np.int64), np.zeros(60, np.float32)
         )
         expected = _reference_loop()(points.astype(np.float64), [[int(v) for v in p] for p in polygons])
-        np.testing.assert_array_equal(native.mass_lumped_dual_areas(surface), expected)
+        # Identical operation order; vectorized norms may round differently by
+        # CPU (seen on CI runners), so allow round-off. Scoring never recomputes
+        # weights: participants read the published arrays.
+        np.testing.assert_allclose(native.mass_lumped_dual_areas(surface), expected, rtol=1e-13, atol=0)
 
     def test_components_follow_polygon_connectivity(self):
         polygons = [[0, 1, 2], [2, 3, 4], [5, 6, 7], [8, 9, 10, 11]]

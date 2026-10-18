@@ -20,9 +20,11 @@ NumPy 2.2.6, VTK 9.5.2).
 
 Checks:
 
-* **Weights.** The vectorized dual-area implementation is **bit-identical** to the
-  original reference loop in `tools/publish_scoring_support.py`, checked on real
-  designs from all three body types and on synthetic meshes in the tests. Total
+* **Weights.** On the build machine the vectorized dual-area implementation is
+  **bit-identical** to the original reference loop in `tools/publish_scoring_support.py`
+  for real designs from all three body types. On other CPUs the two agree to
+  floating-point round-off (2e-16 relative on CI runners). This is one reason the
+  weights are published rather than recomputed by participants. Total
   surface area of `E_S_WW_WM_075` is 29.9306 m², matching the 29.931 m² below.
 * **Truth.** `p` is stored exactly as published (float32). Every design reaches at
   least 449.2 m²/s² (stagnation ½U∞² = 450). 79 designs also contain 1–58 points
