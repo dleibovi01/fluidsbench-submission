@@ -18,7 +18,7 @@ coefficient conversions, and remaining source ambiguities. This audit documents 
 | HiLiftAeroML | [Participant guide](hiliftaeroml/PARTICIPANT_GUIDE.md) · [Specification](hiliftaeroml/submission-spec.json) | [Example](../examples/hiliftaeroml-v3-candidate/README.md) |
 | AirfRANS     | [Specification](airfrans/submission-spec.json)                                                              | —                                                          |
 | BlendedNet   | [Specification](blendednet/submission-spec.json)                                                            | —                                                          |
-| DrivAerNet++ | [Specification](drivaernetplusplus/submission-spec.json)                                                    | —                                                          |
+| DrivAerNet++ | [Quickstart](drivaernetplusplus/QUICKSTART.md) · [Specification](drivaernetplusplus/submission-spec.json)   | [Example](../examples/drivaernetplusplus-v3-candidate/README.md) |
 | Rotor37      | [Specification](rotor37/submission-spec.json)                                                               | —                                                          |
 | VKI-LS59     | [Specification](vki-ls59/submission-spec.json)                                                              | —                                                          |
 | WindsorML    | [Specification](windsorml/submission-spec.json)                                                             | —                                                          |

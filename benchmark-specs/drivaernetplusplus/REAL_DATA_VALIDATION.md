@@ -1,9 +1,60 @@
 # DrivAerNet++ real-data validation record
 
-Interim evidence that the pinned public release reproduces the agreed support. This is not
-the formal `publication_validation` receipt — that requires the official immutable release
-manifest — but it records the checks already run against a real released file, so they can
-be reproduced independently.
+Evidence that the pinned public release reproduces the agreed support. This is not
+the formal `publication_validation` receipt, which belongs to an owner-approved
+official release, but every check below can be reproduced from the public files.
+
+## Full official_test publisher run (2026-10-18)
+
+`scripts/publish_drivaernetplusplus_candidate_support.py` was run on all 1,154
+official_test files, in the pinned participant runtime (Linux, Python 3.12.13,
+NumPy 2.2.6, VTK 9.5.2).
+
+| Item | Value |
+|---|---|
+| Source files | 1,154 `SurfacePressureVTK` files, 30,155,164,093 bytes; per-file SHA-256 in `public-source-identity/` |
+| Provenance check | `E_S_WW_WM_075` is byte-identical to the file recorded below (SHA-256 `2fca6566…6c57e58`) |
+| Scored points | 517,881,608 (362,900–547,646 per design); every point has a positive dual area |
+| Support release | `drivaernetplusplus-native-pressure-support-v1-candidate`, 24 archives, 5,490,953,040 bytes |
+| Build | 48 workers, about 4 s per design; one design required the fragment rule below |
+
+Checks:
+
+* **Weights.** The vectorized dual-area implementation is **bit-identical** to the
+  original reference loop in `tools/publish_scoring_support.py`, checked on real
+  designs from all three body types and on synthetic meshes in the tests. Total
+  surface area of `E_S_WW_WM_075` is 29.9306 m², matching the 29.931 m² below.
+* **Truth.** `p` is stored exactly as published (float32). Every design reaches at
+  least 449.2 m²/s² (stagnation ½U∞² = 450). 79 designs also contain 1–58 points
+  outside the physical range, above 460 or below −4,500 m²/s² (see `README.md`).
+* **Topology.** 1,153 designs have exactly 5 connected components (body plus four
+  wheels). `F_D_WM_WW_3850` has a sixth, 7-point fragment near the roof edge
+  (x ≈ 1.04 m, y ≈ 0.62 m, z ≈ 1.28 m). It is scored, never profiled.
+* **Orientation.** After VTK's consistency and auto-orientation pass, every component
+  of at least 100 points has outward normals on average, in every design.
+* **Profiles.** All three stations extract on every design; see
+  `profiles/STATION_DEFINITIONS.md`.
+* **Scoring path.** For a real Transolver prediction on `E_S_WWC_WM_008`, the
+  evaluator (reading the downloaded archive) and an independent path (original VTK
+  file, original loop weights, `reference.metrics`) agree on every printed digit:
+  13.09847589542854 % area-weighted relative L2.
+* **Chain.** `validate_candidate_manifest_release` passes, and the case order of the
+  manifest chain equals `splits/official_test.json`.
+
+Reproduce:
+
+```bash
+python scripts/publish_drivaernetplusplus_candidate_support.py build \
+  --vtk-dir /data/dnpp/SurfacePressureVTK --work /scratch/dnpp-build --workers 48
+python scripts/publish_drivaernetplusplus_candidate_support.py package \
+  --work /scratch/dnpp-build --archive-dir /scratch/dnpp-archives
+```
+
+`support.npz` members are written with fixed ZIP metadata, so their SHA-256 depends
+only on array values and NumPy's `.npy` header format. The deflate stream can differ
+across zlib builds, which changes archive bytes but not the arrays.
+
+## Original single-file check (2026-09)
 
 ## Source file checked
 
@@ -60,9 +111,8 @@ storage.
   side classification, and defines the wheelhouse station from connected components rather
   than from an unspecified "wheel patch".
 
-## Still to validate on real data
+## Still open
 
-* Profile extraction for all four stations on representative cases from every configuration
-  family (`E_S_*`, `F_S_*`, `N_S_*`, `F_D_WM_WW_*`).
-* A full-split publisher run producing the official manifest, checksums, and the formal
+* Owner approval of the candidate support and, at release, the formal
   `publication_validation` receipt.
+* Hosting of the 24 support archives at the URLs in `support-distribution-v1.json`.

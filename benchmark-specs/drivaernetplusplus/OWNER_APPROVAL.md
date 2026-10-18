@@ -33,14 +33,39 @@ The scientific definition of the pressure-only v1 benchmark as it stands on this
 
 ## What is not yet approved
 
-Approval of the definition does **not** by itself open submissions. Still outstanding:
+Approval of the definition does **not** by itself open submissions. Status as of
+2026-10-18:
 
-1. the immutable scoring-support release (manifest, case-set indexes, checksums) produced by
-   a full-split publisher run, and its `publication_validation` receipt;
-2. validated profile extraction across all configuration families, and the resulting public
-   profile ground truth in the website repository;
-3. retirement of the prototype `default` split and the placeholder leaderboard rows;
-4. documentation of why 29 designs (8,150 referenced vs 8,121 in the split files and drag CSV)
-   are not assigned to any split. As of 2026-09-04 this is not stated publicly in either the
-   DrivAerNet or CarBench repositories; the owner will confirm the reason and it will be
-   recorded here and in the CarBench documentation.
+1. **Scoring-support release: candidate produced, approval outstanding.** The
+   full-split publisher run produced `drivaernetplusplus-native-pressure-support-v1-candidate`
+   (manifest, case index, chunks, 1,154 per-case records and 24 archives). See
+   `REAL_DATA_VALIDATION.md`. Still needed: hosting of the archives, owner approval,
+   and the `publication_validation` receipt at release.
+2. **Profiles: extraction validated, owner confirmation outstanding.** Three stations
+   are frozen and extract on all 1,154 designs (`profiles/STATION_DEFINITIONS.md`).
+   `front_wheelhouse` is proposed for retirement, which departs from "retaining all
+   four stations" above and needs the owner's confirmation. Profiles are report-only.
+   Public profile ground truth for the website repository is not yet exported.
+3. **Prototype split and placeholder rows: retired.** `splits/default.json` and the
+   twelve prototype leaderboard submissions were removed.
+4. **The 29 unassigned designs: reason outstanding.** The release has 8,150 pressure
+   files; 8,121 appear in the splits (5,819 train, 1,148 validation, 1,154 test) and
+   in `DrivAerNetPlusPlus_Cd_8k_Updated.csv`. The other 29 are in neither:
+
+   `E_S_WWC_WM_338`, `E_S_WWC_WM_619`, `E_S_WWC_WM_626`, `E_S_WWC_WM_630`,
+   `F_D_WM_WW_0132`, `F_D_WM_WW_0603`, `F_D_WM_WW_0797`, `F_D_WM_WW_1118`,
+   `F_D_WM_WW_1421`, `F_D_WM_WW_1556`, `F_D_WM_WW_1891`, `F_D_WM_WW_2353`,
+   `F_D_WM_WW_2459`, `F_D_WM_WW_3199`, `F_S_WWC_WM_264`, `F_S_WWS_WM_017`,
+   `F_S_WWS_WM_032`, `F_S_WWS_WM_041`, `F_S_WWS_WM_052`, `F_S_WWS_WM_061`,
+   `F_S_WWS_WM_491`, `F_S_WWS_WM_516`, `F_S_WWS_WM_518`, `F_S_WWS_WM_534`,
+   `F_S_WWS_WM_650`, `N_S_WWC_WM_496`, `N_S_WWC_WM_497`, `N_S_WWC_WM_518`,
+   `N_S_WWS_WM_176`.
+
+   Their pressure files look like the rest: 5 connected components, no non-finite
+   values, stagnation `p` of about 450 m²/s². The reason for their exclusion is not
+   visible in the pressure data, and the owner will record it here. The official test
+   list is used unchanged either way.
+5. **Localized pressure extremes: decision outstanding.** 768 points in 79 test designs
+   lie outside the physical pressure range (see `README.md`). The approved definition
+   scores every point as stored, and the candidate support does so. The owner should
+   confirm this, or define a masking rule before the support becomes official.

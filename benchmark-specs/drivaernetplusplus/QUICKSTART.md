@@ -1,0 +1,142 @@
+# DrivAerNet++ submissions on dev
+
+Use a current `dev` checkout. The participant command checks your copy of the
+public data, downloads the prepared scoring support, evaluates every native
+surface point of all 1,154 `official_test` designs with recovery, and produces a
+validated directory for a pull request to `dev`. Official submissions remain
+closed while the candidate support is under owner review.
+
+The benchmark is **pressure only**: predict the kinematic gauge pressure `p`
+(m²/s², freestream reference zero, so `Cp = p / 450`) at every point of each
+`SurfacePressureVTK` file. The primary metric is the area-weighted relative L2
+error, computed per design and averaged over designs; `overall_score =
+100 − surface_pressure_rel_l2`.
+
+## Install
+
+On Linux, use Python 3.12.13:
+
+```bash
+python3.12 -m venv .venv-dnpp
+.venv-dnpp/bin/pip install -r requirements-drivaernetplusplus-participant.txt
+source .venv-dnpp/bin/activate
+python scripts/drivaernetplusplus.py --help
+```
+
+This pins NumPy 2.2.6 (the evaluator's only numerical dependency) and
+jsonschema 4.26.0. A container is described at the end.
+
+## 1. Get and verify the public data
+
+Download the 15 family archives of `SurfacePressureVTK` from Harvard Dataverse
+[doi:10.7910/DVN/K7PWNJ](https://doi.org/10.7910/DVN/K7PWNJ) version 1.0
+(Globus-backed; about 210 GB) and extract them into one directory. The test
+designs span every family, so all archives are needed. Files named
+`<case_id>.vtk` or `DrivAer_<case_id>.vtk` are both accepted. Then check that
+your copy is byte-identical to the pinned release:
+
+```bash
+python scripts/drivaernetplusplus.py verify-data --dataset-root /data/dnpp/SurfacePressureVTK
+```
+
+Each of the 1,154 test files is checked against the SHA-256 in
+`public-source-identity/`. The data are CC BY-NC 4.0.
+
+## 2. Write one prediction per test design
+
+Copy `examples/drivaernetplusplus-v3-candidate/entry.template.json` to
+`my-entry/entry.json` and choose a submission ID (lowercase letters, digits and
+hyphens). The case list is fixed: the 1,154 IDs of `splits/official_test.json`.
+
+```text
+my-entry/
+  entry.json
+  cases/
+    E_S_WWC_WM_008/prediction.npz
+    ...
+```
+
+Each `prediction.npz` holds exactly one array, `p`: float32 or float64, shape
+`(N,)`, finite, **in the native PointData order** of that design's VTK file.
+There must be one value for every native point; nothing is interpolated or
+filled in by the evaluator. Any resampling your model needs to reach the native
+points is allowed, but it is part of your method, carries its own error, and
+must be declared in the discretization record (step 5). For example:
+
+```python
+import numpy as np, pyvista as pv
+mesh = pv.read(f"/data/dnpp/SurfacePressureVTK/{case_id}.vtk")
+p = model.predict(mesh.points)          # one value per mesh.points row
+np.savez(f"my-entry/cases/{case_id}/prediction.npz", p=p.astype(np.float32))
+```
+
+Check the entry before evaluating:
+
+```bash
+python scripts/drivaernetplusplus.py validate-entry my-entry
+```
+
+## 3. Download the prepared support
+
+The reference pressure, dual-area weights and profile points are prepared once
+by FluidsBench from the public files and published as 24 hash-pinned archives
+(about 5.5 GB). Do not regenerate them.
+
+```bash
+python scripts/drivaernetplusplus.py fetch-support --dry-run   # plan, no network
+python scripts/drivaernetplusplus.py fetch-support
+```
+
+Archives are cached under `~/.cache/fluidsbench/drivaernetplusplus/<manifest-sha>`
+(override with `--destination` or `FLUIDSBENCH_DRIVAERNETPLUSPLUS_SUPPORT_ROOT`).
+They are verified on download and every case is re-verified against the records
+in Git when it is scored. `--mirror DIR` installs archives from a local copy.
+
+## 4. Evaluate, with recovery
+
+```bash
+python scripts/drivaernetplusplus.py evaluate-entry my-entry --output work/my-result --resume
+```
+
+Every case is scored once and published atomically with a checkpoint bound to
+the evaluator, the support, and the exact bytes of its prediction. If the run
+stops, rerun the same command: verified cases are reused. A changed prediction
+or evaluator is refused; use a new output directory. The complete split is
+reduced into `work/my-result/evaluation/`. Inspect a case with:
+
+```bash
+python scripts/drivaernetplusplus.py report --evaluation-root work/my-result/evaluation \
+  --case-id E_S_WWC_WM_008 --output work/E_S_WWC_WM_008.html
+```
+
+Three report-only Cp profiles (upper-body and underbody centrelines, rear base)
+are read by the evaluator from your predictions at frozen native points; see
+`profiles/STATION_DEFINITIONS.md`. You do not submit profiles.
+
+## 5. Package and open a pull request to dev
+
+```bash
+python scripts/drivaernetplusplus.py discretization-template --output my-entry/discretization-cases.jsonl
+cp examples/drivaernetplusplus-v3-candidate/package-config.template.json my-entry/package-config.json
+# fill in every __REPLACE_ value; keep release_bindings unchanged
+python scripts/drivaernetplusplus.py package --evaluation-root work/my-result/evaluation \
+  --config my-entry/package-config.json --discretization-cases my-entry/discretization-cases.jsonl \
+  --checkpoint YOUR_CHECKPOINT_ID=/path/to/model.pt \
+  --output submissions/drivaernetplusplus/YOUR_SUBMISSION_ID
+python scripts/drivaernetplusplus.py verify-package submissions/drivaernetplusplus/YOUR_SUBMISSION_ID
+```
+
+The discretization template describes direct native-point inference (identity
+mapping); edit its inputs and outputs if your model used another representation.
+`package` refuses unresolved tokens, a config that does not match the evaluated
+entry, checkpoint bytes that differ from the methodology SHA-256, and any
+evaluation file changed after reduction. The pull request must add exactly that
+one directory and target `dev`.
+
+## Container
+
+```bash
+docker build -f Dockerfile.drivaernetplusplus -t fluidsbench-drivaernetplusplus .
+docker run --rm -v "$PWD:/work" -v /data:/data -w /work fluidsbench-drivaernetplusplus \
+  evaluate-entry my-entry --output work/my-result --resume
+```
