@@ -230,7 +230,7 @@
         },
         {
           "path": "benchmark-specs/drivaernetplusplus/OWNER_APPROVAL.md",
-          "sha256": "e0629fe78979196f0ade0d37e0ffd874552bef06ea658316b52702ce58e1cd20",
+          "sha256": "117717f32d5c9972a01ecd69bd8b1c277a09922b7f5f6c0910415f4ce964c453",
           "finding": "Existing scientific approval, unchanged; only the outstanding-items section was updated."
         },
         {
