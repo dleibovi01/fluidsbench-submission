@@ -18,7 +18,7 @@ the candidate support. Templates are in
 | Scored entities | Every native PointData point, exactly once, in native order (517,881,608 points in total; 362,900–547,646 per design) |
 | Primary metric | `surface_pressure_rel_l2`: area-weighted relative L2 (%), per design, macro-averaged over designs |
 | Diagnostics | Equal-point relative L2, area-weighted relative L1, equal-point R² pooled over all points |
-| Score | `overall_score = 100 − surface_pressure_rel_l2` |
+| Score | `overall_score = clip(100 − surface_pressure_rel_l2, 0, 100)` |
 
 Weights are mass-lumped dual areas: every polygon's fan-triangulated area is
 split equally among its vertices. They, the reference pressure (float32,

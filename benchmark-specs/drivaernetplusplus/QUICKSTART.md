@@ -10,7 +10,7 @@ The benchmark is **pressure only**: predict the kinematic gauge pressure `p`
 (m²/s², freestream reference zero, so `Cp = p / 450`) at every point of each
 `SurfacePressureVTK` file. The primary metric is the area-weighted relative L2
 error, computed per design and averaged over designs; `overall_score =
-100 − surface_pressure_rel_l2`.
+clip(100 − surface_pressure_rel_l2, 0, 100)`.
 
 ## Install
 
@@ -83,19 +83,23 @@ by FluidsBench from the public files and published as 24 hash-pinned archives
 (about 5.5 GB). Do not regenerate them.
 
 ```bash
-python scripts/drivaernetplusplus.py fetch-support --dry-run   # plan, no network
-python scripts/drivaernetplusplus.py fetch-support
+python scripts/drivaernetplusplus.py fetch-support --destination support/drivaernetplusplus --dry-run   # plan, no network
+python scripts/drivaernetplusplus.py fetch-support --destination support/drivaernetplusplus
 ```
 
-Archives are cached under `~/.cache/fluidsbench/drivaernetplusplus/<manifest-sha>`
-(override with `--destination` or `FLUIDSBENCH_DRIVAERNETPLUSPLUS_SUPPORT_ROOT`).
+These commands cache archives in `support/drivaernetplusplus`, which is also mounted
+by the container commands below. Always pass the same directory to evaluation
+with `--support-root`. Without an explicit directory, the default is
+`~/.cache/fluidsbench/drivaernetplusplus/<manifest-sha>`
+(or `FLUIDSBENCH_DRIVAERNETPLUSPLUS_SUPPORT_ROOT`).
 They are verified on download and every case is re-verified against the records
 in Git when it is scored. `--mirror DIR` installs archives from a local copy.
 
 ## 4. Evaluate, with recovery
 
 ```bash
-python scripts/drivaernetplusplus.py evaluate-entry my-entry --output work/my-result --resume
+python scripts/drivaernetplusplus.py evaluate-entry my-entry --output work/my-result \
+  --support-root support/drivaernetplusplus --resume
 ```
 
 Every case is scored once and published atomically with a checkpoint bound to
@@ -135,8 +139,23 @@ one directory and target `dev`.
 
 ## Container
 
+Run from the repository root. The persistent `support/drivaernetplusplus` directory
+is shared by download and evaluation, including across interrupted runs. Files are
+written as your user so the resulting package can be edited and committed on the host.
+
 ```bash
+mkdir -p support/drivaernetplusplus work
 docker build -f Dockerfile.drivaernetplusplus -t fluidsbench-drivaernetplusplus .
-docker run --rm -v "$PWD:/work" -v /data:/data -w /work fluidsbench-drivaernetplusplus \
-  evaluate-entry my-entry --output work/my-result --resume
+docker run --rm --user "$(id -u):$(id -g)" \
+  -v "$PWD:/work" -v "$PWD/support/drivaernetplusplus:/support" -w /work \
+  fluidsbench-drivaernetplusplus fetch-support --destination /support
+docker run --rm --user "$(id -u):$(id -g)" \
+  -v "$PWD:/work" -v "$PWD/support/drivaernetplusplus:/support" -w /work \
+  fluidsbench-drivaernetplusplus evaluate-entry my-entry \
+  --output work/my-result --support-root /support --resume
 ```
+
+Use the same mounts and working directory for `validate-entry`, `report`,
+`discretization-template`, `package` and `verify-package`. Mount any external data
+or model checkpoint directory at the path used in your command, for example
+`-v /data:/data:ro` for `verify-data --dataset-root /data/dnpp/SurfacePressureVTK`.
