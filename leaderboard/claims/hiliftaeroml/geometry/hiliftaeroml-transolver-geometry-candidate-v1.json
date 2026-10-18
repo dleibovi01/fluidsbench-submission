@@ -1,11 +1,11 @@
 {
   "$schema": "https://fluidsbench.org/schemas/releases/result-claim.schema.json",
   "schema_version": "1.0",
-  "claim_id": "prototype-dev-2026-09-29-e0c9e7949e43/hiliftaeroml/geometry/hiliftaeroml-transolver-geometry-candidate-v1",
+  "claim_id": "prototype-dev-2026-10-18-6ef4f652a467/hiliftaeroml/geometry/hiliftaeroml-transolver-geometry-candidate-v1",
   "release": {
-    "id": "prototype-dev-2026-09-29-e0c9e7949e43",
+    "id": "prototype-dev-2026-10-18-6ef4f652a467",
     "status": "prototype_dummy_data",
-    "published_at": "2026-10-18T17:36:27Z",
+    "published_at": "2026-10-18T20:25:03Z",
     "archive_url": null,
     "release_view_url": null
   },
@@ -54,8 +54,8 @@
   "bindings": {
     "result": {
       "feed_file": "leaderboard/all.json",
-      "feed_sha256": "e0c9e7949e43fd0bd1563c2efb0dcd53e584d2ea32102a072d64e00038aa091d",
-      "row_index": 25
+      "feed_sha256": "6ef4f652a46779522e82332b4241a3608e7b0f23d32bb7c365fecc2453198312",
+      "row_index": 26
     },
     "source_submission": {
       "path": "submissions/hiliftaeroml/hiliftaeroml-transolver-geometry-candidate-v1/submission.json",
