@@ -3,8 +3,12 @@
 # Dataset contracts
 
 **AirfRANS Full, Scarce and AoA extrapolation are open on `dev`.**
-Follow the [dev intake guide](airfrans/RELEASES.md) and submit PRs against `dev`. Reynolds and the other datasets remain closed.
-Choose a dataset below, then follow [SUBMITTING.md](../SUBMITTING.md).
+Follow the [dev intake guide](airfrans/RELEASES.md). **AhmedML, WindsorML, DrivAerML and DrivAerNet++ also accept
+development-candidate PRs targeting `dev`.** Their official support releases remain closed; reviewed candidates require separate
+maintainer registration before appearing as unranked dev references.
+
+Production `main` intake, AirfRANS Reynolds and new result intake for the remaining datasets, including HiLiftAeroML, remain
+closed. Choose a dataset below, then follow the [accepted routes and validation commands](../SUBMITTING.md).
 Each `submission-spec.json` defines the accepted splits, exact native fields and associations, support identities, metrics,
 units, weights, profiles, evaluator version, and lifecycle gates consumed by the validator.
 
@@ -34,9 +38,11 @@ The `scoring_support` statuses are:
 | `prototype`             | Format or evaluator development only.                                  |
 | `retired`               | Historical interpretation; closed to new results.                      |
 
-Read `closed_reason` whenever a dataset is closed. A separate pinned `candidate_manifest` can permit a non-approving local
-dry run. It does not substitute for an official, owner-approved, open release. Split indexes marked `official` bind ordered
-evaluation cases; `prototype_generated` indexes are dummy case lists and cannot support real submissions.
+Read `closed_reason` and the dataset guide for its official-release blockers. A pinned `candidate_manifest` permits a
+non-approving dry run; the four development-candidate routes listed above also accept PRs to `dev` using
+`--dev-intake --contributor-stage`. Candidate acceptance and registration do not open the official release.
+Split indexes marked `official` bind ordered evaluation cases; `prototype_generated` indexes are dummy case lists and cannot
+support real submissions.
 
 ## Shared requirements
 
