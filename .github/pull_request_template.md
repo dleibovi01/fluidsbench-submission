@@ -9,8 +9,10 @@
 
 ## Contributor checklist
 
-- [ ] **Dataset and release:** I used the exact dataset/split version recorded in `submission.json`; the exact scoring-support
-      release is official, owner-approved, and open for submissions, or this is an AhmedML development candidate targeting `dev`.
+- [ ] **Dataset and release:** This result PR targets `dev` and follows an
+      [accepted submission route](https://github.com/neilashton/fluidsbench-submission/blob/dev/SUBMITTING.md):
+      an open, owner-approved support release, or an AhmedML, WindsorML, DrivAerML or DrivAerNet++ development candidate.
+      I used the exact dataset/split version and scoring-support binding recorded in `submission.json`.
 - [ ] **Evaluation data:** I used public evaluation fields only for final evaluation, not fitting, selection, tuning, or
       preprocessing statistics. I disclosed any earlier contact below.
 - [ ] **Complete evaluation:** I followed the published equations and dataset-specific reductions. `metrics/cases.json` covers
@@ -31,8 +33,9 @@
 - [ ] **Publication rights:** I have the right to publish the submitted metadata, profiles, and result material under the
       declared open result-data licence.
 - [ ] **Validation and review:** I successfully ran
-      `python3 scripts/validate_submission.py --contributor-stage <submission-directory>` and retained the calculation evidence
-      that maintainers may request before approval. For AhmedML development candidates, I also passed `--dev-intake`.
+      `python3 scripts/validate_submission.py --dev-intake --contributor-stage <submission-directory>` and retained the
+      calculation evidence that maintainers may request. This command covers AirfRANS dev intake and all four accepted
+      development-candidate datasets.
 
 ## Optional metric verification
 
@@ -50,5 +53,6 @@ Disclose contact with evaluation data before the final evaluation run; it may ma
 
 <a id="maintainer-validation-follow-up-pull-request"></a>
 
-Maintainers: use the [separate approval checklist](../docs/MAINTAINERS.md#maintainer-validation-follow-up-checklist)
-in the maintainer-owned validation/approval PR.
+Maintainers: follow the [publication route for this dataset](https://github.com/neilashton/fluidsbench-submission/blob/dev/SUBMITTING.md#5-open-a-result-pr-when-the-dataset-is-accepting-submissions).
+AirfRANS uses validation and approval; development candidates use exact registration and feed regeneration in a separate
+maintainer PR to `dev`. Merging a contributor package alone does not publish a leaderboard row.
