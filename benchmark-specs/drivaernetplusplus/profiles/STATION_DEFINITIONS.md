@@ -1,7 +1,7 @@
-# DrivAerNet++ pressure-profile stations (v1 candidate, validated on official_test)
+# DrivAerNet++ pressure-profile stations (v1, validated on official_test)
 
-Status: **frozen extraction rules, validated on all 1,154 official_test designs; pending
-owner confirmation.** The rules are implemented in
+Status: **frozen extraction rules, validated on all 1,154 official_test designs, and
+confirmed by the dataset owner on 2026-10-18** (three stations; `front_wheelhouse` retired). The rules are implemented in
 [`reference/drivaernetplusplus/native.py`](../../../reference/drivaernetplusplus/native.py)
 (`extract_profile_stations`, rules version `drivaernetplusplus-native-support-rules-v1`).
 They run once, when the support is published, and freeze one ordered list of native

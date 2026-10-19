@@ -31,41 +31,46 @@ The scientific definition of the pressure-only v1 benchmark as it stands on this
 - retaining all four pressure-profile stations, subject to the extraction rules in
   `profiles/STATION_DEFINITIONS.md` being validated on real geometries.
 
+## Owner confirmations (2026-10-18)
+
+Recorded by Mohamed Elrefaie (DrivAerNet++ dataset author), answering the three
+questions raised on pull request #59 before official activation.
+
+1. **Profile stations.** `front_wheelhouse` is retired. The three validated
+   report-only stations (`upper_body_centerline`, `underbody_centerline`,
+   `rear_body_centerline`) are retained as defined in
+   `profiles/STATION_DEFINITIONS.md`. Reason: on the detailed-underbody family
+   (`F_D_WM_WW`, 595 of the 1,154 test designs) the wheel-centre plane misses the
+   arch liner, so the station cannot be defined consistently across the split.
+   Profiles do not enter the score.
+2. **Localized pressure extremes.** The 768 points in 79 test designs outside the
+   physical pressure range (see `README.md`) stay scored exactly as stored, with no
+   masking. Reasons: this is the approved definition (every native point of the
+   released file); the points are part of the public CFD release, and equivalent
+   artefacts occur in 625 of the 8,121 published designs (7.7%), training designs
+   included; and their split-level effect is small (0.26 points of mean area-weighted
+   relative L2 for the dev Transolver result). Their per-design effect is documented
+   so results can be interpreted.
+3. **The 29 unassigned designs.** They were removed because one or more of the other
+   released modalities (3D meshes, wall shear stress, full CFD fields, or annotations)
+   was missing or incomplete for them. DrivAerNet++ splits and the drag table cover
+   only designs with every modality. The repository history agrees: 28 of the 29 were
+   in the June 2024 splits (20 train, 7 validation, 1 test) and were removed in the
+   January 2025 revision that introduced the current splits and
+   `DrivAerNetPlusPlus_Cd_8k_Updated.csv`. `F_S_WWS_WM_516` was never assigned. Their
+   pressure fields are unremarkable: 5 connected components, finite values, normal
+   stagnation pressure, and pressure drag within 2.2 standard deviations of their
+   family. The official test list is used unchanged.
+
 ## What is not yet approved
 
-Approval of the definition does **not** by itself open submissions. Status as of
-2026-10-18:
+Approval of the definition and the confirmations above do **not** by themselves open
+submissions. Remaining for official activation:
 
-1. **Scoring-support release: candidate produced, approval outstanding.** The
-   full-split publisher run produced `drivaernetplusplus-native-pressure-support-v1-candidate`
-   (manifest, case index, chunks, 1,154 per-case records and 24 archives). See
-   `REAL_DATA_VALIDATION.md`. Still needed: hosting of the archives, owner approval,
-   and the `publication_validation` receipt at release.
-2. **Profiles: extraction validated, owner confirmation outstanding.** Three stations
-   are frozen and extract on all 1,154 designs (`profiles/STATION_DEFINITIONS.md`).
-   `front_wheelhouse` is proposed for retirement, which departs from "retaining all
-   four stations" above and needs the owner's confirmation. Profiles are report-only.
-   Public profile ground truth for the website repository is not yet exported.
-3. **Prototype split and placeholder rows: retired.** `splits/default.json` and the
-   twelve prototype leaderboard submissions were removed.
-4. **The 29 unassigned designs: reason outstanding.** The release has 8,150 pressure
-   files; 8,121 appear in the splits (5,819 train, 1,148 validation, 1,154 test) and
-   in `DrivAerNetPlusPlus_Cd_8k_Updated.csv`. The other 29 are in neither:
-
-   `E_S_WWC_WM_338`, `E_S_WWC_WM_619`, `E_S_WWC_WM_626`, `E_S_WWC_WM_630`,
-   `F_D_WM_WW_0132`, `F_D_WM_WW_0603`, `F_D_WM_WW_0797`, `F_D_WM_WW_1118`,
-   `F_D_WM_WW_1421`, `F_D_WM_WW_1556`, `F_D_WM_WW_1891`, `F_D_WM_WW_2353`,
-   `F_D_WM_WW_2459`, `F_D_WM_WW_3199`, `F_S_WWC_WM_264`, `F_S_WWS_WM_017`,
-   `F_S_WWS_WM_032`, `F_S_WWS_WM_041`, `F_S_WWS_WM_052`, `F_S_WWS_WM_061`,
-   `F_S_WWS_WM_491`, `F_S_WWS_WM_516`, `F_S_WWS_WM_518`, `F_S_WWS_WM_534`,
-   `F_S_WWS_WM_650`, `N_S_WWC_WM_496`, `N_S_WWC_WM_497`, `N_S_WWC_WM_518`,
-   `N_S_WWS_WM_176`.
-
-   Their pressure files look like the rest: 5 connected components, no non-finite
-   values, stagnation `p` of about 450 m²/s². The reason for their exclusion is not
-   visible in the pressure data, and the owner will record it here. The official test
-   list is used unchanged either way.
-5. **Localized pressure extremes: decision outstanding.** 768 points in 79 test designs
-   lie outside the physical pressure range (see `README.md`). The approved definition
-   scores every point as stored, and the candidate support does so. The owner should
-   confirm this, or define a masking rule before the support becomes official.
+1. **Scoring-support release.** `drivaernetplusplus-native-pressure-support-v1-candidate`
+   (manifest, case index, chunks, 1,154 per-case records) is complete, and its 24
+   archives are hosted on the `drivaernetplusplus-support-v1-dev` release with
+   GitHub-reported SHA-256 values matching `support-distribution-v1.json`. Still
+   needed: approval of the release and its `publication_validation` receipt.
+2. **Public profile ground truth** for the website repository (native Cp display).
+3. Prototype split and placeholder rows: retired.

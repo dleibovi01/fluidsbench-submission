@@ -230,8 +230,8 @@
         },
         {
           "path": "benchmark-specs/drivaernetplusplus/OWNER_APPROVAL.md",
-          "sha256": "117717f32d5c9972a01ecd69bd8b1c277a09922b7f5f6c0910415f4ce964c453",
-          "finding": "Existing scientific approval, unchanged; only the outstanding-items section was updated."
+          "sha256": "1344069d7a644b6508fcf13bed55079bc3698fa644bf457de1b7083abc770ad7",
+          "finding": "Existing scientific approval, unchanged; the 2026-10-18 owner confirmations keep every native p scored as stored and do not change the pressure convention."
         },
         {
           "path": "reference/drivaernetplusplus/evaluator.py",

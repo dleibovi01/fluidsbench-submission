@@ -158,7 +158,7 @@ The author README calls the surface modality Cp, but its loader reads p directly
 <summary>Evaluator and specification trace</summary>
 
 - [benchmark-specs/drivaernetplusplus/submission-spec.json](../benchmark-specs/drivaernetplusplus/submission-spec.json): Candidate dev scoring specification. Re-audited 2026-10-18 after the move to candidate_native_support: the p units note and the pressure convention are unchanged.
-- [benchmark-specs/drivaernetplusplus/OWNER_APPROVAL.md](../benchmark-specs/drivaernetplusplus/OWNER_APPROVAL.md): Existing scientific approval, unchanged; only the outstanding-items section was updated.
+- [benchmark-specs/drivaernetplusplus/OWNER_APPROVAL.md](../benchmark-specs/drivaernetplusplus/OWNER_APPROVAL.md): Existing scientific approval, unchanged; the 2026-10-18 owner confirmations keep every native p scored as stored and do not change the pressure convention.
 - [reference/drivaernetplusplus/evaluator.py](../reference/drivaernetplusplus/evaluator.py): Scores native p exactly as submitted against stored p, with no fitted offset; profile Cp is p / 450.
 
 SHA-256 identities for these files and downloaded sources are recorded in the JSON inventory.

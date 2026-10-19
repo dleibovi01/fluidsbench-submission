@@ -37,7 +37,7 @@ submitted predictions at frozen native points: `upper_body_centerline`,
 `underbody_centerline` and `rear_body_centerline`. Their extraction rules and
 full-split validation are in
 [`profiles/STATION_DEFINITIONS.md`](profiles/STATION_DEFINITIONS.md). The
-proposed `front_wheelhouse` station is retired. Profiles do not enter the
+`front_wheelhouse` station is retired (owner-confirmed). Profiles do not enter the
 score.
 
 ## Known properties of the public data
@@ -53,12 +53,12 @@ which points are scored.
   area-weighted relative L2 by 0.26 points (14.77% scored as stored, 14.51% if
   excluded). In 16 designs, however, they carry more than half of that model's
   squared error (`F_D_WM_WW_1119`: 60.8% versus 17.6%). The approved definition
-  scores them as stored; whether to mask them is an open owner decision.
+  scores them as stored, confirmed by the dataset owner on 2026-10-18.
 * **Detached fragment.** `F_D_WM_WW_3850` has a sixth connected component of
   7 points near the roof edge. It is scored like every other point.
 * **Unassigned designs.** The release has 8,150 pressure files; 29 designs are
-  in no split and absent from the drag-coefficient table. See
-  [`OWNER_APPROVAL.md`](OWNER_APPROVAL.md).
+  in no split and absent from the drag-coefficient table because other released
+  modalities were incomplete for them. See [`OWNER_APPROVAL.md`](OWNER_APPROVAL.md).
 
 ## Status
 
