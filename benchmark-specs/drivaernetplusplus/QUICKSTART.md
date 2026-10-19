@@ -3,8 +3,10 @@
 Use a current `dev` checkout. The participant command checks your copy of the
 public data, downloads the prepared scoring support, evaluates every native
 surface point of all 1,154 `official_test` designs with recovery, and produces a
-validated directory for a pull request to `dev`. Official submissions remain
-closed while the candidate support is under owner review.
+validated directory for a pull request to `dev`. The dataset owner's scientific
+approval and latest confirmations are recorded in [OWNER_APPROVAL.md](OWNER_APPROVAL.md).
+Development candidate PRs are accepted; official intake remains closed pending
+the separate formal release activation.
 
 The benchmark is **pressure only**: predict the kinematic gauge pressure `p`
 (m²/s², freestream reference zero, so `Cp = p / 450`) at every point of each
@@ -23,8 +25,9 @@ source .venv-dnpp/bin/activate
 python scripts/drivaernetplusplus.py --help
 ```
 
-This pins NumPy 2.2.6 (the evaluator's only numerical dependency) and
-jsonschema 4.26.0. A container is described at the end.
+This pins NumPy 2.2.6 (the evaluator's only numerical dependency),
+jsonschema 4.26.0 and VTK 9.5.2. The prediction example below uses this installed
+VTK reader. A container is described at the end.
 
 ## 1. Get and verify the public data
 
@@ -61,13 +64,28 @@ Each `prediction.npz` holds exactly one array, `p`: float32 or float64, shape
 There must be one value for every native point; nothing is interpolated or
 filled in by the evaluator. Any resampling your model needs to reach the native
 points is allowed, but it is part of your method, carries its own error, and
-must be declared in the discretization record (step 5). For example:
+must be declared in the discretization record (step 5). The example below reads
+the native points with VTK; supply your own loaded `model` and run it for each
+`case_id` in the test list:
 
 ```python
-import numpy as np, pyvista as pv
-mesh = pv.read(f"/data/dnpp/SurfacePressureVTK/{case_id}.vtk")
-p = model.predict(mesh.points)          # one value per mesh.points row
-np.savez(f"my-entry/cases/{case_id}/prediction.npz", p=p.astype(np.float32))
+from pathlib import Path
+
+import numpy as np
+from vtkmodules.util.numpy_support import vtk_to_numpy
+from vtkmodules.vtkIOLegacy import vtkPolyDataReader
+
+source = Path("/data/dnpp/SurfacePressureVTK") / f"{case_id}.vtk"
+if not source.is_file():
+    source = source.with_name(f"DrivAer_{case_id}.vtk")
+reader = vtkPolyDataReader()
+reader.SetFileName(str(source))
+reader.Update()
+points = vtk_to_numpy(reader.GetOutput().GetPoints().GetData())
+p = np.asarray(model.predict(points), dtype=np.float32)  # one value per native point
+output = Path("my-entry/cases") / case_id / "prediction.npz"
+output.parent.mkdir(parents=True, exist_ok=True)
+np.savez(output, p=p)
 ```
 
 Check the entry before evaluating:
@@ -136,6 +154,25 @@ mapping); edit its inputs and outputs if your model used another representation.
 entry, checkpoint bytes that differ from the methodology SHA-256, and any
 evaluation file changed after reduction. The pull request must add exactly that
 one directory and target `dev`.
+
+## 6. Review and display on the dev leaderboard
+
+CI validates development candidate PRs targeting `dev`. A maintainer reviews
+the package and merges it while it is still unapproved and absent from the
+leaderboard. The participant's PR contains only the generated submission
+directory; registration and feed updates are maintainer responsibilities.
+
+To display the reviewed result, a maintainer follows the
+[DrivAerNet++ registration procedure](../../docs/MAINTAINERS.md#receive-and-display-a-drivaernet-development-candidate)
+in a separate PR to `dev`: register the exact package, regenerate the feeds,
+and check them. After that PR is merged, the
+[dev leaderboard](https://fluidsbench.org/review-x4n7q9m2vk6p/committee-leaderboard/?dataset=drivaernetplusplus)
+reads the updated feed. Merging the participant's PR alone does not publish a row.
+
+The displayed result is an **unranked pre-release reference**, without official
+approval, citation or promotion eligibility. The maintainer checks the new row,
+its score and its three native Cp profile comparisons. This publication step
+does not require manual edits to the participant's generated package.
 
 ## Container
 

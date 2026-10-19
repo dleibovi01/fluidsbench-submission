@@ -3,8 +3,9 @@
 Start with the [resumable participant quickstart](QUICKSTART.md) for data
 verification, support download, whole-split evaluation, recovery and validated
 packaging. DrivAerNet++ accepts complete schema-v3 **development candidate PRs
-targeting `dev`**; official submissions remain closed pending owner review of
-the candidate support. Templates are in
+targeting `dev`**. The dataset owner's scientific approval and latest confirmations
+are recorded in [OWNER_APPROVAL.md](OWNER_APPROVAL.md); official intake remains
+closed pending the separate formal release activation. Templates are in
 [`examples/drivaernetplusplus-v3-candidate`](../../examples/drivaernetplusplus-v3-candidate/README.md).
 
 ## Data and scoring contract
@@ -63,6 +64,6 @@ which points are scored.
 ## Status
 
 See [`OWNER_APPROVAL.md`](OWNER_APPROVAL.md) for the approved scientific
-definition and the decisions still open, and
+definition, owner confirmations and remaining formal release-activation steps, and
 [`REAL_DATA_VALIDATION.md`](REAL_DATA_VALIDATION.md) for the full-split
 publisher run.

@@ -28,6 +28,11 @@ citation eligibility, or promotion eligibility.
 
 ## Review and approve a result
 
+For DrivAerNet++ development candidates, use the separate
+[review and registration procedure below](#receive-and-display-a-drivaernet-development-candidate)
+to publish an unranked dev reference. The approval workflow in this section
+requires an official support release and does not replace candidate registration.
+
 1. Commit exactly one new submission directory. Do not modify schemas, specifications, validators, workflows, generated feeds, or
    existing submissions in the same pull request. Use a new globally unique `<series-id>-vN` submission ID and the revision rules
    in the [result reference](RESULT_FORMAT.md#result-versions).
@@ -76,6 +81,42 @@ Local repository checks and builds on `dev` must include `--dev-intake` when unr
 AhmedML candidates are present. They remain absent from feeds. Optional publication of a
 reviewed `pre_release_reference` still uses the existing exact registration procedure in
 the [AhmedML guide](../examples/ahmedml-v3-candidate/README.md#optional-dev-only-pre-release-registration).
+
+## Receive and display a DrivAerNet++ development candidate
+
+Participants follow the [DrivAerNet++ quickstart](../benchmark-specs/drivaernetplusplus/QUICKSTART.md)
+and open a PR targeting `dev` containing exactly one new submission directory.
+CI uses `--dev-intake` to check the complete candidate package without requiring
+registration. Review the scientific provenance, inference attestation,
+methodology, checkpoint declarations and complete test-case/profile coverage,
+then merge the package. It remains unapproved and absent from the feed.
+
+To display the reviewed result, create a maintainer branch from the updated
+`dev` checkout. Substitute the package's actual submission ID below. First
+inspect the proposed exact binding; the first command changes no files. Then
+register that binding and rebuild and check the feeds:
+
+```bash
+python scripts/register_drivaernetplusplus_pre_release.py \
+  submissions/drivaernetplusplus/YOUR_SUBMISSION_ID/submission.json
+python scripts/register_drivaernetplusplus_pre_release.py --register \
+  submissions/drivaernetplusplus/YOUR_SUBMISSION_ID/submission.json
+python scripts/manage_leaderboard.py build --dev-intake
+python scripts/manage_leaderboard.py check --dev-intake
+```
+
+Commit `benchmark-specs/drivaernetplusplus/pre-release-reference-registry.json`
+and the generated feeds in a separate maintainer PR targeting `dev`. Registration
+binds the exact package bytes; changes to the submitted package invalidate that
+binding. No manual edits to the generated participant package are needed.
+
+After the maintainer PR is merged, the
+[dev leaderboard](https://fluidsbench.org/review-x4n7q9m2vk6p/committee-leaderboard/?dataset=drivaernetplusplus)
+reads the updated submission `dev` feed. Verify the submission ID, overall score,
+1,154-case coverage and three native Cp profile comparisons per case. The row
+is an unranked `pre_release_reference`, without official approval, citation or
+promotion eligibility. Official intake remains closed until the separate
+[formal release activation](../benchmark-specs/drivaernetplusplus/OWNER_APPROVAL.md#release-preparation-and-activation).
 
 ## Activate a dataset support release
 
