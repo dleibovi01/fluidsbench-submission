@@ -15,7 +15,7 @@ the candidate support. Templates are in
 | Source identity | [`public-source-identity/`](public-source-identity/drivaernetplusplus-public-source-identity-v1.json): SHA-256, size and point count of all 1,154 test files |
 | Split | [`splits/official_test.json`](splits/official_test.json): the 1,154-design test list of `Mohamedelrefaie/DrivAerNet` commit `8b8c053`, unchanged |
 | Predicted field | `p`, kinematic gauge pressure (m²/s²), freestream reference zero; `Cp = p / 450` at U∞ = 30 m/s |
-| Scored entities | Every native PointData point, exactly once, in native order (517,881,608 points in total; 362,900–547,646 per design) |
+| Scored entities | Every native PointData point, exactly once, in native order (516,881,608 points in total; 362,900–547,646 per design) |
 | Primary metric | `surface_pressure_rel_l2`: area-weighted relative L2 (%), per design, macro-averaged over designs |
 | Diagnostics | Equal-point relative L2, area-weighted relative L1, equal-point R² pooled over all points |
 | Score | `overall_score = clip(100 − surface_pressure_rel_l2, 0, 100)` |

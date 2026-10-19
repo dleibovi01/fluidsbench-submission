@@ -27,14 +27,17 @@ The scientific definition of the pressure-only v1 benchmark as it stands on this
 - the official evaluation split: the 1,154-case test list, ordered lexicographically;
 - the scoring support: every native surface point exactly once, with mass-lumped dual-area
   weights, and the area-weighted relative L2 as the primary ranking metric;
-- `overall_score = 100 − surface_pressure_rel_l2` for v1;
-- retaining all four pressure-profile stations, subject to the extraction rules in
-  `profiles/STATION_DEFINITIONS.md` being validated on real geometries.
+- `overall_score = clip(100 − surface_pressure_rel_l2, 0, 100)` for v1;
+- the three report-only pressure-profile stations confirmed below, with extraction
+  rules in `profiles/STATION_DEFINITIONS.md`. This supersedes the initial conditional
+  proposal to retain four stations.
 
 ## Owner confirmations (2026-10-18)
 
 Recorded by Mohamed Elrefaie (DrivAerNet++ dataset author), answering the three
-questions raised on pull request #59 before official activation.
+questions raised on pull request #59 before official activation. The confirmations
+are recorded in [PR #61](https://github.com/neilashton/fluidsbench-submission/pull/61)
+and the [owner's response](https://github.com/neilashton/fluidsbench-submission/pull/59#issuecomment-6256964063).
 
 1. **Profile stations.** `front_wheelhouse` is retired. The three validated
    report-only stations (`upper_body_centerline`, `underbody_centerline`,
@@ -62,15 +65,27 @@ questions raised on pull request #59 before official activation.
    stagnation pressure, and pressure drag within 2.2 standard deviations of their
    family. The official test list is used unchanged.
 
-## What is not yet approved
+## Release preparation and activation
 
 Approval of the definition and the confirmations above do **not** by themselves open
-submissions. Remaining for official activation:
+submissions. The following evidence is complete on dev:
 
 1. **Scoring-support release.** `drivaernetplusplus-native-pressure-support-v1-candidate`
    (manifest, case index, chunks, 1,154 per-case records) is complete, and its 24
    archives are hosted on the `drivaernetplusplus-support-v1-dev` release with
-   GitHub-reported SHA-256 values matching `support-distribution-v1.json`. Still
-   needed: approval of the release and its `publication_validation` receipt.
-2. **Public profile ground truth** for the website repository (native Cp display).
-3. Prototype split and placeholder rows: retired.
+   GitHub-reported SHA-256 values matching `support-distribution-v1.json`. Also
+   prepared: the [approval record](releases/drivaernetplusplus-v1-preparation/approval-record.json)
+   and [full publication-validation evidence](releases/drivaernetplusplus-v1-preparation/publication-validation.json).
+   These bind the candidate release without making it official.
+2. **Public profile ground truth: deployed.** All 1,154 cases and 3,462 native Cp
+   traces are available on the dev review website, merged in
+   [website PR #69](https://github.com/neilashton/fluidsbench/pull/69). Frozen native
+   point IDs and coordinates match the submitted profiles; no interpolation is used.
+3. **Prototype split and placeholder rows: retired.** The genuine Transolver result
+   is registered as an unranked dev reference.
+
+Remaining work is the separate official-release transition: select the final release
+identities, bind the approval and validation receipt to that exact manifest, update
+the evaluator/participant contracts and website together, then explicitly open intake.
+Wall shear and volume remain outside this pressure-only v1 release. See the
+[release preparation notes](releases/drivaernetplusplus-v1-preparation/README.md).
