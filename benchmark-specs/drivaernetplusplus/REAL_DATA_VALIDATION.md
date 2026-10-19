@@ -14,7 +14,7 @@ NumPy 2.2.6, VTK 9.5.2).
 |---|---|
 | Source files | 1,154 `SurfacePressureVTK` files, 30,155,164,093 bytes; per-file SHA-256 in `public-source-identity/` |
 | Provenance check | `E_S_WW_WM_075` is byte-identical to the file recorded below (SHA-256 `2fca6566…6c57e58`) |
-| Scored points | 517,881,608 (362,900–547,646 per design); every point has a positive dual area |
+| Scored points | 516,881,608 (362,900–547,646 per design); every point has a positive dual area |
 | Support release | `drivaernetplusplus-native-pressure-support-v1-candidate`, 24 archives, 5,490,953,040 bytes |
 | Build | 48 workers, about 4 s per design; one design required the fragment rule below |
 
@@ -113,8 +113,17 @@ storage.
   side classification, and defines the wheelhouse station from connected components rather
   than from an unspecified "wheel patch".
 
-## Still open
+## Release preparation (2026-10-19)
 
-* Owner approval of the candidate support and, at release, the formal
-  `publication_validation` receipt.
-* Hosting of the 24 support archives at the URLs in `support-distribution-v1.json`.
+The 24 archives are hosted at the URLs in `support-distribution-v1.json`. The
+owner's scientific confirmations and release-readiness response are recorded in
+`OWNER_APPROVAL.md`. Native profile ground truth is deployed on the dev website.
+
+`tools/validate_publication.py` revalidates all archived NPZ arrays against their
+retained records, source identities and the manifest chain, and records the
+normalized support digest in
+`releases/drivaernetplusplus-v1-preparation/publication-validation.json`. This is
+full candidate-artifact validation, without rerunning source-mesh extraction or
+model inference. The receipt stays separate from the active candidate specification.
+Official activation still requires a receipt bound to the final official manifest;
+the current evaluation data, dev ranking status and closed intake are unchanged.

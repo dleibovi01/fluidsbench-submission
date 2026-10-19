@@ -15,7 +15,7 @@ the candidate support. Templates are in
 | Source identity | [`public-source-identity/`](public-source-identity/drivaernetplusplus-public-source-identity-v1.json): SHA-256, size and point count of all 1,154 test files |
 | Split | [`splits/official_test.json`](splits/official_test.json): the 1,154-design test list of `Mohamedelrefaie/DrivAerNet` commit `8b8c053`, unchanged |
 | Predicted field | `p`, kinematic gauge pressure (m²/s²), freestream reference zero; `Cp = p / 450` at U∞ = 30 m/s |
-| Scored entities | Every native PointData point, exactly once, in native order (517,881,608 points in total; 362,900–547,646 per design) |
+| Scored entities | Every native PointData point, exactly once, in native order (516,881,608 points in total; 362,900–547,646 per design) |
 | Primary metric | `surface_pressure_rel_l2`: area-weighted relative L2 (%), per design, macro-averaged over designs |
 | Diagnostics | Equal-point relative L2, area-weighted relative L1, equal-point R² pooled over all points |
 | Score | `overall_score = clip(100 − surface_pressure_rel_l2, 0, 100)` |
@@ -37,7 +37,7 @@ submitted predictions at frozen native points: `upper_body_centerline`,
 `underbody_centerline` and `rear_body_centerline`. Their extraction rules and
 full-split validation are in
 [`profiles/STATION_DEFINITIONS.md`](profiles/STATION_DEFINITIONS.md). The
-proposed `front_wheelhouse` station is retired. Profiles do not enter the
+`front_wheelhouse` station is retired (owner-confirmed). Profiles do not enter the
 score.
 
 ## Known properties of the public data
@@ -53,12 +53,12 @@ which points are scored.
   area-weighted relative L2 by 0.26 points (14.77% scored as stored, 14.51% if
   excluded). In 16 designs, however, they carry more than half of that model's
   squared error (`F_D_WM_WW_1119`: 60.8% versus 17.6%). The approved definition
-  scores them as stored; whether to mask them is an open owner decision.
+  scores them as stored, confirmed by the dataset owner on 2026-10-18.
 * **Detached fragment.** `F_D_WM_WW_3850` has a sixth connected component of
   7 points near the roof edge. It is scored like every other point.
 * **Unassigned designs.** The release has 8,150 pressure files; 29 designs are
-  in no split and absent from the drag-coefficient table. See
-  [`OWNER_APPROVAL.md`](OWNER_APPROVAL.md).
+  in no split and absent from the drag-coefficient table because other released
+  modalities were incomplete for them. See [`OWNER_APPROVAL.md`](OWNER_APPROVAL.md).
 
 ## Status
 
