@@ -367,6 +367,22 @@ class ManageLeaderboardTests(unittest.TestCase):
         self.assertEqual(by_id["model-a"]["ranked_result_count"], 4)
         self.assertFalse(rows[0]["claim_eligibility"]["academic_citation"])
 
+    def test_drivaernetplusplus_dev_reference_has_no_rank_or_claim_record(self) -> None:
+        manifest = self.ranking_manifest()
+        row = {"submission_id": "dnpp-dev", "dataset_id": "drivaernetplusplus",
+               "split_id": "official_test", "record_type": "pre_release_reference",
+               "metric_values": {"score": 85.23}, "ranking": {"rank": 1}}
+        manage_leaderboard.add_release_rankings(manifest, {"Example": [row]})
+        self.assertNotIn("ranking", row)
+        self.assertEqual(row["metric_values"]["score"], 85.23)
+        self.assertFalse(row["claim_eligibility"]["academic_citation"])
+        self.assertFalse(row["claim_eligibility"]["promotion"])
+        manifest.update({"all_file": "leaderboard/all.json", "data_release": {
+            "id": "prototype-test", "status": "prototype_dummy_data", "feed_sha256": "a" * 64}})
+        index, claims = manage_leaderboard.expected_claim_artifacts(manifest, [row])
+        self.assertEqual(claims, {})
+        self.assertEqual(index["record_count"], 0)
+
     def test_decimal_half_up_is_not_binary_float_rounding(self) -> None:
         rounded, json_value, display = manage_leaderboard.published_metric_value(9.95, 1)
         self.assertEqual(str(rounded), "10.0")

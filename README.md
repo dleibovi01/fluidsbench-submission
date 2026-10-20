@@ -24,6 +24,11 @@ and target `dev` in your PR. Repository-wide development checks use
 all 16 fixed and relative profiles. The same separate review and registration
 process controls dev leaderboard publication.
 
+**DrivAerNet++ development candidate PRs are also accepted on `dev`.** Follow the
+[DrivAerNet++ quickstart](benchmark-specs/drivaernetplusplus/QUICKSTART.md): pressure only, every native
+surface point of all 1,154 `official_test` designs, prepared support downloaded with
+`python scripts/drivaernetplusplus.py fetch-support`, resumable evaluation, and a validated package.
+
 ## Start here
 
 1. **Choose a dataset:** check the [dataset index](benchmark-specs/README.md), its exact split, and its current release status.
@@ -40,6 +45,7 @@ For a coordinated closed-candidate dry run, start with the dataset-specific inst
 | ------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | AhmedML      | [Native evaluator and support](benchmark-specs/ahmedml/README.md)      | [Candidate package](examples/ahmedml-v3-candidate/README.md)      |
 | WindsorML | [Native contract and splits](benchmark-specs/windsorml/README.md) | [Candidate package](examples/windsorml-v3-candidate/README.md) |
+| DrivAerNet++ | [Pressure contract and quickstart](benchmark-specs/drivaernetplusplus/README.md) | [Candidate package](examples/drivaernetplusplus-v3-candidate/README.md) |
 | DrivAerML    | [Participant guide](benchmark-specs/drivaerml/PARTICIPANT_GUIDE.md)    | [Candidate package](examples/drivaerml-v3-candidate/README.md)    |
 | HiLiftAeroML | [Participant guide](benchmark-specs/hiliftaeroml/PARTICIPANT_GUIDE.md) | [Candidate package](examples/hiliftaeroml-v3-candidate/README.md) |
 

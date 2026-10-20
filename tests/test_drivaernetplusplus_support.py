@@ -169,10 +169,10 @@ class TestOfficialSplit(unittest.TestCase):
         digest = hashlib.sha256(self.split_path.read_bytes()).hexdigest()
         self.assertEqual(entry["sha256"], digest)
 
-    def test_prototype_split_still_present_during_review(self):
+    def test_prototype_split_is_retired(self):
         ids = [item["id"] for item in self.spec["splits"]]
-        self.assertIn("default", ids)
-        self.assertIn("official_test", ids)
+        self.assertEqual(ids, ["official_test"])
+        self.assertFalse((SPEC_DIR / "splits" / "default.json").exists())
 
 
 class TestPublisherSyntheticRelease(unittest.TestCase):
