@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-10-18T20:25:03Z",
+  "generated_at": "2026-10-20T19:42:21Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -19,13 +19,13 @@
     "rounding": "decimal_half_up"
   },
   "data_release": {
-    "id": "prototype-dev-2026-10-18-6ef4f652a467",
+    "id": "prototype-dev-2026-10-18-5a698e721637",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-10-18T20:25:03Z",
+    "generated_at": "2026-10-20T19:42:21Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
-    "feed_sha256": "6ef4f652a46779522e82332b4241a3608e7b0f23d32bb7c365fecc2453198312",
+    "feed_sha256": "5a698e721637775d81157b3963ae858549fa58758fff81a542512b976bb181a9",
     "canonical_url": "https://fluidsbench.org/",
     "archive_url": null,
     "release_view_url": null,
@@ -51,16 +51,16 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "9aca689f803fd2093a25c597aa4f703249f53f9f2176aebba33923e019853e78",
-      "record_count": 48,
+      "index_sha256": "f8bc34cfd979a634800201e77d356443ad0003079adc1afc23680e9627e326f1",
+      "record_count": 49,
       "eligible_record_count": 0
     },
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "06b7244c772a6f4e168c63cbcbdc2d45b88816ab868f3d452a0be0e9a90c1caa",
-      "record_count": 50,
-      "series_count": 50
+      "sha256": "492764f6ceb42057258aae17aa9eb3eb3bdd2630a4ea34831429154b80840049",
+      "record_count": 51,
+      "series_count": 51
     }
   },
   "all_file": "leaderboard/all.json",
@@ -233,8 +233,8 @@
       "name": "AhmedML",
       "slug": "ahmedml",
       "file": "leaderboard/datasets/ahmedml.json",
-      "submission_count": 1,
-      "updated_at": "2026-09-16",
+      "submission_count": 2,
+      "updated_at": "2026-10-16",
       "metrics": {
         "dimensional_fields": [
           "surface_pressure",
@@ -682,7 +682,7 @@
         ],
         "tolerance": 1e-06
       },
-      "revision_count": 1,
+      "revision_count": 2,
       "profile_definition": {
         "id": "ahmedml-native-profiles-v1-candidate",
         "file": "profile-definition-v1.json",
