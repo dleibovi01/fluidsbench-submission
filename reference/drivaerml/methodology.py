@@ -236,6 +236,7 @@ def methodology_errors(
     *,
     expected_case_count: int | None = None,
     contract: Mapping[str, Any] | None = None,
+    allow_unmeasured_inference: bool = False,
 ) -> list[str]:
     """Return cross-field errors not expressible cleanly in JSON Schema."""
 
@@ -555,6 +556,11 @@ def methodology_errors(
     if (
         record_kind in {"submitter_reported", "format_example"}
         and inference_status != "measured"
+        and not (
+            allow_unmeasured_inference
+            and record_kind == "submitter_reported"
+            and inference_status == "not_measured"
+        )
     ):
         errors.append(
             "methodology.inference_compute.status must be measured for "

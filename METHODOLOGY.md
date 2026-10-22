@@ -165,6 +165,15 @@ measurements must not be substituted for full campaign time. The precise v1
 boundary above is an implementation convention for review, not a claim that the
 committee agreed every measurement detail.
 
+Closed DrivAerNet++ candidates in the prototype `dev` release may instead
+declare `inference_compute={"status":"not_measured","reason":"..."}` when only
+partial timing is available. Preserve the reported interval and its limitations
+in `reason`; omit numeric campaign/device totals so the website cannot derive
+throughput from incomplete measurements. This applies to candidate dry-runs,
+dev intake and exact registered dev references only. It does not waive timing
+requirements for official results or other datasets, and does not grant approval,
+citation eligibility or promotion.
+
 ## Training cost and historical estimates
 
 Add `measurement_basis=measured|estimated|unknown` to each submitter training
