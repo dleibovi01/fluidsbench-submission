@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-10-20T19:42:21Z",
+  "generated_at": "2026-10-22T07:08:20Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -19,13 +19,13 @@
     "rounding": "decimal_half_up"
   },
   "data_release": {
-    "id": "prototype-dev-2026-10-18-5a698e721637",
+    "id": "prototype-dev-2026-10-22-5dd3421979a4",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-10-20T19:42:21Z",
+    "generated_at": "2026-10-22T07:08:20Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
-    "feed_sha256": "5a698e721637775d81157b3963ae858549fa58758fff81a542512b976bb181a9",
+    "feed_sha256": "5dd3421979a4ad63fe67c2b7cdcfb0c6c8ecd19b9f5deaed8ee3e497d18cdb39",
     "canonical_url": "https://fluidsbench.org/",
     "archive_url": null,
     "release_view_url": null,
@@ -51,15 +51,15 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "f8bc34cfd979a634800201e77d356443ad0003079adc1afc23680e9627e326f1",
+      "index_sha256": "a7ae31fc1ff39f5e3da6bfcdc6d281367b17980a7227f7fe5e1df7a3772d655b",
       "record_count": 49,
       "eligible_record_count": 0
     },
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "492764f6ceb42057258aae17aa9eb3eb3bdd2630a4ea34831429154b80840049",
-      "record_count": 51,
+      "sha256": "cd02bdb248a1784675f83e4f32ab1fb745016361d1e60d2e4b86db3fa6d47ccc",
+      "record_count": 52,
       "series_count": 51
     }
   },
@@ -1948,7 +1948,7 @@
       "slug": "drivaernetplusplus",
       "file": "leaderboard/datasets/drivaernetplusplus.json",
       "submission_count": 1,
-      "updated_at": "2026-10-18",
+      "updated_at": "2026-10-22",
       "metrics": {
         "dimensional_fields": [
           "surface_pressure"
@@ -2145,7 +2145,7 @@
         ],
         "tolerance": 1e-06
       },
-      "revision_count": 1
+      "revision_count": 2
     },
     {
       "name": "HiLiftAeroML",

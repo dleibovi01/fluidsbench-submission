@@ -67,6 +67,65 @@
         "academic_citation": false,
         "promotion": false
       }
+    },
+    {
+      "status": "registered_pre_release_reference",
+      "record_type": "pre_release_reference",
+      "submission_id": "drivaernetplusplus-carbench-transolver-dev-v2",
+      "submission_path": "submissions/drivaernetplusplus/drivaernetplusplus-carbench-transolver-dev-v2/submission.json",
+      "submission_json_sha256": "781f20ae0af7d3db34d4d38c8f0cfc2b00ae9ffa439483849a70342b21a74947",
+      "scope": {
+        "split_id": "official_test",
+        "case_set_id": "official_test",
+        "case_count": 1154,
+        "profile_series_count": 3462
+      },
+      "inference_provenance": {
+        "actual_model_inference": true,
+        "evaluation_truth_generated_predictions": false,
+        "methodology_record_kind": "submitter_reported",
+        "checkpoint_sha256s": [
+          "ca7001e3d258fd1b9d315c13b75e50c5d28a4035f2bdf93beeadabddfa56994c"
+        ],
+        "attestation": "Participant attests that every submitted prediction value was produced by actual model inference for the declared checkpoint(s), not generated from DrivAerNet++ evaluation ground truth. The assembler verified the local checkpoint bytes against the methodology SHA-256 declarations."
+      },
+      "artifacts": {
+        "evaluation_evidence": {
+          "file": "evaluation-evidence.json",
+          "sha256": "220e19dd73a6c4a8b4a4fbce8273d3b7ec98c2d115a6a4b1634bd6d35067843d",
+          "size_bytes": 2289
+        },
+        "case_metrics": {
+          "file": "metrics/cases.json",
+          "sha256": "ad70d530ed3d27694276e1cde1bf482fdde8c74331eb70c319c5442addcae64e",
+          "size_bytes": 1672601
+        },
+        "profile_index": {
+          "file": "profiles/index.json",
+          "sha256": "c1e45063c2def8d6bac07162cf1b368450ae04fb11b6f4b5160f8525eda94f9e",
+          "size_bytes": 33912
+        },
+        "discretization": {
+          "file": "discretization.json",
+          "sha256": "5efee48ba16da6abc0a60a2b35eb611cfd2a6dc99bc4bc2ec5cbefb9acaf6f43",
+          "size_bytes": 5688
+        },
+        "discretization_cases": {
+          "file": "discretization/cases.jsonl",
+          "sha256": "2a090de30f0d0076b7cbf6a3520944a00cb7529fbdef3c8d8cccf9992dfb9b51",
+          "size_bytes": 1168848
+        }
+      },
+      "package_tree": {
+        "algorithm": "sha256-posix-path-size-content-sha256-v1",
+        "sha256": "a80e88cf027ac3d4f43944d360454c2fa6ecdb34d2c58efdefbaaae01f1b5317",
+        "file_count": 30,
+        "total_bytes": 36643056
+      },
+      "claim_eligibility": {
+        "academic_citation": false,
+        "promotion": false
+      }
     }
   ]
 }
