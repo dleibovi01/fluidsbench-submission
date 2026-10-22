@@ -82,8 +82,8 @@ those records with the fixed or minimum/median/maximum summary and verifies `fra
 Contributors leave `approval` absent and must not add `maintainer-validation.json` or
 `prediction-artifact-checks.json`. After submitted-data validation, maintainers add
 the separately hashed validation record and `approval.status=approved`. Prototype packages use `approval.status=prototype`; the feed
-builder publishes only prototype and maintainer-approved rows. The sole exception class is an exact maintainer-registered,
-hash-bound HiLiftAeroML `pre_release_reference`; each remains unapproved and explicitly ineligible for citation or promotion.
+builder also publishes exact maintainer-registered, hash-bound dataset `pre_release_reference` rows in the prototype `dev`
+release. These remain unapproved and explicitly ineligible for citation or promotion.
 
 Sharing full or example prediction fields is optional. When used, `prediction_artifacts` points to a revision-pinned public Hugging
 Face dataset manifest. A maintainer may add one `prediction-artifact-checks.json` index recording accessibility, format, or explicit
@@ -142,6 +142,12 @@ The first package is `<series-id>-v1`, uses `version: 1`, and sets `supersedes` 
 a completely new `<series-id>-vN` directory, replaces every changed prediction, metric, profile, evidence record, and checksum,
 increments the version by exactly one, points to the immediately preceding published submission, and explains the material change.
 Never edit, rename, or delete an earlier published directory.
+
+On the prototype `dev` release, an exact maintainer-registered `pre_release_reference` also counts as a published predecessor.
+The validator rechecks the predecessor's complete registered package binding; an unregistered or modified candidate does not
+qualify. This exception does not apply to production or official releases. Submit and review the new version as a separate
+package, then register it separately to publish it on dev. Until that registration, the previous version remains displayed.
+After registration and feed regeneration, only the latest registered version is displayed, while both remain in revision history.
 
 For a result published before this versioning contract whose ID does not end in `-v1`, keep that package unchanged. Its first update
 uses `<legacy-submission-id>-v2`, retains `<legacy-submission-id>` as the series ID, and sets `supersedes` to the exact legacy ID. For
