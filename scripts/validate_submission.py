@@ -737,6 +737,7 @@ def validate_result_revisions(
     records: list[tuple[Path, dict[str, Any]]],
     *,
     focus_paths: set[Path] | None = None,
+    manifest: dict[str, Any] | None = None,
 ) -> list[str]:
     """Validate immutable, sequential result-series relationships across packages."""
 
@@ -821,7 +822,7 @@ def validate_result_revisions(
         if predecessor_record is None:
             add(path, f"result_revision predecessor {supersedes!r} does not exist")
             continue
-        _, predecessor = predecessor_record
+        predecessor_path, predecessor = predecessor_record
         predecessor_revision = normalized_result_revision(predecessor)
         if (
             predecessor_revision.get("series_id") != series_id
@@ -840,8 +841,14 @@ def validate_result_revisions(
             if predecessor.get(field) != submission.get(field):
                 add(path, f"result_revision predecessor must have the same {field}")
         predecessor_status = predecessor.get("approval", {}).get("status")
-        if predecessor_status not in {"approved", "prototype"}:
-            add(path, "result_revision predecessor must already be published as approved or prototype")
+        if predecessor_status not in {"approved", "prototype"} and not (
+            _registered_dev_revision_predecessor(predecessor_path, predecessor, manifest)
+        ):
+            add(
+                path,
+                "result_revision predecessor must already be published as approved or prototype, "
+                "or be an exact registered pre-release reference in the dev release",
+            )
         try:
             submitted_at = date.fromisoformat(str(submission.get("submitted_at")))
             predecessor_date = date.fromisoformat(str(predecessor.get("submitted_at")))
@@ -852,6 +859,32 @@ def validate_result_revisions(
                 add(path, "submitted_at must not be earlier than the superseded result")
 
     return errors
+
+
+def _registered_dev_revision_predecessor(
+    path: Path,
+    submission: dict[str, Any],
+    manifest: dict[str, Any] | None,
+) -> bool:
+    """Accept reviewed dev predecessors only while their complete binding matches."""
+
+    if manifest is None or (
+        manifest.get("data_release", {}).get("status") != "prototype_dummy_data"
+        or manifest.get("data_release", {}).get("source_ref") != "dev"
+    ):
+        return False
+    recognizer = {
+        "ahmedml": registered_ahmedml_pre_release_reference,
+        "windsorml": registered_windsorml_pre_release_reference,
+        "drivaerml": registered_drivaerml_pre_release_reference,
+        "drivaernetplusplus": registered_drivaernetplusplus_pre_release_reference,
+        "airfrans": registered_airfrans_pre_release_reference,
+        "hiliftaeroml": registered_hiliftaeroml_preview,
+    }.get(submission.get("dataset_id"))
+    if recognizer is None:
+        return False
+    entry = recognizer(path, submission, manifest)
+    return entry is not None and entry.get("record_type") == "pre_release_reference"
 
 
 def manifest_with_benchmark_contract(manifest: dict[str, Any]) -> dict[str, Any]:
@@ -8202,6 +8235,7 @@ def validate_many(
         validate_result_revisions(
             revision_records,
             focus_paths=set(files) if paths else None,
+            manifest=manifest,
         )
     )
     return errors, totals
