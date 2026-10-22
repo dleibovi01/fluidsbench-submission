@@ -21,7 +21,7 @@
   "methodology": {
     "format": "fluidsbench-method-v1",
     "record_kind": "submitter_reported",
-    "record_note": "Released CarBench checkpoint (carbench-weights-v1.0, tripnet.pt) run unchanged; every native surface point of all 1,154 official_test designs is predicted directly. Training compute is from the recorded run.",
+    "record_note": "Released CarBench checkpoint (carbench-weights-v1.0, tripnet.pt) run unchanged; every native surface point of all 1,154 official_test designs is predicted directly. Training compute is from the recorded run. Maintainer metadata correction (2026-10-22): aggregate training cost uses the stated device-count basis, and partial output-file intervals are retained only as timing context. Original predictions, evaluation command and numerical evidence are unchanged; inference was not rerun. The shared decoder dependency was added from the pinned public loader and manifest, and its public bytes were verified. This documents the released pipeline dependency; the original packaging command is preserved as historical provenance.",
     "architecture": {
       "description": "Triplane neural field: each design's geometry is encoded as a 3 x 32 x 128 x 128 triplane fitted to its surface occupancy with a shared 45,569-parameter occupancy decoder; a 7,919,393-parameter U-Net plus MLP head maps triplane features at any query point to pressure.",
       "total_parameter_count": 7964962,
@@ -157,24 +157,22 @@
         "bytes_description": "Raw bytes of tripnet.pt from the CarBench v1.0 weights release, loaded unchanged.",
         "role": "Exact loaded checkpoint for every prediction.",
         "selection_rule": "Lowest official-validation loss, selected before any test-case inference."
+      },
+      {
+        "id": "carbench-tripnet-decoder",
+        "component_ids": [
+          "tripnet"
+        ],
+        "sha256": "ee53735ff3b8578e739ec0d6004e53bf5b5100475a88775b7f16d7f6c7c30e02",
+        "digest_scope": "raw_loaded_file",
+        "bytes_description": "Raw 185,152 bytes of checkpoints/tripnet_decoder.pt from https://github.com/Mohamedelrefaie/CarBench/tree/66202db98e7564fb73367211cf81b278e83e6306 . Maintainer downloaded and hashed the public file on 2026-10-22; digest matches checkpoints/MANIFEST.json.",
+        "role": "Frozen shared occupancy decoder used by the released app/tripnet_infer.py loader to fit each geometry triplane before pressure prediction.",
+        "selection_rule": "Fixed decoder distributed with the released TripNet pressure checkpoint; no selection using test pressure targets."
       }
     ],
     "inference_compute": {
-      "status": "measured",
-      "hardware": "1 x NVIDIA A100-SXM4-80GB shared with other inference processes",
-      "max_concurrent_device_count": 1,
-      "case_count": 1154,
-      "campaign_wall_time_seconds": 5643.0,
-      "aggregate_device_time_seconds": 5643.0,
-      "includes_preprocessing": true,
-      "includes_mapping": true,
-      "measurement_notes": "Wall time from first to last prediction file. Ran concurrently with up to nine other inference processes across two GPUs. Includes VTK reading, preprocessing, all passes and serialization; excludes model loading and the FluidsBench evaluator.",
-      "accelerator": {
-        "type": "gpu",
-        "vendor": "NVIDIA",
-        "model": "A100-SXM4-80GB"
-      },
-      "devices_per_job": 1
+      "status": "not_measured",
+      "reason": "Complete campaign timing is unavailable. The submitter reported 5643 seconds between the first and last prediction files for 1,154 designs, on 1 x NVIDIA A100-SXM4-80GB shared with other inference processes, with up to ten concurrent inference processes across two GPUs. This partial interval excludes work before the first output, including its preprocessing and prediction, and is not a complete-split wall time or an attributable GPU-time measurement. The original claim that it included all preprocessing and passes is withdrawn. Model loading and the FluidsBench evaluator were also excluded. Complete timing requires start-to-finish logs or a rerun; no new timing was measured for this metadata correction."
     }
   },
   "submitter_name": "Mohamed Elrefaie",

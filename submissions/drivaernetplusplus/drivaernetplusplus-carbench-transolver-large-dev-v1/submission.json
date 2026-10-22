@@ -21,7 +21,7 @@
   "methodology": {
     "format": "fluidsbench-method-v1",
     "record_kind": "submitter_reported",
-    "record_note": "Released CarBench checkpoint (carbench-weights-v1.0, transolver_large.pth) run unchanged; every native surface point of all 1,154 official_test designs is predicted directly. Training compute is a labelled estimate reconstructed from checkpoint timestamps.",
+    "record_note": "Released CarBench checkpoint (carbench-weights-v1.0, transolver_large.pth) run unchanged; every native surface point of all 1,154 official_test designs is predicted directly. Training compute is a labelled estimate reconstructed from checkpoint timestamps. Maintainer metadata correction (2026-10-22): aggregate training cost uses the stated device-count basis, and partial output-file intervals are retained only as timing context. Original predictions, evaluation command and numerical evidence are unchanged; inference was not rerun.",
     "architecture": {
       "description": "Large Transolver variant with dropout 0.1, predicting surface pressure from per-point coordinates and outward normals.",
       "total_parameter_count": 7587109,
@@ -141,7 +141,7 @@
             "max_concurrent_device_count": 4,
             "campaign_wall_time_hours": 5.1,
             "aggregate_device_hours": 20.4,
-            "measurement_notes": "Reconstructed from the run's checkpoint timestamps (results/transolver_large, 2025-10-25): 71 s per epoch; the released best checkpoint (epoch 244) was written 5.1 h after start. Training continued for early-stopping patience after that, so total wall time was somewhat longer. Single run with PyTorch DataParallel (multi_gpu enabled) on a 4 x A100-SXM4-80GB machine; the visible device count was not recorded and is assumed to be all four.",
+            "measurement_notes": "Reconstructed from the run's checkpoint timestamps (results/transolver_large, 2025-10-25): 71 s per epoch; the released best checkpoint (epoch 244) was written 5.1 h after start. Training continued for early-stopping patience after that, so total wall time was somewhat longer. Single run with PyTorch DataParallel (multi_gpu enabled) on a 4 x A100-SXM4-80GB machine; the visible device count was not recorded and is assumed to be all four. Aggregate GPU-hours are estimated because the device count was assumed; any recorded wall time remains submitter-reported.",
             "accelerator": {
               "type": "gpu",
               "vendor": "NVIDIA",
@@ -166,21 +166,8 @@
       }
     ],
     "inference_compute": {
-      "status": "measured",
-      "hardware": "1 x NVIDIA A100-SXM4-80GB shared with other inference processes",
-      "max_concurrent_device_count": 1,
-      "case_count": 1154,
-      "campaign_wall_time_seconds": 5993.0,
-      "aggregate_device_time_seconds": 5993.0,
-      "includes_preprocessing": true,
-      "includes_mapping": true,
-      "measurement_notes": "Wall time from first to last prediction file. Ran concurrently with up to nine other inference processes across two GPUs. Includes VTK reading, preprocessing, all passes and serialization; excludes model loading and the FluidsBench evaluator.",
-      "accelerator": {
-        "type": "gpu",
-        "vendor": "NVIDIA",
-        "model": "A100-SXM4-80GB"
-      },
-      "devices_per_job": 1
+      "status": "not_measured",
+      "reason": "Complete campaign timing is unavailable. The submitter reported 5993 seconds between the first and last prediction files for 1,154 designs, on 1 x NVIDIA A100-SXM4-80GB shared with other inference processes, with up to ten concurrent inference processes across two GPUs. This partial interval excludes work before the first output, including its preprocessing and prediction, and is not a complete-split wall time or an attributable GPU-time measurement. The original claim that it included all preprocessing and passes is withdrawn. Model loading and the FluidsBench evaluator were also excluded. Complete timing requires start-to-finish logs or a rerun; no new timing was measured for this metadata correction."
     }
   },
   "submitter_name": "Mohamed Elrefaie",

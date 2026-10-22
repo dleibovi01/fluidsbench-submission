@@ -6,9 +6,9 @@
     "series_id": "drivaernetplusplus-carbench-pointnet-large-dev",
     "version": 1,
     "supersedes": null,
-    "change_summary": "Initial dev result for the released CarBench checkpoint."
+    "change_summary": "Initial dev result for the submitter-reported CarBench PointNet-Large checkpoint; weights are not publicly released."
   },
-  "model": "PointNet-Large (CarBench release)",
+  "model": "PointNet-Large (CarBench)",
   "model_type": "Point-cloud network",
   "model_types": [
     "Point-cloud network"
@@ -20,7 +20,7 @@
   "methodology": {
     "format": "fluidsbench-method-v1",
     "record_kind": "submitter_reported",
-    "record_note": "Released CarBench checkpoint (carbench-weights-v1.0, pointnet_large.pth) run unchanged; every native surface point of all 1,154 official_test designs is predicted directly. Training compute is from the recorded run.",
+    "record_note": "Submitter-reported CarBench checkpoint (pointnet_large.pth) run unchanged; every native surface point of all 1,154 official_test designs is predicted directly. Training compute is from the recorded run. Maintainer metadata correction (2026-10-22): aggregate training cost uses the stated device-count basis, and partial output-file intervals are retained only as timing context. Original predictions, evaluation command and numerical evidence are unchanged; inference was not rerun. Public checkpoint availability: the public CarBench manifest at commit 66202db98e7564fb73367211cf81b278e83e6306 lists PointNet-Large as omitted because its checkpoint is not released. The submitted checkpoint digest has not been independently verified against public bytes.",
     "architecture": {
       "description": "Wider PointNet regressor predicting per-point pressure from coordinates.",
       "total_parameter_count": 32581226,
@@ -105,7 +105,7 @@
             },
             "duration": {
               "epochs": 82,
-              "description": "82 epochs run; the released checkpoint is the lowest validation-loss epoch (62)."
+              "description": "82 epochs run; the submitted checkpoint is the lowest validation-loss epoch (62)."
             }
           },
           "run_count": 1,
@@ -116,12 +116,12 @@
           "compute": {
             "hardware": "NVIDIA A100-SXM4-80GB",
             "hardware_identity_basis": "submitter_reported",
-            "measurement_basis": "measured",
+            "measurement_basis": "estimated",
             "cost_scope": "final_training",
             "max_concurrent_device_count": 4,
             "campaign_wall_time_hours": 1.63,
             "aggregate_device_hours": 6.52,
-            "measurement_notes": "Recorded run PointNetLarge_results_20250924_120824 (best epoch 62, batch 8): 1.63 h total training wall time. Single run with PyTorch DataParallel (multi_gpu enabled) on a 4 x A100-SXM4-80GB machine; the visible device count was not recorded and is assumed to be all four.",
+            "measurement_notes": "Recorded run PointNetLarge_results_20250924_120824 (best epoch 62, batch 8): 1.63 h total training wall time. Single run with PyTorch DataParallel (multi_gpu enabled) on a 4 x A100-SXM4-80GB machine; the visible device count was not recorded and is assumed to be all four. Aggregate GPU-hours are estimated because the device count was assumed; any recorded wall time remains submitter-reported.",
             "accelerator": {
               "type": "gpu",
               "vendor": "NVIDIA",
@@ -140,27 +140,14 @@
         ],
         "sha256": "aa81d8c477cc4e06ed73e04d8251c9fbf0a457dcc8a78350d4b5745c6e078a46",
         "digest_scope": "raw_loaded_file",
-        "bytes_description": "Raw bytes of pointnet_large.pth from the CarBench v1.0 weights release, loaded unchanged.",
+        "bytes_description": "Submitter-reported raw PointNet-Large checkpoint bytes; public availability and this digest remain unverified. The pinned CarBench release manifest explicitly omits this model.",
         "role": "Exact loaded checkpoint for every prediction.",
         "selection_rule": "Lowest official-validation loss, selected before any test-case inference."
       }
     ],
     "inference_compute": {
-      "status": "measured",
-      "hardware": "1 x NVIDIA A100-SXM4-80GB shared with other inference processes",
-      "max_concurrent_device_count": 1,
-      "case_count": 1154,
-      "campaign_wall_time_seconds": 2347.0,
-      "aggregate_device_time_seconds": 2347.0,
-      "includes_preprocessing": true,
-      "includes_mapping": true,
-      "measurement_notes": "Wall time from first to last prediction file. Ran concurrently with up to nine other inference processes across two GPUs. Includes VTK reading, preprocessing, all passes and serialization; excludes model loading and the FluidsBench evaluator.",
-      "accelerator": {
-        "type": "gpu",
-        "vendor": "NVIDIA",
-        "model": "A100-SXM4-80GB"
-      },
-      "devices_per_job": 1
+      "status": "not_measured",
+      "reason": "Complete campaign timing is unavailable. The submitter reported 2347 seconds between the first and last prediction files for 1,154 designs, on 1 x NVIDIA A100-SXM4-80GB shared with other inference processes, with up to ten concurrent inference processes across two GPUs. This partial interval excludes work before the first output, including its preprocessing and prediction, and is not a complete-split wall time or an attributable GPU-time measurement. The original claim that it included all preprocessing and passes is withdrawn. Model loading and the FluidsBench evaluator were also excluded. Complete timing requires start-to-finish logs or a rerun; no new timing was measured for this metadata correction."
     }
   },
   "submitter_name": "Mohamed Elrefaie",
@@ -173,7 +160,7 @@
     "public_test_data_use": "evaluation_only",
     "result_data_license_spdx": "CC-BY-4.0"
   },
-  "note": "Dev result for a released CarBench checkpoint; not owner-approved and not an official result.",
+  "note": "Dev result for a submitter-reported CarBench PointNet-Large checkpoint whose weights are not publicly released; its hash is declared by the submitter and has not been independently verified against public bytes. Not owner-approved and not an official result.",
   "dataset_id": "drivaernetplusplus",
   "prediction_scope": "surface_only",
   "parameter_count_millions": 32.581226,

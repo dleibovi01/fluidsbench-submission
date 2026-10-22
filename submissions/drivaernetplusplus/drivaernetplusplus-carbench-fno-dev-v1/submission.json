@@ -20,7 +20,7 @@
   "methodology": {
     "format": "fluidsbench-method-v1",
     "record_kind": "submitter_reported",
-    "record_note": "Released CarBench checkpoint (carbench-weights-v1.0, fno.pth) run unchanged; every native surface point of all 1,154 official_test designs is predicted directly. Training compute is from the recorded run.",
+    "record_note": "Released CarBench checkpoint (carbench-weights-v1.0, fno.pth) run unchanged; every native surface point of all 1,154 official_test designs is predicted directly. Training compute is from the recorded run. Maintainer metadata correction (2026-10-22): aggregate training cost uses the stated device-count basis, and partial output-file intervals are retained only as timing context. Original predictions, evaluation command and numerical evidence are unchanged; inference was not rerun.",
     "architecture": {
       "description": "Fourier neural operator on a 32^3 grid with 8 retained modes, mapping sampled surface points to per-point pressure.",
       "total_parameter_count": 2098498,
@@ -125,12 +125,12 @@
           "compute": {
             "hardware": "NVIDIA A100-SXM4-80GB",
             "hardware_identity_basis": "submitter_reported",
-            "measurement_basis": "measured",
+            "measurement_basis": "estimated",
             "cost_scope": "final_training",
             "max_concurrent_device_count": 4,
             "campaign_wall_time_hours": 0.22,
             "aggregate_device_hours": 0.88,
-            "measurement_notes": "Recorded run NeuralOperator_results_20250924_103402 (best epoch 100, batch 16): 0.22 h total training wall time. Single run with PyTorch DataParallel (multi_gpu enabled) on a 4 x A100-SXM4-80GB machine; the visible device count was not recorded and is assumed to be all four.",
+            "measurement_notes": "Recorded run NeuralOperator_results_20250924_103402 (best epoch 100, batch 16): 0.22 h total training wall time. Single run with PyTorch DataParallel (multi_gpu enabled) on a 4 x A100-SXM4-80GB machine; the visible device count was not recorded and is assumed to be all four. Aggregate GPU-hours are estimated because the device count was assumed; any recorded wall time remains submitter-reported.",
             "accelerator": {
               "type": "gpu",
               "vendor": "NVIDIA",
@@ -155,21 +155,8 @@
       }
     ],
     "inference_compute": {
-      "status": "measured",
-      "hardware": "1 x NVIDIA A100-SXM4-80GB shared with other inference processes",
-      "max_concurrent_device_count": 1,
-      "case_count": 1154,
-      "campaign_wall_time_seconds": 939.0,
-      "aggregate_device_time_seconds": 939.0,
-      "includes_preprocessing": true,
-      "includes_mapping": true,
-      "measurement_notes": "Wall time from first to last prediction file. Ran concurrently with up to nine other inference processes across two GPUs. Includes VTK reading, preprocessing, all passes and serialization; excludes model loading and the FluidsBench evaluator.",
-      "accelerator": {
-        "type": "gpu",
-        "vendor": "NVIDIA",
-        "model": "A100-SXM4-80GB"
-      },
-      "devices_per_job": 1
+      "status": "not_measured",
+      "reason": "Complete campaign timing is unavailable. The submitter reported 939 seconds between the first and last prediction files for 1,154 designs, on 1 x NVIDIA A100-SXM4-80GB shared with other inference processes, with up to ten concurrent inference processes across two GPUs. This partial interval excludes work before the first output, including its preprocessing and prediction, and is not a complete-split wall time or an attributable GPU-time measurement. The original claim that it included all preprocessing and passes is withdrawn. Model loading and the FluidsBench evaluator were also excluded. Complete timing requires start-to-finish logs or a rerun; no new timing was measured for this metadata correction."
     }
   },
   "submitter_name": "Mohamed Elrefaie",

@@ -7532,6 +7532,24 @@ def validate_profiles(
     return {"cases": len(loaded_case_ids), "series": series_count}
 
 
+def allows_unmeasured_drivaernetplusplus_timing(
+    submission: dict[str, Any], dataset_spec: dict[str, Any], manifest: dict[str, Any],
+    *, candidate_contract_validation: bool,
+) -> bool:
+    """Permit honest missing timing only for closed DrivAerNet++ dev candidates."""
+    return (
+        candidate_contract_validation
+        and submission.get("dataset_id") == "drivaernetplusplus"
+        and submission.get("scoring_support", {}).get("status") == "candidate"
+        and dataset_spec.get("status") in {
+            "candidate", "candidate_native_support", "candidate_scoring_contract",
+            "owner_review_required",
+        }
+        and manifest.get("data_release", {}).get("status") == "prototype_dummy_data"
+        and manifest.get("data_release", {}).get("source_ref") == "dev"
+    )
+
+
 def validate_submission_file(
     path: Path,
     manifest: dict[str, Any] | None = None,
@@ -7934,10 +7952,17 @@ def validate_submission_file(
         expected_method_case_count = spec_split.get("case_count")
         if not isinstance(expected_method_case_count, int):
             expected_method_case_count = None
+        # Closed dev candidates may disclose missing timing without presenting
+        # partial output-file intervals as complete campaign measurements.
+        # Official validation and every other dataset keep measured timing.
         for error in methodology_errors(
             submission,
             expected_case_count=expected_method_case_count,
             contract=methodology_contract,
+            allow_unmeasured_inference=allows_unmeasured_drivaernetplusplus_timing(
+                submission, dataset_spec, manifest,
+                candidate_contract_validation=candidate_contract_validation,
+            ),
         ):
             add(f"methodology validation failed: {error}")
     split_case_ids: list[str] = []

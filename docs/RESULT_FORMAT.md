@@ -57,6 +57,8 @@ identifiers. See [`OPEN_REPRODUCIBILITY.md`](../OPEN_REPRODUCIBILITY.md) for the
 Every schema-v3 package includes the same structured methodology record covering architecture components, exact total and
 submitter-trainable parameter counts, inputs and outputs, data handling, training stages, checkpoint selection, and measured
 compute, including the shared [hardware identity and allocation fields](../METHODOLOGY.md#hardware-and-compute).
+The methodology guide also documents the narrow DrivAerNet++ dev-candidate exception for
+unavailable complete inference timing; partial intervals belong in explanatory notes, not numeric campaign totals.
 Each dataset's `methodology-contract.json` names only that benchmark's existing required outputs; it does not change the
 prediction or scoring process. A SHA-256 digest is required for every checkpoint file actually loaded by a parameterized method so
 the result has an exact model identity; publishing those checkpoint bytes, source code, or a model archive remains optional. See
