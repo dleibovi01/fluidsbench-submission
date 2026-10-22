@@ -1,11 +1,11 @@
 {
   "$schema": "https://fluidsbench.org/schemas/releases/result-claim.schema.json",
   "schema_version": "1.0",
-  "claim_id": "prototype-dev-2026-10-18-5a698e721637/hiliftaeroml/deflection/hiliftaeroml-transolver-ood-deflection-candidate-v1",
+  "claim_id": "prototype-dev-2026-10-22-5dd3421979a4/hiliftaeroml/deflection/hiliftaeroml-transolver-ood-deflection-candidate-v1",
   "release": {
-    "id": "prototype-dev-2026-10-18-5a698e721637",
+    "id": "prototype-dev-2026-10-22-5dd3421979a4",
     "status": "prototype_dummy_data",
-    "published_at": "2026-10-20T19:42:21Z",
+    "published_at": "2026-10-22T07:08:20Z",
     "archive_url": null,
     "release_view_url": null
   },
@@ -54,7 +54,7 @@
   "bindings": {
     "result": {
       "feed_file": "leaderboard/all.json",
-      "feed_sha256": "5a698e721637775d81157b3963ae858549fa58758fff81a542512b976bb181a9",
+      "feed_sha256": "5dd3421979a4ad63fe67c2b7cdcfb0c6c8ecd19b9f5deaed8ee3e497d18cdb39",
       "row_index": 31
     },
     "source_submission": {

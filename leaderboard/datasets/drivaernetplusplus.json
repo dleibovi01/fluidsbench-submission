@@ -1,15 +1,15 @@
 [
   {
     "schema_version": "3.0",
-    "submission_id": "drivaernetplusplus-carbench-transolver-dev-v1",
+    "submission_id": "drivaernetplusplus-carbench-transolver-dev-v2",
     "result_revision": {
       "series_id": "drivaernetplusplus-carbench-transolver-dev",
-      "version": 1,
-      "supersedes": null,
-      "change_summary": "Initial end-to-end dev trial of the DrivAerNet++ pressure workflow with the released CarBench Transolver checkpoint.",
+      "version": 2,
+      "supersedes": "drivaernetplusplus-carbench-transolver-dev-v1",
+      "change_summary": "Correct training-compute provenance using the submitter-reported matching run: 2.03 hours wall time and estimated 8.12 GPU-hours assuming four GPUs. Predictions, metrics, checkpoints and inference timing are inherited unchanged from v1.",
       "is_latest": true,
-      "latest_submission_id": "drivaernetplusplus-carbench-transolver-dev-v1",
-      "version_count": 1
+      "latest_submission_id": "drivaernetplusplus-carbench-transolver-dev-v2",
+      "version_count": 2
     },
     "model": "Transolver (CarBench release)",
     "model_type": "Transformer",
@@ -24,7 +24,7 @@
     "methodology": {
       "format": "fluidsbench-method-v1",
       "record_kind": "submitter_reported",
-      "record_note": "Released CarBench Transolver checkpoint (carbench-weights-v1.0, transolver.pth) run unchanged; every native surface point of all 1,154 official_test designs predicted directly by disjoint 10,000-point passes. Training compute was not recorded for the released run and is an explicit estimate.",
+      "record_note": "Released CarBench Transolver checkpoint used for the unchanged v1 predictions. Metadata-only revision: training wall time corrected to the 2.03 hours reported by Mohamed Elrefaie in PR #66 for Transolver_results_20251027_203801 (best epoch 191, batch 128). Aggregate GPU-hours remain estimated because the DataParallel device count was not recorded. No training, inference or metric recomputation was performed for this revision.",
       "architecture": {
         "description": "Transolver physics-attention transformer: 5 blocks, 256 hidden width, 8 heads, 32 physics slices, MLP ratio 2, predicting surface pressure from per-point coordinates and outward normals.",
         "total_parameter_count": 2463177,
@@ -169,9 +169,9 @@
               "measurement_basis": "estimated",
               "cost_scope": "final_training",
               "max_concurrent_device_count": 4,
-              "campaign_wall_time_hours": 3.2,
-              "aggregate_device_hours": 12.8,
-              "measurement_notes": "Not recorded for the released run. Estimated from 53-68 s per epoch measured for earlier runs of the same architecture on the same 4 x A100 machine, times 191 epochs.",
+              "campaign_wall_time_hours": 2.03,
+              "aggregate_device_hours": 8.12,
+              "measurement_notes": "Submitter-reported correction in https://github.com/neilashton/fluidsbench-submission/pull/66: the matching recorded run Transolver_results_20251027_203801 (best epoch 191, batch 128) has 2.03 hours training wall time. The visible DataParallel device count was not recorded; four A100-SXM4-80GB GPUs are assumed, giving an estimated 8.12 GPU-hours. measurement_basis remains estimated for the aggregate device cost. The underlying training logs were not independently replayed or remeasured by the maintainer.",
               "accelerator": {
                 "type": "gpu",
                 "vendor": "NVIDIA",
@@ -216,14 +216,14 @@
     "submitter_name": "Mohamed Elrefaie",
     "institution": "MIT",
     "paper_url": "https://arxiv.org/abs/2406.09624",
-    "submitted_at": "2026-10-18",
+    "submitted_at": "2026-10-22",
     "reproducibility": {
       "contract_version": "open-reproducibility-3.0",
       "access": "public",
       "public_test_data_use": "evaluation_only",
       "result_data_license_spdx": "CC-BY-4.0"
     },
-    "note": "Dev trial of the complete DrivAerNet++ submission workflow; not owner-approved and not an official result.",
+    "note": "Metadata-only dev revision of Transolver v1 correcting training-compute provenance. Original predictions, metric values, checkpoint and legacy inference timing are reused; the evaluation command and evaluation timestamps record the original v1 run. Not owner-approved and not an official result.",
     "dataset_id": "drivaernetplusplus",
     "prediction_scope": "surface_only",
     "parameter_count_millions": 2.463177,
@@ -237,7 +237,7 @@
       "reference_version": "drivaernetplusplus-evaluator-v0.1-candidate",
       "command": "python scripts/drivaernetplusplus.py evaluate-entry my-entry --output work/transolver --resume && python scripts/drivaernetplusplus.py package --evaluation-root work/transolver/evaluation --config package-config.json --discretization-cases discretization-cases.jsonl --checkpoint carbench-transolver=transolver.pth --output submissions/drivaernetplusplus/drivaernetplusplus-carbench-transolver-dev-v1",
       "evidence_file": "evaluation-evidence.json",
-      "evidence_sha256": "1251525fae08d0437d168945d6d9aaead99a05ee30b55ece9bbf9b1fbd789d19"
+      "evidence_sha256": "220e19dd73a6c4a8b4a4fbce8273d3b7ec98c2d115a6a4b1634bd6d35067843d"
     },
     "scoring_support": {
       "status": "candidate",
@@ -247,12 +247,12 @@
     },
     "spatial_discretization": {
       "format": "fluidsbench-discretization-v1",
-      "file": "submissions/drivaernetplusplus/drivaernetplusplus-carbench-transolver-dev-v1/discretization.json",
-      "sha256": "dae6f645a35e1c5b83485f03988270f873d18cdb5de987882cfde13903f11bb4",
+      "file": "submissions/drivaernetplusplus/drivaernetplusplus-carbench-transolver-dev-v2/discretization.json",
+      "sha256": "5efee48ba16da6abc0a60a2b35eb611cfd2a6dc99bc4bc2ec5cbefb9acaf6f43",
       "summary": {
         "$schema": "https://fluidsbench.org/schemas/v3/discretization.schema.json",
         "schema_version": "1.0",
-        "submission_id": "drivaernetplusplus-carbench-transolver-dev-v1",
+        "submission_id": "drivaernetplusplus-carbench-transolver-dev-v2",
         "dataset_id": "drivaernetplusplus",
         "split_id": "official_test",
         "scoring_support_release_id": "drivaernetplusplus-native-pressure-support-v1-candidate",
@@ -440,8 +440,8 @@
         },
         "case_manifest": {
           "format": "jsonl",
-          "file": "submissions/drivaernetplusplus/drivaernetplusplus-carbench-transolver-dev-v1/discretization/cases.jsonl",
-          "sha256": "3e704946050637ab75621827a3c33cfdc497db9fd99f6b4ff676fd1f2d49ce2f",
+          "file": "submissions/drivaernetplusplus/drivaernetplusplus-carbench-transolver-dev-v2/discretization/cases.jsonl",
+          "sha256": "2a090de30f0d0076b7cbf6a3520944a00cb7529fbdef3c8d8cccf9992dfb9b51",
           "case_count": 1154
         },
         "notes": "Patchwise native inference: every native point is a direct model query exactly once."
@@ -449,8 +449,8 @@
     },
     "case_metrics": {
       "format": "fluidsbench-case-metrics-v1",
-      "file": "submissions/drivaernetplusplus/drivaernetplusplus-carbench-transolver-dev-v1/metrics/cases.json",
-      "sha256": "50d8145e0666954211289b7dea0821aa64a63c98c2beda356ad40ed1dd3646b4",
+      "file": "submissions/drivaernetplusplus/drivaernetplusplus-carbench-transolver-dev-v2/metrics/cases.json",
+      "sha256": "ad70d530ed3d27694276e1cde1bf482fdde8c74331eb70c319c5442addcae64e",
       "case_count": 1154
     },
     "metric_values": {
@@ -462,12 +462,12 @@
     },
     "profile_data": {
       "format": "fluidsbench-profile-chunks-v1",
-      "index_file": "submissions/drivaernetplusplus/drivaernetplusplus-carbench-transolver-dev-v1/profiles/index.json",
+      "index_file": "submissions/drivaernetplusplus/drivaernetplusplus-carbench-transolver-dev-v2/profiles/index.json",
       "case_count": 1154,
       "case_set_id": "official_test",
       "profile_ground_truth_release_id": "prototype-profile-ground-truth-2026-09-04",
       "profile_ground_truth_manifest_sha256": "3d3b0d7c8546925f6bace2113969eab62b0258edb5e4fdba99c0e65e29b02fdc",
-      "index_sha256": "01daa9a813e5fc960453e3def1ed310ca3e029b398e623e007d889a2437aa866"
+      "index_sha256": "c1e45063c2def8d6bac07162cf1b368450ae04fb11b6f4b5160f8525eda94f9e"
     },
     "record_type": "pre_release_reference",
     "parameter_count": 2.463177,
