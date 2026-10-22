@@ -1,11 +1,11 @@
 {
   "$schema": "https://fluidsbench.org/schemas/releases/result-claim.schema.json",
   "schema_version": "1.0",
-  "claim_id": "prototype-dev-2026-10-22-5dd3421979a4/vki-ls59/train_250/vkils59-prototype-train-250",
+  "claim_id": "prototype-dev-2026-10-22-1868d30937bf/vki-ls59/train_250/vkils59-prototype-train-250",
   "release": {
-    "id": "prototype-dev-2026-10-22-5dd3421979a4",
+    "id": "prototype-dev-2026-10-22-1868d30937bf",
     "status": "prototype_dummy_data",
-    "published_at": "2026-10-22T07:08:20Z",
+    "published_at": "2026-10-22T08:31:05Z",
     "archive_url": null,
     "release_view_url": null
   },
@@ -53,8 +53,8 @@
   "bindings": {
     "result": {
       "feed_file": "leaderboard/all.json",
-      "feed_sha256": "5dd3421979a4ad63fe67c2b7cdcfb0c6c8ecd19b9f5deaed8ee3e497d18cdb39",
-      "row_index": 37
+      "feed_sha256": "1868d30937bff243b10b43a966e83564939e077e150c276f6650362c6e321c93",
+      "row_index": 46
     },
     "source_submission": {
       "path": "submissions/vki-ls59/vkils59-prototype-train-250/submission.json",

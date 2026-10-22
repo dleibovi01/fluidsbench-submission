@@ -1,6 +1,6 @@
 {
   "schema_version": "0.6.0",
-  "generated_at": "2026-10-22T07:08:20Z",
+  "generated_at": "2026-10-22T08:31:05Z",
   "ranking_contract": {
     "version": "1.0",
     "scope": [
@@ -19,13 +19,13 @@
     "rounding": "decimal_half_up"
   },
   "data_release": {
-    "id": "prototype-dev-2026-10-22-5dd3421979a4",
+    "id": "prototype-dev-2026-10-22-1868d30937bf",
     "status": "prototype_dummy_data",
-    "generated_at": "2026-10-22T07:08:20Z",
+    "generated_at": "2026-10-22T08:31:05Z",
     "source_repository": "https://github.com/neilashton/fluidsbench-submission",
     "source_ref": "dev",
     "source_commit": null,
-    "feed_sha256": "5dd3421979a4ad63fe67c2b7cdcfb0c6c8ecd19b9f5deaed8ee3e497d18cdb39",
+    "feed_sha256": "1868d30937bff243b10b43a966e83564939e077e150c276f6650362c6e321c93",
     "canonical_url": "https://fluidsbench.org/",
     "archive_url": null,
     "release_view_url": null,
@@ -51,16 +51,16 @@
     "claims": {
       "schema_version": "1.0",
       "index_file": "leaderboard/claims/index.json",
-      "index_sha256": "a7ae31fc1ff39f5e3da6bfcdc6d281367b17980a7227f7fe5e1df7a3772d655b",
+      "index_sha256": "920513e0f8f64e4f220c240b73456a18645c0a5e60329212a0cf987ef1a7e514",
       "record_count": 49,
       "eligible_record_count": 0
     },
     "revision_history": {
       "schema_version": "1.0",
       "file": "leaderboard/revisions.json",
-      "sha256": "cd02bdb248a1784675f83e4f32ab1fb745016361d1e60d2e4b86db3fa6d47ccc",
-      "record_count": 52,
-      "series_count": 51
+      "sha256": "d71af08c9d07f9ebf47a118a73fd0c8a15e158cf713a31557e72b182ddd29ef7",
+      "record_count": 61,
+      "series_count": 60
     }
   },
   "all_file": "leaderboard/all.json",
@@ -1947,7 +1947,7 @@
       "name": "DrivAerNet++",
       "slug": "drivaernetplusplus",
       "file": "leaderboard/datasets/drivaernetplusplus.json",
-      "submission_count": 1,
+      "submission_count": 10,
       "updated_at": "2026-10-22",
       "metrics": {
         "dimensional_fields": [
@@ -2145,7 +2145,7 @@
         ],
         "tolerance": 1e-06
       },
-      "revision_count": 2
+      "revision_count": 11
     },
     {
       "name": "HiLiftAeroML",
