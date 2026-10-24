@@ -6,7 +6,7 @@ import math
 import unittest
 from pathlib import Path
 
-from reference.airfrans.pre_release import historical_contract
+from reference.airfrans.pre_release import REGISTRY_PATH, historical_contract
 from reference.scores import composite_component_group_scores, composite_overall_score
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -77,16 +77,28 @@ class AirfransContractTests(unittest.TestCase):
         )
         self.assertNotIn("cp_cut_r2", {m["id"] for m in self.specification["metrics"]})
 
-    def test_prototype_packages_bind_the_revised_scores_and_evidence(self) -> None:
+    def test_packages_bind_their_registered_contract_scores_and_evidence(self) -> None:
         legacy = historical_contract(root=ROOT)
         self.assertEqual(legacy["evaluation_reference_version"], "airfrans-scoring-v2-candidate")
         self.assertFalse(legacy["scoring_support"]["submissions_open"])
-        for path in sorted((ROOT / "submissions/airfrans").glob("*/submission.json")):
+        registry = load_json(ROOT / REGISTRY_PATH)
+        historical_paths = {
+            ROOT / entry["submission_path"]
+            for section in ("entries", "prototype_packages")
+            for entry in registry[section]
+        }
+        package_paths = set((ROOT / "submissions/airfrans").glob("*/submission.json"))
+        self.assertTrue(historical_paths)
+        self.assertTrue(historical_paths <= package_paths)
+        self.assertTrue(package_paths - historical_paths)
+        for path in sorted(package_paths):
             with self.subTest(submission=path.parent.name):
+                # Only explicitly registered packages may use the frozen contract.
+                contract = legacy if path in historical_paths else self.specification
                 submission = load_json(path)
                 evidence_path = path.parent / submission["evaluation"]["evidence_file"]
                 evidence = load_json(evidence_path)
-                version = legacy["evaluation_reference_version"]
+                version = contract["evaluation_reference_version"]
                 self.assertEqual(submission["evaluation"]["reference_version"], version)
                 self.assertEqual(evidence["reference_version"], version)
                 self.assertEqual(submission["evaluation"]["evidence_sha256"], sha256_file(evidence_path))
@@ -94,11 +106,11 @@ class AirfransContractTests(unittest.TestCase):
                 values = submission["metric_values"]
                 self.assertAlmostEqual(
                     values["overall_score"],
-                    composite_overall_score(values, self.specification["overall_score_composite"]),
+                    composite_overall_score(values, contract["overall_score_composite"]),
                 )
                 groups = composite_component_group_scores(
-                    values, self.specification["overall_score_composite"],
-                    self.specification["component_score_groups"],
+                    values, contract["overall_score_composite"],
+                    contract["component_score_groups"],
                 )
                 for metric_id, expected in groups.items():
                     self.assertAlmostEqual(values[metric_id], expected)
