@@ -17,6 +17,7 @@ from typing import Any
 from urllib.parse import unquote, urlencode, urlsplit, urlunsplit
 
 if __package__:
+    from .display_replacements import apply_display_replacements
     from .validate_submission import (
         load_json,
         manifest_with_benchmark_contract,
@@ -35,6 +36,7 @@ if __package__:
         validate_submission_file,
     )
 else:
+    from display_replacements import apply_display_replacements
     from validate_submission import (
         load_json,
         manifest_with_benchmark_contract,
@@ -504,6 +506,7 @@ def latest_rows_by_dataset(
             deepcopy(row)
             for row in rows
             if row.get("result_revision", {}).get("is_latest") is True
+            and not row.get("display_replacement", {}).get("replaced_by")
         ]
         for dataset, rows in rows_by_dataset.items()
     }
@@ -1137,6 +1140,7 @@ def expected_outputs(
 ]:
     updated_manifest = manifest_with_benchmark_contract(manifest)
     revision_rows_by_dataset = source_rows_by_dataset(updated_manifest)
+    apply_display_replacements(ROOT, updated_manifest, revision_rows_by_dataset)
     rows_by_dataset = latest_rows_by_dataset(revision_rows_by_dataset)
     add_release_rankings(updated_manifest, rows_by_dataset)
     all_rows: list[dict[str, Any]] = []
@@ -1196,9 +1200,12 @@ def build(manifest: dict[str, Any]) -> list[str]:
     generated_at = None
     if manifest.get("data_release", {}).get("status") != "official":
         generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
-    updated_manifest, rows_by_dataset, all_rows, revision_history = expected_outputs(
-        manifest, generated_at=generated_at
-    )
+    try:
+        updated_manifest, rows_by_dataset, all_rows, revision_history = expected_outputs(
+            manifest, generated_at=generated_at
+        )
+    except ValueError as error:
+        return [str(error)]
     claim_index, claim_records = expected_claim_artifacts(updated_manifest, all_rows)
     seal_errors = official_release_seal_errors(updated_manifest, claim_index, claim_records)
     if seal_errors:
@@ -1220,7 +1227,10 @@ def build(manifest: dict[str, Any]) -> list[str]:
 
 
 def check_generated_feeds(manifest: dict[str, Any]) -> list[str]:
-    expected_manifest, rows_by_dataset, all_rows, revision_history = expected_outputs(manifest)
+    try:
+        expected_manifest, rows_by_dataset, all_rows, revision_history = expected_outputs(manifest)
+    except ValueError as error:
+        return [str(error)]
     expected_claim_index, expected_claim_records = expected_claim_artifacts(expected_manifest, all_rows)
     errors = []
     for dataset in expected_manifest["datasets"]:
