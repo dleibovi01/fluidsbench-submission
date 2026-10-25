@@ -57,6 +57,26 @@ External pull requests are restricted to one entirely new submission directory. 
 `trusted-maintenance` label to allow a reviewed external repository-maintenance contribution; validation/approval changes must still
 come from a maintainer-owned branch.
 
+### Replacing a dev prototype across dataset contracts
+
+A retained inference run repackaged under a different dataset contract starts a new result series.
+Keep both source packages intact. After approving the new package, add a maintainer-owned record to
+`benchmark-specs/dev-display-replacements.json` with both submission IDs, the SHA-256 of each exact
+`submission.json`, a reason, and the publication PR URL. See the AoA record for the format.
+
+Feed generation validates that the source is a registered pre-release reference, the replacement is
+approved, and their split, model provenance, per-case metrics and profile chunks agree. It rejects
+changed hashes, ambiguous links and cycles. The mapping applies only to the prototype `dev` feed.
+Only the replacement is ranked; both packages remain in `leaderboard/revisions.json` with reciprocal
+`display_replacement` metadata. Later versions of the new series retain the historical link.
+The history is covered by the existing release-manifest hash, and original source packages and
+release snapshots are unchanged. The website links both the original package and the maintainer PR.
+
+This is a display replacement, not `result_revision.supersedes`: do not change dataset versions to
+force a same-series update. Future updates within the new contract use ordinary sequential versions.
+Run `manage_leaderboard.py build --dev-intake` and `check --dev-intake`, then verify there is only one
+current entry for the retained inference run before merging the publication PR.
+
 ### Maintainer validation follow-up checklist
 
 Complete this checklist in the separate maintainer-owned validation/approval pull request.
