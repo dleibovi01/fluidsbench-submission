@@ -34,7 +34,11 @@ class AhmedMLDevIntakeTests(unittest.TestCase):
         self.stack = ExitStack()
         self.addCleanup(self.stack.close)
         self.root = Path(self.stack.enter_context(tempfile.TemporaryDirectory())).resolve()
-        (self.root / "benchmark-specs").symlink_to(SOURCE_ROOT / "benchmark-specs", target_is_directory=True)
+        # This fixture has no published real results or display replacements.
+        (self.root / "benchmark-specs").mkdir()
+        for contract in (SOURCE_ROOT / "benchmark-specs").iterdir():
+            if contract.name != "dev-display-replacements.json":
+                (self.root / "benchmark-specs" / contract.name).symlink_to(contract, target_is_directory=contract.is_dir())
         (self.root / "leaderboard").mkdir()
         shutil.copy2(SOURCE_ROOT / "leaderboard/manifest.json", self.root / "leaderboard/manifest.json")
         old_id = validator.AHMEDML_DEVELOPMENT_FIXTURE_ID

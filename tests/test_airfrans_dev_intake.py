@@ -21,7 +21,12 @@ class AirfransDevIntakeTests(unittest.TestCase):
         manifest = validator.manifest_with_benchmark_contract(validator.load_json(validator.MANIFEST_PATH))
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()
-            (root / 'benchmark-specs').symlink_to(ROOT / 'benchmark-specs', target_is_directory=True)
+            # Share scientific contracts, not publication records for real results
+            # absent from this disposable one-package repository.
+            (root / 'benchmark-specs').mkdir()
+            for contract in (ROOT / 'benchmark-specs').iterdir():
+                if contract.name != 'dev-display-replacements.json':
+                    (root / 'benchmark-specs' / contract.name).symlink_to(contract, target_is_directory=contract.is_dir())
             folder = root / 'submissions/airfrans/dev-intake-trial'
             shutil.copytree(ROOT / 'submissions/airfrans/transolverpp-full-v1', folder)
             # Rebind a disposable copy of previously evaluated, byte-identical
