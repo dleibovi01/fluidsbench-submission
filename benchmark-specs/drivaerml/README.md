@@ -4,15 +4,15 @@ The reviewed proposal is now the participant-facing candidate contract.
 It uses the exact public DrivAerML release and the eight owner-published splits.
 Neil Ashton, acting as dataset owner, approved the candidate's native-field,
 force, velocity-profile, continuous-Cp, sampling, and tolerance decisions on
-2026-08-28. Submissions remain closed only while the immutable production
+2026-08-28. Development candidate PRs are accepted against `dev`. Official submissions remain closed while the immutable production
 release, multi-model sensitivity study, and independent full-submission dry run
-are completed. Existing leaderboard rows remain non-rankable prototype fixtures.
+are completed. Registered genuine-inference dev references and prototype fixtures remain unranked and non-citable.
 
 ## Prepare a candidate
 
-Follow the [participant guide](PARTICIPANT_GUIDE.md), then the
+Start with the [resumable quickstart](QUICKSTART.md), then consult the [participant guide](PARTICIPANT_GUIDE.md) and
 [packaging example](../../examples/drivaerml-v3-candidate/README.md). The complete native evaluator requires Linux and the
-published dependency pins. Check unresolved release tokens before an expensive run.
+published dependency pins. Keep the supplied release bindings and replace every participant placeholder before packaging.
 
 | Scope                | Required predictions and profiles                                                                                                                                                   |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -72,15 +72,18 @@ For every selected case:
    `run_N/force_mom_constref_N.csv` files are convenience mirrors that must
    replay the matching aggregate row.
 5. Use the same evaluator to extract the diagnostics defined in
-   [`drivaerml-diagnostics-v9.json`](drivaerml-diagnostics-v9.json): 16 AutoCFD5
+   [`drivaerml-diagnostics-v10.json`](drivaerml-diagnostics-v10.json), with the
+   [dev v2 scoring override](dev-profile-scoring-v2.json): 16 AutoCFD5
    velocity lines on the candidate 10 mm grid and four continuous Cp cuts:
    upperbody centreline (`y=0`), underbody centreline (`y=0`), sidewall
-   (`z=0.15 m`), and front-left wheelhouse (`y=-0.6 m`). Once the contract is
-   activated, the ranked velocity metric will be global R2 with equal total
+   (`z=0.15 m`), and front-left wheelhouse (`y=-0.6 m`). The dev v2
+   velocity metric is global R2 with equal total
    weight for every case and line and normalized trapezoidal arc-length weight
    within each line. Continuous Cp-cut R2 is a separate ranked component with
-   equal total weight for every case and cut and normalized native
-   cut-intersection segment-length weight within each cut. The corresponding
+   equal total weight for every case and cut and normalized trapezoidal
+   arc-length weight within each cut. Unsupported gaps are never bridged.
+   Dev v2 replaces the historical v10 Cp segment-length reduction without changing
+   profile geometry or truth; reevaluate historical v1 predictions rather than relabelling their release IDs. The corresponding
    RMSE values remain report-only diagnostics. Submit the complete
    evaluator-produced coordinate and prediction arrays for all 16 velocity
    profiles for `surface_and_volume` and all four Cp cuts in either scope, in the normal FluidsBench profile JSON. `surface_only` supplies no velocity-profile series.

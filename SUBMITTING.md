@@ -5,9 +5,9 @@
 | Dataset | Accepted dev route and participant instructions |
 | --- | --- |
 | AirfRANS | Full, Scarce and AoA extrapolation use the open, owner-approved support: [participant quickstart](benchmark-specs/airfrans/QUICKSTART.md). |
-| AhmedML | Development candidate: [packaging guide](examples/ahmedml-v3-candidate/README.md). |
-| WindsorML | Development candidate: [packaging guide](examples/windsorml-v3-candidate/README.md). |
-| DrivAerML | Development candidate: [participant guide](benchmark-specs/drivaerml/PARTICIPANT_GUIDE.md). |
+| AhmedML | Development candidate: [participant quickstart](benchmark-specs/ahmedml/QUICKSTART.md). |
+| WindsorML | Development candidate: [participant quickstart](benchmark-specs/windsorml/QUICKSTART.md). |
+| DrivAerML | Development candidate: [participant quickstart](benchmark-specs/drivaerml/QUICKSTART.md). |
 | DrivAerNet++ | Development candidate: [participant quickstart](benchmark-specs/drivaernetplusplus/QUICKSTART.md). |
 
 AirfRANS Reynolds and new result intake for the remaining datasets, including HiLiftAeroML, remain closed.
