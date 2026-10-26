@@ -3,7 +3,7 @@
 # Dataset contracts
 
 **AirfRANS Full, Scarce and AoA extrapolation are open on `dev`.**
-Follow the [dev intake guide](airfrans/RELEASES.md). **AhmedML, WindsorML, DrivAerML and DrivAerNet++ also accept
+Follow the [participant quickstart](airfrans/QUICKSTART.md). **AhmedML, WindsorML, DrivAerML and DrivAerNet++ also accept
 development-candidate PRs targeting `dev`.** Their official support releases remain closed; reviewed candidates require separate
 maintainer registration before appearing as unranked dev references.
 
@@ -17,15 +17,15 @@ coefficient conversions, and remaining source ambiguities. This audit documents 
 
 | Dataset      | Instructions / specification                                                                                | Candidate package                                          |
 | ------------ | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| AhmedML      | [Evaluator guide](ahmedml/README.md) · [Specification](ahmedml/submission-spec.json)                        | [Example](../examples/ahmedml-v3-candidate/README.md)      |
-| DrivAerML    | [Participant guide](drivaerml/PARTICIPANT_GUIDE.md) · [Specification](drivaerml/submission-spec.json)       | [Example](../examples/drivaerml-v3-candidate/README.md)    |
+| AhmedML      | [Quickstart](ahmedml/QUICKSTART.md) · [Evaluator guide](ahmedml/README.md) · [Specification](ahmedml/submission-spec.json)                        | [Example](../examples/ahmedml-v3-candidate/README.md)      |
+| DrivAerML    | [Quickstart](drivaerml/QUICKSTART.md) · [Participant guide](drivaerml/PARTICIPANT_GUIDE.md) · [Specification](drivaerml/submission-spec.json)       | [Example](../examples/drivaerml-v3-candidate/README.md)    |
 | HiLiftAeroML | [Participant guide](hiliftaeroml/PARTICIPANT_GUIDE.md) · [Specification](hiliftaeroml/submission-spec.json) | [Example](../examples/hiliftaeroml-v3-candidate/README.md) |
-| AirfRANS     | [Specification](airfrans/submission-spec.json)                                                              | —                                                          |
+| AirfRANS     | [Quickstart](airfrans/QUICKSTART.md) · [Specification](airfrans/submission-spec.json)                                                              | —                                                          |
 | BlendedNet   | [Specification](blendednet/submission-spec.json)                                                            | —                                                          |
 | DrivAerNet++ | [Quickstart](drivaernetplusplus/QUICKSTART.md) · [Specification](drivaernetplusplus/submission-spec.json)   | [Example](../examples/drivaernetplusplus-v3-candidate/README.md) |
 | Rotor37      | [Specification](rotor37/submission-spec.json)                                                               | —                                                          |
 | VKI-LS59     | [Specification](vki-ls59/submission-spec.json)                                                              | —                                                          |
-| WindsorML    | [Specification](windsorml/submission-spec.json)                                                             | —                                                          |
+| WindsorML    | [Quickstart](windsorml/QUICKSTART.md) · [Specification](windsorml/submission-spec.json)                                                             | —                                                          |
 
 ## Check status before starting
 

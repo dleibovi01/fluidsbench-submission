@@ -14,18 +14,17 @@ Reynolds and official intake for the other datasets remain closed. Production is
 registered HiLiftAeroML Transolver and GeoTransolver previews retain real inference and CFD comparison truth but remain
 unapproved and non-citable. A local candidate validation pass does not open submissions or create a leaderboard entry.
 
-**AhmedML development candidate PRs are accepted on `dev`.** Follow the
-[candidate packaging guide](examples/ahmedml-v3-candidate/README.md). Prepared evaluator
-support is available through `python scripts/fetch_ahmedml_support.py --split full`;
-evaluation downloads missing cases automatically, and the assembler downloads the
-pinned profile manifest. Validate with `--dev-intake --contributor-stage`
-and target `dev` in your PR. Repository-wide development checks use
-`python scripts/manage_leaderboard.py check --dev-intake`. Candidates remain unapproved and unpublished.
+**AhmedML and WindsorML development candidate PRs are accepted on `dev`.** Start with the
+[AhmedML quickstart](benchmark-specs/ahmedml/QUICKSTART.md) or
+[WindsorML quickstart](benchmark-specs/windsorml/QUICKSTART.md). Both use the
+[resumable participant workflow](docs/NATIVE_PARTICIPANT_WORKFLOW.md) for native data/support preparation,
+complete-split evaluation, reports, checkpoint checks and validated packaging.
+Both require surface and volume predictions. Maintainer registration and feed generation are separate publication steps.
 
-**WindsorML development candidate PRs are also accepted on `dev`.** Use the
-[WindsorML packaging guide](examples/windsorml-v3-candidate/README.md), including
-all 16 fixed and relative profiles. The same separate review and registration
-process controls dev leaderboard publication.
+**DrivAerML development candidate PRs are also accepted on `dev`.** Use the
+[DrivAerML quickstart](benchmark-specs/drivaerml/QUICKSTART.md) for either `surface_and_volume`
+or `surface_only`, with native data streaming, prepared support, resumable evaluation and packaging.
+The dev v2 profile contract uses normalized trapezoidal arc-length weighting; surface-only results retain a maximum overall score of 60.
 
 **DrivAerNet++ development candidate PRs are also accepted on `dev`.** Follow the
 [DrivAerNet++ quickstart](benchmark-specs/drivaernetplusplus/QUICKSTART.md): pressure only, every native
@@ -42,7 +41,7 @@ surface point of all 1,154 `official_test` designs, prepared support downloaded 
 4. **Validate and submit when open:** pass contributor-stage validation and open a PR containing one new result directory.
    Maintainers review the submitted data before a separate approval step publishes it.
 
-For a coordinated closed-candidate dry run, start with the dataset-specific instructions:
+For detailed dataset contracts and package formats, use the links below. HiLiftAeroML is limited to owner-coordinated closed-candidate dry runs:
 
 | Dataset      | Start with                                                             | Packaging example                                                 |
 | ------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------- |

@@ -5,7 +5,7 @@ the complete resumable command sequence and pinned Linux container. The
 per-case commands below remain available for existing pipelines.
 
 This directory is a reusable configuration template, not a submission. The
-AhmedML native evaluator remains a closed owner-review candidate and public
+AhmedML native evaluator remains an owner-review candidate and official
 submissions are not open. Development candidate PRs are accepted against `dev`.
 The assembler creates an unapproved candidate package
 for any of the eight official split labels only after all placeholder tokens,
