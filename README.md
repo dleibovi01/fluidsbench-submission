@@ -7,6 +7,9 @@ This repository holds the dataset contracts, evaluators, result packages, and ge
 
 **AirfRANS submissions are open on `dev` for Full, Scarce and AoA extrapolation.**
 Use the [participant quickstart](benchmark-specs/airfrans/QUICKSTART.md) for verified support downloads, resumable evaluation and package generation, and target your PR at `dev`.
+The [completed Full and AoA participant trials](benchmark-specs/airfrans/QUICKSTART.md#completed-participant-trials)
+cover real-data extraction, interruption/resume and packaging using existing Transolver++ predictions;
+the AoA package has also completed separate maintainer approval and dev leaderboard publication.
 Reynolds and official intake for the other datasets remain closed. Production is unchanged. Work on `dev` is pre-release: prototype rows are illustrative;
 registered HiLiftAeroML Transolver and GeoTransolver previews retain real inference and CFD comparison truth but remain
 unapproved and non-citable. A local candidate validation pass does not open submissions or create a leaderboard entry.

@@ -16,6 +16,12 @@ AirfRANS source hash against the approved profile contract.
 docker build -f Dockerfile.airfrans -t fluidsbench-airfrans .
 ```
 
+Build from a clean checkout before downloading support or adding predictions.
+Docker installations without BuildKit ignore `Dockerfile.airfrans.dockerignore`;
+the current ignore file also omits `support/`. Rebuilding a populated checkout
+can therefore copy large local artifacts into the image. Keep those artifacts
+outside the build checkout and mount them at runtime if you need to rebuild.
+
 For the commands below, either install `requirements-airfrans-participant.txt`
 into a Python 3.12 environment, or run them inside the container. For example:
 
@@ -167,11 +173,24 @@ Open a PR to **`dev`** containing only the new submission directory. Do not add
 approval records. Maintainers review and approve in a separate dev PR before
 displaying a ranked result. A passing contributor check is not approval.
 
-## Remaining real-data trial
+## Completed participant trials
 
-The participant workflow has automated policy/recovery tests, a synthetic
-numerical reduction test, and complete package validation for all three enabled
-splits using retained records. Those checks do not constitute a new model run.
-A submitter with the original meshes and full prediction arrays must still run
-the complete field/profile extraction path, including an interrupted/resumed
-run, and submit the resulting dev package. Start with Full, then AoA if available.
+Emanuele Tamburini completed the container workflow with existing Transolver++
+predictions for **Full (200 cases)** in [PR #68](https://github.com/neilashton/fluidsbench-submission/pull/68)
+and **AoA extrapolation (196 cases)** in [PR #69](https://github.com/neilashton/fluidsbench-submission/pull/69).
+He reported successful support-cache reuse, validation, field/profile extraction,
+interruption and resume after 6 Full cases and 5 AoA cases, packaging with
+`--checkpoint`, and package/contributor validation. The submitted metrics and
+profiles match the retained inference results (overall scores 53.41 and 40.61).
+These trials reused existing inference runs; they did not retrain the model.
+
+The AoA package was separately approved for the dev leaderboard in
+[PR #70](https://github.com/neilashton/fluidsbench-submission/pull/70).
+It replaces the older prototype-contract display entry; the original package
+remains in history. Approval checked submitted data and did not rerun the model
+or independently recompute base metrics from full fields.
+
+Scarce has automated workflow and retained-package validation, but no equivalent
+completed participant trial is recorded here. Reynolds and production intake
+remain closed. Prediction export remains model-specific: supply exactly the
+four native arrays documented above before running the evaluator.
