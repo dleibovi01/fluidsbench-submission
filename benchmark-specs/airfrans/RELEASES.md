@@ -8,14 +8,17 @@ here remain useful for inspecting or independently installing the artifacts.
 **Intake is open on `dev` for Full, Scarce and AoA extrapolation.** Submit a new
 schema-v3 result directory through a PR against **`dev`**. Reynolds extrapolation
 is closed: 318 of its 496 evaluation cases are not covered by these supports.
-Other datasets and production intake remain closed.
+Production intake remains closed. See the [dataset index](../README.md) for other datasets' development availability.
 
 Full and Scarce share the ordered 200-case evaluation set; AoA uses 196 cases.
 The approved native support and lossless profile truth cover 355 unique cases.
 The score contract was approved by Neil Ashton in [PR #47](https://github.com/neilashton/fluidsbench-submission/pull/47).
-No participant result is approved or ranked by opening intake. Existing
-prototype fixtures and candidate references keep their original bytes and
-historical identities in the unranked development feed.
+Opening intake does not approve or rank a participant result. The Full and AoA
+[participant trials](QUICKSTART.md#completed-participant-trials) are complete;
+the AoA package received separate dev approval in
+[PR #70](https://github.com/neilashton/fluidsbench-submission/pull/70).
+Its older prototype-contract entry retains its original bytes and identity in
+revision history and is excluded from the current feed to avoid duplicate ranking.
 
 ## Editable dev downloads
 
