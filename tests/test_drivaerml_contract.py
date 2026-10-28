@@ -450,7 +450,7 @@ class DrivAerMLContractTests(unittest.TestCase):
             self.assertIn("no_submission_or_cp_cut_support_role", artifact["role"])
             self.assertFalse(artifact["public_scoring_support_eligible"])
 
-    def test_leaderboard_and_prototypes_use_the_candidate_contract(self) -> None:
+    def test_leaderboard_and_submissions_use_the_candidate_contract(self) -> None:
         manifest = load_json(ROOT / "leaderboard" / "manifest.json")
         dataset = next(item for item in manifest["datasets"] if item["slug"] == "drivaerml")
         self.assertEqual(dataset["scoring_support"], self.specification["scoring_support"])
@@ -492,7 +492,6 @@ class DrivAerMLContractTests(unittest.TestCase):
             with self.subTest(submission_id=submission["submission_id"]):
                 self.assertEqual(submission["dataset_version"], self.specification["dataset_version"])
                 self.assertEqual(set(submission["metric_values"]), expected_metrics)
-                self.assertEqual(submission["approval"]["status"], "prototype")
                 self.assertGreater(submission["metric_values"]["overall_score"], 0.0)
                 self.assertLessEqual(submission["metric_values"]["overall_score"], 100.0)
 
@@ -572,10 +571,19 @@ class DrivAerMLContractTests(unittest.TestCase):
             }
             self.assertTrue(selected_ids.isdisjoint(other_ids), other["slug"])
 
-        fixture_paths = sorted(
-            (ROOT / "submissions" / "drivaerml").glob("*/submission.json")
-        )
-        fixtures = [load_json(path) for path in fixture_paths]
+        # Pending contributor packages are valid source submissions but are not
+        # published until maintainer registration. Population metadata describes
+        # the published feed, not every package awaiting review in submissions/.
+        fixtures = load_json(ROOT / "leaderboard" / "datasets" / "drivaerml.json")
+        self.assertTrue(fixtures)
+        for fixture in fixtures:
+            source = load_json(
+                ROOT / "submissions" / "drivaerml"
+                / fixture["submission_id"] / "submission.json"
+            )
+            with self.subTest(submission_id=fixture["submission_id"]):
+                self.assertEqual(source["approval"]["status"], "prototype")
+                self.assertEqual(source["submitted_at"], fixture["submitted_at"])
         population = dataset["submission_population"]
         self.assertEqual(dataset["submission_count"], len(fixtures))
         self.assertEqual(population["feed_row_count"], len(fixtures))
